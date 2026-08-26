@@ -10,7 +10,8 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: '指南', link: '/guide/quick-start' },
-      { text: 'API', link: '/api/form-item' },
+      { text: 'API', link: '/api/config-form' },
+      { text: '示例', link: '/examples/' },
       { text: '架构', link: '/architecture/controlled-data-flow' },
       { text: '示例站', link: playgroundUrl }
     ],
@@ -27,10 +28,23 @@ export default defineConfig({
       {
         text: 'API',
         items: [
+          { text: 'ConfigForm', link: '/api/config-form' },
           { text: 'FormItem', link: '/api/form-item' },
+          { text: '内置字段类型', link: '/api/builtin-types' },
           { text: 'Component 与 Binding', link: '/api/component-and-binding' },
+          { text: '上下文与 Slot', link: '/api/context-and-slots' },
           { text: 'Hint、事件与 Ref', link: '/api/events-and-ref' },
           { text: '自定义字段类型', link: '/api/custom-field-types' }
+        ]
+      },
+      {
+        text: '示例',
+        items: [
+          { text: '示例索引', link: '/examples/' },
+          { text: '基础、校验与联动', link: '/examples/basic-form' },
+          { text: '选项字段映射', link: '/examples/options-mapping' },
+          { text: '扩展、Slot 与复合字段', link: '/examples/extensions' },
+          { text: '详情与只读模式', link: '/examples/readonly-detail' }
         ]
       },
       {
@@ -38,8 +52,7 @@ export default defineConfig({
         items: [
           { text: '受控数据流', link: '/architecture/controlled-data-flow' }
         ]
-      },
-      { text: '示例', items: [{ text: '示例索引', link: '/examples/' }] }
+      }
     ],
     socialLinks: [],
     search: { provider: 'local' }
