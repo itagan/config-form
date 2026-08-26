@@ -1,0 +1,10 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "files": [],
+  "compilerOptions": { "baseUrl": "." },
+  "references": [
+    { "path": "./tsconfig.config.json" },
+    { "path": "./packages/config-form/tsconfig.json" },
+    { "path": "./playground/tsconfig.json" }
+  ]
+}

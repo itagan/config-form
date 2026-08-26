@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/vue-shim.d.ts",
+    "src/public-types.ts",
+    "src/defineFormItems.ts",
+    "src/defineConfigFormType.ts",
+    "src/defineConfigFormTypes.ts",
+    "src/index.ts",
+    "src/types.ts"
+  ],
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "src",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "dist/types",
+    "stripInternal": true
+  }
+}

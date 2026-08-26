@@ -1,0 +1,35 @@
+{
+  "name": "configform-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.31.0",
+  "scripts": {
+    "dev": "pnpm --filter configform-playground dev",
+    "preview": "pnpm --filter configform-playground preview",
+    "docs:install": "pnpm --dir docs --ignore-workspace install --frozen-lockfile",
+    "docs:dev": "pnpm --dir docs --ignore-workspace dev",
+    "docs:build": "run-s docs:install docs:build-only",
+    "docs:build-only": "pnpm --dir docs --ignore-workspace build",
+    "docs:preview": "pnpm --dir docs --ignore-workspace preview",
+    "site:dev": "run-p dev docs:dev",
+    "build": "run-s build:package build:playground docs:build",
+    "build:package": "pnpm --filter @itagan/config-form build",
+    "build:playground": "pnpm --filter configform-playground build",
+    "test": "pnpm --filter @itagan/config-form test",
+    "type-check": "pnpm -r type-check",
+    "pack:check": "node scripts/check-package.mjs",
+    "release:check": "run-s test type-check build pack:check"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.45",
+    "@vitejs/plugin-vue2": "^1.1.2",
+    "@vue/tsconfig": "^0.1.3",
+    "jsdom": "21.1.2",
+    "less": "^4.4.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "~4.7.4",
+    "vite": "^3.0.2",
+    "vue": "2.7.16",
+    "vue-tsc": "^0.38.8"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "configform-playground",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173 --strictPort",
+    "build": "run-p type-check build-only",
+    "build-only": "vite build",
+    "preview": "vite preview --port 4173",
+    "type-check": "vue-tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@itagan/config-form": "workspace:*",
+    "element-ui": "^2.15.14",
+    "vue": "2.7.16",
+    "vue-router": "^3.5.4"
+  }
+}
