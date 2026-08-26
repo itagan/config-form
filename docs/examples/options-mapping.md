@@ -1,6 +1,6 @@
 # Select、Radio、Checkbox 选项映射
 
-<a href="http://localhost:5173/#/options" target="_blank">在 Playground 中运行</a>
+<PlaygroundLink route="/options" />
 
 三个选项类字段共享 `options/optionProps`。业务数据无需预先转换成 `{ label, value }`：
 

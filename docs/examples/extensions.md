@@ -1,6 +1,6 @@
 # 扩展、Slot 与复合字段
 
-<a href="http://localhost:5173/#/extensions" target="_blank">在 Playground 中运行</a>
+<PlaygroundLink route="/extensions" />
 
 这个场景组合三种扩展方式：注册可复用的金额 type、用 Slot 完全控制摘要渲染、用 `binding.map` 将开始和结束时间交给一个复合编辑器。
 

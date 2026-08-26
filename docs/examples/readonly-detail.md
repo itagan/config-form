@@ -1,6 +1,6 @@
 # 详情与只读模式
 
-<a href="http://localhost:5173/#/readonly" target="_blank">在 Playground 中运行</a>
+<PlaygroundLink route="/readonly" />
 
 编辑和详情共用同一份 Schema 时，可在根级切换 `readonly`：
 
