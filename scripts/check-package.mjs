@@ -1,5 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { createRequire } from 'node:module'
 import { spawnSync } from 'node:child_process'
 
 const packageDir = resolve('packages/config-form')
@@ -52,6 +54,17 @@ for (const file of publicFiles) {
   const content = readFileSync(file, 'utf8')
   if (content.includes(legacyProduct) || content.includes(legacySlug)) {
     throw new Error(`Legacy product name found in ${file}`)
+  }
+}
+
+const esmEntry = await import(pathToFileURL(resolve(packageDir, 'dist/config-form.es.js')).href)
+const cjsEntry = createRequire(import.meta.url)(resolve(packageDir, 'dist/config-form.umd.cjs'))
+for (const [format, entry] of [['ESM', esmEntry], ['CommonJS', cjsEntry]]) {
+  if (entry.default !== entry.ConfigForm || entry.createConfigForm() !== entry.ConfigForm) {
+    throw new Error(`${format} public component exports are inconsistent.`)
+  }
+  for (const helper of ['defineFormItems', 'defineConfigFormType', 'defineConfigFormTypes']) {
+    if (typeof entry[helper] !== 'function') throw new Error(`${format} entry is missing ${helper}.`)
   }
 }
 

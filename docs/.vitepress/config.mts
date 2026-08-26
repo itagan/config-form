@@ -20,7 +20,8 @@ export default defineConfig({
         items: [
           { text: '快速开始', link: '/guide/quick-start' },
           { text: '配置总览', link: '/guide/configuration' },
-          { text: '动态配置', link: '/guide/dynamic-configuration' }
+          { text: '动态配置', link: '/guide/dynamic-configuration' },
+          { text: '开发与质量检查', link: '/guide/development' }
         ]
       },
       {

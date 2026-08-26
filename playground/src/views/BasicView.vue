@@ -3,24 +3,24 @@
     <h1>基础、校验与动态联动</h1>
     <p>单个 el-row 配合字段级 el-col；企业名称根据类型动态显示。</p>
     <div class="demo-card">
-    <ConfigForm
-      ref="formRef"
-      v-model="formModel"
-      :items="items"
-      :form-props="{ labelWidth: '96px', size: 'small' }"
-      :hint-options="{ mode: 'tooltip' }"
-      @field-change="lastChange = $event"
-    >
-      <template #actions>
-        <span />
-      </template>
-      <template #append>
-        <div class="actions">
-          <el-button type="primary" size="small" @click="submit">校验</el-button>
-          <el-button size="small" @click="reset">重置</el-button>
-        </div>
-      </template>
-    </ConfigForm>
+      <ConfigForm
+        ref="formRef"
+        v-model="formModel"
+        :items="items"
+        :form-props="{ labelWidth: '96px', size: 'small' }"
+        :hint-options="{ mode: 'tooltip' }"
+        @field-change="lastChange = $event"
+      >
+        <template #actions>
+          <span />
+        </template>
+        <template #append>
+          <div class="actions">
+            <el-button type="primary" size="small" @click="submit">校验</el-button>
+            <el-button size="small" @click="reset">重置</el-button>
+          </div>
+        </template>
+      </ConfigForm>
     </div>
     <pre class="model-preview">{{ formModel }}</pre>
     <p v-if="lastChange">最近变化：{{ lastChange.fieldKey }}</p>
