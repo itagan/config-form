@@ -118,7 +118,7 @@ export type BuiltinFormItemType =
   | 'number' | 'switch' | 'radio' | 'checkbox' | 'text' | 'rate'
   | 'slider' | 'color' | 'cascader' | 'autocomplete'
 
-export type FormItemType = BuiltinFormItemType | 'component' | 'slot' | (string & {})
+export type FormItemType = BuiltinFormItemType | 'component' | 'slot' | (string & Record<never, never>)
 export type ReservedFormItemType = BuiltinFormItemType | 'component' | 'slot'
 
 export interface FormItemConfig<TModel extends FormModel = FormModel> {
@@ -177,7 +177,7 @@ export interface ConfigFormRef {
 
 export type ConfigFormComponent<TModel extends FormModel = FormModel> = DefineComponent<
   ConfigFormProps<TModel>,
-  {},
+  Record<string, never>,
   any
 >
 

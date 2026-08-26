@@ -21,6 +21,7 @@
     "build:lib": "vite build",
     "build:types": "tsc -p tsconfig.build.json",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "type-check": "vue-tsc -p tsconfig.json --noEmit",
     "prepack": "pnpm build"
   },

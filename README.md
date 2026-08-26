@@ -22,10 +22,15 @@ pnpm site:dev     # 同时启动两者
 
 ```bash
 pnpm test
+pnpm test:coverage
+pnpm lint
 pnpm type-check
+pnpm compat:check
 pnpm build
 pnpm pack:check
 pnpm release:check
 ```
+
+`release:check` 只执行质量验证，不创建 tag、不推送版本，也不会发布 npm 包。最低兼容消费包固定使用 Vue 2.7.1 与 Element UI 2.4.9。
 
 组件安装和 API 说明见 [`packages/config-form/README.md`](./packages/config-form/README.md)。

@@ -10,6 +10,8 @@ pnpm add @itagan/config-form
 
 使用方需要安装并注册 Vue `>=2.7.1 <3` 与 Element UI `>=2.4.9 <3`。
 
+仓库通过独立消费包持续验证 Vue `2.7.1` 与 Element UI `2.4.9` 的最低 peer 组合；日常开发环境使用 Vue `2.7.16` 与 Element UI `2.15.14`。
+
 ## 快速开始
 
 ```ts
