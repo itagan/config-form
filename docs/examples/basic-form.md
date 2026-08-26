@@ -1,6 +1,6 @@
 # 基础、校验与动态联动
 
-<a href="http://localhost:5173/#/" target="_blank">在 Playground 中运行</a>
+<PlaygroundLink route="/" />
 
 这个示例覆盖日常表单的最小闭环：双列栅格、动态显隐、Element UI 校验、提交、重置和字段变化事件。
 
