@@ -40,7 +40,8 @@ export default defineConfig({
       {
         text: '功能',
         items: [
-          { text: '键盘导航', link: '/features/keyboard-navigation' }
+          { text: '键盘导航', link: '/features/keyboard-navigation' },
+          { text: 'Tooltip 提示单例', link: '/features/hint-tooltip' }
         ]
       },
       {

@@ -5,6 +5,7 @@
 ```ts
 interface ConfigFormHintOptions<TModel> {
   mode?: false | 'title' | 'tooltip'
+  hintTrigger?: 'item' | 'content'
   field?: boolean | ((context: ConfigFormFieldRenderContext<TModel>) => string | false | null | undefined)
   tooltipProps?: Record<string, any>
 }
@@ -12,15 +13,18 @@ interface ConfigFormHintOptions<TModel> {
 
 默认配置为 `{ mode: 'title', field: false, tooltipProps: {} }`。
 
-- `mode: 'title'` 使用原生 title；`tooltip` 使用 `el-tooltip`；`false` 全局关闭。
+- `mode: 'title'` 使用原生 title；`tooltip` 使用表单级单例 Tooltip；`false` 全局关闭。
+- `mode: 'tooltip'` 时整个表单只挂载一个 `el-tooltip`，通过事件委托展示：指针悬停或字段获得焦点时出现，`aria-describedby` 由组件自动维护，Escape 可临时关闭。大量字段时没有逐字段 Tooltip 的实例开销。
+- `hintTrigger` 仅在 `tooltip` 模式下生效：`item`（默认）悬停整个 FormItem 触发；`content` 仅悬停字段内容根节点触发，Tooltip 也定位在内容根节点上。
 - `field: true` 默认字符串化非空字段值；函数可统一格式化。
 - 字段 `hint` 的非空字符串优先于 `field`；字段 `hint: false` 可单独关闭。
-- `tooltipProps` 透传给 `el-tooltip`。
+- `tooltipProps` 透传给单例 `el-tooltip`；`content`、`manual`、`value`、`enterable` 等受管属性会被忽略，`popperClass` 会与内部类名合并。
 
 ```vue
 <ConfigForm
   :hint-options="{
     mode: 'tooltip',
+    hintTrigger: 'content',
     field: ({ value }) => value ? `当前值：${value}` : false,
     tooltipProps: { placement: 'top', effect: 'dark' }
   }"
