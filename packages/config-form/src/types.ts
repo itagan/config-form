@@ -147,14 +147,17 @@ export type FieldTypeListeners<
   ) => void
 }
 
+/** 根据当前字段上下文同步选择实际渲染组件。 */
+export type FieldComponentResolver<TModel extends FormModel = FormModel> = (
+  context: ConfigFormFieldRenderContext<TModel>
+) => string | Component | undefined
+
 /** 字段项级组件配置；未指定 type 时按 `component` 渲染一次性组件。 */
 export interface FieldComponentConfig<TModel extends FormModel = FormModel> {
   /** 静态 Vue 组件或已注册的字段类型名称。 */
   is?: string | Component
   /** 根据当前字段上下文同步选择组件；返回 undefined 时回退到 is。 */
-  resolveComponent?: (
-    context: ConfigFormFieldRenderContext<TModel>
-  ) => string | Component | undefined
+  resolveComponent?: FieldComponentResolver<TModel>
   /** 透传给实际字段组件的属性。 */
   props?: DynamicValue<ComponentProps, ConfigFormFieldRenderContext<TModel>>
   /** 字段组件事件监听器；回调首参固定为可更新的字段上下文。 */
@@ -215,14 +218,21 @@ export type FormItemType = BuiltinFormItemType | 'component' | 'slot' | (string 
 /** 不可被业务字段类型注册表覆盖的保留名称。 */
 export type ReservedFormItemType = BuiltinFormItemType | 'component' | 'slot'
 
-/** 单个表单字段的配置；fieldKey 支持点路径（`profile.name`）与数组下标（`rows.0.name`）。 */
-export interface FormItemConfig<TModel extends FormModel = FormModel> {
+/** 未声明自定义字段类型时使用的严格空注册表；此时 Custom 联合分支为 never。 */
+export type EmptyFieldTypeRegistry = Record<never, never>
+
+/** 运行时消费的宽松注册表视图：任意类型名都映射到未收窄定义，合法性交给配置诊断。 */
+export type LooseFieldTypeRegistry<TModel extends FormModel = FormModel> = FieldTypeRegistry<TModel>
+
+/** 已注册的自定义字段类型名称。 */
+export type RegisteredFormItemType<TFieldTypes> = Extract<keyof TFieldTypes, string>
+
+/** 所有字段配置共享的基础属性；各联合分支通过 type 区分。 */
+export interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
   /** 列表渲染的稳定标识；动态增删字段时用于保持组件实例身份。 */
   key?: string
   /** 必填，当前字段的 model 寻址路径。 */
   fieldKey: string
-  /** 内置类型、保留类型或已注册的业务字段类型。 */
-  type: FormItemType
   /** 复合值映射；配置后字段按映射读取和写回组件值。 */
   binding?: FieldBindingConfig
   /** 业务自定义元数据；ConfigForm 不读取，仅随上下文透出。 */
@@ -243,9 +253,109 @@ export interface FormItemConfig<TModel extends FormModel = FormModel> {
   colProps?: DynamicValue<ComponentProps, ConfigFormFieldRenderContext<TModel>>
   /** 透传给当前字段 el-form-item 的属性（label、rules 等）。 */
   formItemProps?: DynamicValue<ComponentProps, ConfigFormFieldRenderContext<TModel>>
-  /** 字段项级组件配置；type 为 'component'/'slot' 或覆盖内置类型行为时使用。 */
-  component?: FieldComponentConfig<TModel>
 }
+
+/** 使用内置字段类型渲染的配置。 */
+export interface BuiltinFormItemConfig<TModel extends FormModel = FormModel>
+  extends BaseFormItemConfig<TModel> {
+  /** 内置字段类型。 */
+  type: BuiltinFormItemType
+  /** 字段组件的动态属性、监听器、选项与 model 覆盖；不可重新指定渲染目标。 */
+  component?: FieldComponentConfig<TModel> & { is?: never, resolveComponent?: never, slot?: never }
+}
+
+/** 组件目标的异或约束：is 与 resolveComponent 二选一。 */
+type ComponentTargetConfig<TModel extends FormModel = FormModel> =
+  | { is: string | Component, resolveComponent?: FieldComponentResolver<TModel>, slot?: never }
+  | { is?: never, resolveComponent: FieldComponentResolver<TModel>, slot?: never }
+
+/** 直接指定静态或动态 Vue 组件的配置；选项数据源由业务层自行传入。 */
+type DirectFieldComponentConfig<TModel extends FormModel = FormModel> = Omit<
+  FieldComponentConfig<TModel>,
+  'options' | 'optionProps'
+> & { options?: never, optionProps?: never }
+
+/** 使用一次性组件渲染的配置。 */
+export interface ComponentFormItemConfig<TModel extends FormModel = FormModel>
+  extends BaseFormItemConfig<TModel> {
+  type: 'component'
+  /** 必须通过 is 或 resolveComponent 提供组件目标。 */
+  component: DirectFieldComponentConfig<TModel> & ComponentTargetConfig<TModel>
+}
+
+/** 使用根 ConfigForm 具名 Slot 渲染内容的字段配置。 */
+export interface SlotFormItemConfig<TModel extends FormModel = FormModel>
+  extends BaseFormItemConfig<TModel> {
+  type: 'slot'
+  /** 必须通过 slot 指定具名 Slot，不创建实际字段组件。 */
+  component: FieldComponentConfig<TModel> & { slot: string, is?: never, resolveComponent?: never }
+}
+
+/** 从注册表定义中还原声明时的组件 Props 协议。 */
+type RegisteredFieldTypeProps<TDefinition> = TDefinition extends {
+  readonly [FIELD_TYPE_PROTOCOL]: { props: object }
+} ? TDefinition[typeof FIELD_TYPE_PROTOCOL]['props'] : ComponentProps
+
+/** 从注册表定义中还原按事件名收窄的监听器表。 */
+type RegisteredFieldTypeListeners<TModel extends FormModel, TDefinition> =
+  TDefinition extends {
+    readonly [FIELD_TYPE_PROTOCOL]: { listeners: object }
+  } ? TDefinition[typeof FIELD_TYPE_PROTOCOL]['listeners']
+    : Record<string, ConfigFormFieldListener<TModel>>
+
+/** 从注册表定义中还原声明时的事件元组协议。 */
+type RegisteredFieldTypeEvents<TDefinition> = TDefinition extends {
+  readonly [FIELD_TYPE_PROTOCOL]: { events: infer TEvents }
+} ? TEvents extends Record<keyof TEvents, unknown[]>
+    ? TEvents
+    : FieldTypeEventMap
+  : FieldTypeEventMap
+
+/** 取注册表中指定类型名的定义。 */
+type RegisteredFieldTypeDefinition<TFieldTypes, TType extends PropertyKey> =
+  TFieldTypes extends Record<TType, infer TDefinition> ? TDefinition : never
+
+/** 已注册自定义类型字段的收窄组件配置；渲染协议键全部禁止。 */
+type CustomFieldComponentConfig<
+  TModel extends FormModel,
+  TDefinition
+> = {
+  props?: DynamicValue<
+    Partial<RegisteredFieldTypeProps<TDefinition>>,
+    ConfigFormFieldRenderContext<TModel>
+  >
+  listeners?: RegisteredFieldTypeListeners<TModel, TDefinition>
+  model?: FieldModelConfig<TModel, RegisteredFieldTypeEvents<TDefinition>> | false
+  is?: never
+  resolveComponent?: never
+  slot?: never
+  options?: never
+  optionProps?: never
+}
+
+/** 为注册表中的每个业务类型名生成一个收窄分支，未注册的名称无法通过类型检查。 */
+type CustomFormItemConfig<
+  TModel extends FormModel,
+  TFieldTypes extends FieldTypeRegistry<TModel>
+> = {
+  [TType in RegisteredFormItemType<TFieldTypes>]: BaseFormItemConfig<TModel> & {
+    type: TType
+    component?: CustomFieldComponentConfig<TModel, RegisteredFieldTypeDefinition<TFieldTypes, TType>>
+  }
+}[RegisteredFormItemType<TFieldTypes>]
+
+/**
+ * 单个表单字段的配置；fieldKey 支持点路径（`profile.name`）与数组下标（`rows.0.name`）。
+ * 显式传入字段类型注册表后，自定义 type 的 component 配置按注册协议收窄。
+ */
+export type FormItemConfig<
+  TModel extends FormModel = FormModel,
+  TFieldTypes extends FieldTypeRegistry<TModel> = LooseFieldTypeRegistry<TModel>
+> =
+  | BuiltinFormItemConfig<TModel>
+  | ComponentFormItemConfig<TModel>
+  | SlotFormItemConfig<TModel>
+  | CustomFormItemConfig<TModel, TFieldTypes>
 
 /** 表单级自动提示策略；Tooltip 属性仅在对应模式下有效。 */
 export interface ConfigFormHintOptions<TModel extends FormModel = FormModel> {
@@ -279,12 +389,15 @@ export interface ConfigFormFieldChangePayload<TModel extends FormModel = FormMod
   itemConfig: Readonly<FormItemConfig<TModel>>
 }
 
-/** ConfigForm 的完整公共 Props。 */
-export interface ConfigFormProps<TModel extends FormModel = FormModel> {
+/** ConfigForm 的完整公共 Props；传入字段类型注册表后 items 按注册协议收窄。 */
+export interface ConfigFormProps<
+  TModel extends FormModel = FormModel,
+  TFieldTypes extends FieldTypeRegistry<TModel> = LooseFieldTypeRegistry<TModel>
+> {
   /** 受控表单数据，v-model 对应的数据源。 */
   model: TModel
   /** 字段配置数组，按数组顺序渲染。 */
-  items?: FormItemConfig<TModel>[]
+  items?: FormItemConfig<TModel, TFieldTypes>[]
   /** 透传给 el-form；model 与 disabled 由 ConfigForm 管理。 */
   formProps?: ComponentProps & { model?: never }
   /** 透传给唯一的 el-row；默认 `{ gutter: 16 }`。 */
@@ -328,8 +441,11 @@ export interface ConfigFormRef {
 }
 
 /** ConfigForm 组件的类型视图；运行时与默认导出是同一组件实例。 */
-export type ConfigFormComponent<TModel extends FormModel = FormModel> = DefineComponent<
-  ConfigFormProps<TModel>,
+export type ConfigFormComponent<
+  TModel extends FormModel = FormModel,
+  TFieldTypes extends FieldTypeRegistry<TModel> = LooseFieldTypeRegistry<TModel>
+> = DefineComponent<
+  ConfigFormProps<TModel, TFieldTypes>,
   Record<string, never>,
   any
 >
