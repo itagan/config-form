@@ -7,6 +7,8 @@
       <router-link to="/options">选项与映射</router-link>
       <router-link to="/extensions">扩展与复合字段</router-link>
       <router-link to="/readonly">详情与只读</router-link>
+      <router-link to="/interaction">校验聚焦与键盘导航</router-link>
+      <router-link to="/hints">提示与 Tooltip 单例</router-link>
     </aside>
     <main class="content"><router-view /></main>
   </div>
