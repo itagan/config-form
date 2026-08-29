@@ -12,6 +12,7 @@
 | `rowProps` | `object` | `{ gutter: 16 }` | 透传给唯一的 `el-row` |
 | `fieldTypes` | `FieldTypeRegistry` | `{}` | 当前实例的业务字段类型注册表 |
 | `hintOptions` | `ConfigFormHintOptions` | 见下文 | 全局提示策略 |
+| `navigationOptions` | `ConfigFormNavigationOptions` | 省略 | Enter 键字段导航；省略时不接管键盘，详见[键盘导航](/features/keyboard-navigation) |
 | `disabled` | `boolean` | `false` | 禁用全部字段 |
 | `readonly` | `boolean` | `false` | 全局只读；同时禁用 Element Form 交互 |
 

@@ -38,6 +38,12 @@ export default defineConfig({
         ]
       },
       {
+        text: '功能',
+        items: [
+          { text: '键盘导航', link: '/features/keyboard-navigation' }
+        ]
+      },
+      {
         text: '示例',
         items: [
           { text: '示例索引', link: '/examples/' },

@@ -7,6 +7,7 @@
     :disabled="disabled || readonly"
     data-config-form-root=""
     @validate="handleValidate"
+    @keydown.native="handleNavigationKeydown"
   >
     <slot name="prepend" :model="model" />
     <el-row v-bind="rowProps">
@@ -87,11 +88,13 @@ import type {
   ConfigFormFieldRenderContext,
   ConfigFormValue,
   ConfigFormHintOptions,
+  ConfigFormNavigationOptions,
   FieldTypeRegistry,
   FormItemConfig,
   FormModel
 } from './types'
 import { useConfigFormFieldLocator } from './composables/useConfigFormFieldLocator'
+import { useConfigFormKeyboardNavigation } from './composables/useConfigFormKeyboardNavigation'
 import { useControlledFormUpdate } from './composables/useControlledFormUpdate'
 import { createBindingPatch, resolveBindingValue } from './utils/binding'
 import { resolveDynamic, resolveFieldComponent } from './utils/field'
@@ -105,6 +108,7 @@ const props = withDefaults(defineProps<{
   rowProps?: ComponentProps
   fieldTypes?: FieldTypeRegistry
   hintOptions?: ConfigFormHintOptions
+  navigationOptions?: ConfigFormNavigationOptions
   disabled?: boolean
   readonly?: boolean
 }>(), {
@@ -169,6 +173,12 @@ const controlledUpdate = useControlledFormUpdate({
 const fieldLocator = useConfigFormFieldLocator({
   getContainer: () => (formRef.value?.$el as HTMLElement | undefined) ?? null,
   getForm: () => formRef.value
+})
+
+const { handleNavigationKeydown } = useConfigFormKeyboardNavigation({
+  getOptions: () => props.navigationOptions,
+  getMountedFields: fieldLocator.getMountedFields,
+  focusElement: fieldLocator.focusElement
 })
 
 function getRenderContext(item: FormItemConfig): ConfigFormFieldRenderContext {
