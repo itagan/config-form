@@ -21,6 +21,15 @@ pnpm release:check
 
 最低 peer 消费包从 `@itagan/config-form` 的构建产物加载 ESM、类型和样式入口，并执行挂载、受控更新、自定义 model 与校验测试。发布包检查额外加载 CommonJS 入口。
 
+## 配置诊断
+
+开发环境下（`import.meta.env.DEV`），ConfigForm 在挂载时收集配置问题并按 key 去重后以 `console.warn` 输出，不抛错、不影响渲染：
+
+- 注册表：保留名称被忽略、定义不是对象、不支持的定义键（只允许 `is`、`model`、`props`）、`is`/`props`/`model` 类型错误、`model.prop`/`model.event` 必须为字符串、`model.valueToProp`/`model.valueFromEvent` 必须为函数。
+- 字段项：`fieldKey`/`type` 非空、渲染 key 重复、`type: 'component'`/`'slot'` 缺少渲染目标、未注册的业务 type（提示当前可用的自定义类型名）、自定义类型在 item 级使用 `component.is/resolveComponent/slot/options/optionProps` 等被禁止的覆盖键。
+
+生产构建不包含诊断逻辑。
+
 ## 分支流程
 
 功能和修复在独立 `codex/feature-*` 或 `codex/fix-*` 分支完成。合并前必须运行 `pnpm release:check`，通过后使用非快进合并回 master；默认不自动推送远端。
