@@ -144,6 +144,10 @@ export interface ConfigFormHintOptions<TModel extends FormModel = FormModel> {
   tooltipProps?: ComponentProps
 }
 
+export interface ConfigFormNavigationOptions {
+  enabled?: boolean
+}
+
 export interface ConfigFormFieldChangePayload<TModel extends FormModel = FormModel> {
   fieldKey: string
   value: ConfigFormValue
@@ -159,6 +163,7 @@ export interface ConfigFormProps<TModel extends FormModel = FormModel> {
   rowProps?: ComponentProps
   fieldTypes?: FieldTypeRegistry<TModel>
   hintOptions?: ConfigFormHintOptions<TModel>
+  navigationOptions?: ConfigFormNavigationOptions
   disabled?: boolean
   readonly?: boolean
 }
