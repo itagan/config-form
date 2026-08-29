@@ -23,11 +23,11 @@ export default defineComponent({
   components: { ConfigForm },
   setup() {
     const model = ref({ project: 'ConfigForm', amount: 1200, start: '09:00', end: '18:00', summary: '' })
-    const money = defineConfigFormType()({ is: MoneyInput, props: { currency: 'CNY' } })
+    const money = defineConfigFormType()<{ currency: string }>({ is: MoneyInput, props: { currency: 'CNY' } })
     const fieldTypes = defineConfigFormTypes()({ money })
-    const items = defineFormItems([
+    const items = defineFormItems<Record<string, any>, typeof fieldTypes>([
       { fieldKey: 'project', type: 'input', colProps: { span: 12 }, formItemProps: { label: '项目' } },
-      { fieldKey: 'amount', type: 'money', colProps: { span: 12 }, formItemProps: { label: '金额' } },
+      { fieldKey: 'amount', type: 'money', colProps: { span: 12 }, formItemProps: { label: '金额' }, component: { props: { currency: 'CNY' } } },
       {
         fieldKey: 'start', type: 'component', colProps: { span: 24 }, formItemProps: { label: '工作时段' },
         component: { is: TimeRangeEditor },
