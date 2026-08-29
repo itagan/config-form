@@ -54,7 +54,7 @@ interface ConfigFormFieldChangePayload<TModel> {
 ```ts
 interface ConfigFormRef {
   validate(callback?): Promise<boolean>
-  validateField(props: string | string[], callback?): void
+  validateField(props: string | string[], callback?): Promise<boolean>
   resetFields(): void
   clearValidate(props?: string | string[]): void
   getFieldValue(fieldKey: string): any
@@ -62,13 +62,15 @@ interface ConfigFormRef {
   setFieldsValue(patch: Record<string, any>): void
   getModel(): FormModel
   getFormRef(): unknown
+  focusField(fieldKey: string): Promise<boolean>
+  scrollToFirstError(): Promise<boolean>
 }
 ```
 
 | 方法 | 行为 |
 | --- | --- |
 | `validate(callback?)` | 校验全部字段；无论 Element UI resolve 或 reject 都返回 `Promise<boolean>` |
-| `validateField(props, callback?)` | 校验一个或多个字段 |
+| `validateField(props, callback?)` | 校验一个或多个字段；返回 `Promise<boolean>`（全部通过为 `true`）。未挂载或未知的字段直接视为失败，不会等待 Element UI |
 | `resetFields()` | 恢复为组件创建时 model 的深拷贝，并清除校验状态 |
 | `clearValidate(props?)` | 清除全部或指定字段校验状态 |
 | `getFieldValue(path)` | 按点路径或数组路径读取本轮最新值 |
@@ -76,6 +78,8 @@ interface ConfigFormRef {
 | `setFieldsValue(patch)` | 在一次受控事务中更新多个路径；patch 的 key 可为路径 |
 | `getModel()` | 获取包含尚未被父组件回写更新的本轮最新 model |
 | `getFormRef()` | 获取底层 Element UI `el-form` 实例 |
+| `focusField(fieldKey)` | 聚焦已挂载字段的第一个可聚焦元素（input/textarea/select 等）；成功返回 `true`。字段未挂载（隐藏或未知）返回 `false` |
+| `scrollToFirstError()` | 滚动到第一个校验失败的字段（居中）并尝试聚焦；无报错字段时返回 `false` |
 
 连续同步调用字段更新方法会基于最近一次结果继续合并，父组件尚未回写时也不会丢失修改。
 
@@ -86,7 +90,11 @@ import { ref } from 'vue'
 const formRef = ref<ConfigFormRef | null>(null)
 
 async function submit() {
-  if (!await formRef.value?.validate()) return
+  const valid = await formRef.value?.validate()
+  if (!valid) {
+    await formRef.value?.scrollToFirstError()
+    return
+  }
   const payload = formRef.value.getModel()
   // 提交 payload
 }
