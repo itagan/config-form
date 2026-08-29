@@ -7,6 +7,7 @@ export interface SchemaDiagnostic {
 
 type UnknownRecord = Record<string, unknown>
 const definitionKeys = new Set(['is', 'model', 'props'])
+const forbiddenItemComponentKeys = ['is', 'resolveComponent', 'slot', 'options', 'optionProps']
 
 function isRecord(value: unknown): value is UnknownRecord {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -43,11 +44,31 @@ function validateDefinition(name: string, definition: unknown): SchemaDiagnostic
       message: `${prefix}: "props" must be an object or synchronous function.`
     })
   }
-  if (definition.model !== undefined && definition.model !== false && !isRecord(definition.model)) {
-    diagnostics.push({
-      key: `definition-model:${name}`,
-      message: `${prefix}: "model" must be false or an object.`
-    })
+  const model = definition.model
+  if (model !== undefined && model !== false) {
+    if (!isRecord(model)) {
+      diagnostics.push({
+        key: `definition-model:${name}`,
+        message: `${prefix}: "model" must be false or an object.`
+      })
+    } else {
+      for (const key of ['prop', 'event']) {
+        if (model[key] !== undefined && typeof model[key] !== 'string') {
+          diagnostics.push({
+            key: `definition-model-${key}:${name}`,
+            message: `${prefix}: model.${key} must be a string.`
+          })
+        }
+      }
+      for (const key of ['valueToProp', 'valueFromEvent']) {
+        if (model[key] !== undefined && typeof model[key] !== 'function') {
+          diagnostics.push({
+            key: `definition-model-${key}:${name}`,
+            message: `${prefix}: model.${key} must be a synchronous function.`
+          })
+        }
+      }
+    }
   }
   return diagnostics
 }
@@ -59,6 +80,7 @@ export function collectSchemaDiagnostics(
 ): SchemaDiagnostic[] {
   const diagnostics: SchemaDiagnostic[] = []
   const registeredNames = Object.keys(fieldTypes)
+  const customNames = registeredNames.filter(name => !isReservedType(name))
 
   registeredNames.forEach(name => {
     if (isReservedType(name)) {
@@ -121,10 +143,23 @@ export function collectSchemaDiagnostics(
         key: `slot-target:${identity || index}`,
         message: `[ConfigForm] Slot field "${location}" requires a non-empty component.slot.`
       })
+    } else if (!isReservedType(type) && registeredNames.includes(type)) {
+      // 已注册的自定义类型不得在 item 级重新指定渲染协议；高级渲染应改用 type: "component"/"slot"。
+      forbiddenItemComponentKeys.forEach(key => {
+        if (component && component[key] !== undefined) {
+          diagnostics.push({
+            key: `item-key:${type}:${key}`,
+            message: `[ConfigForm] Custom field type "${type}" cannot use component.${key} at field "${location}"; use type: "component" or "slot" for advanced rendering.`
+          })
+        }
+      })
     } else if (!isReservedType(type) && !registeredNames.includes(type)) {
+      const available = customNames.length
+        ? ` Available custom types: ${customNames.map(name => `"${name}"`).join(', ')}.`
+        : ' No custom field types are registered on this instance.'
       diagnostics.push({
         key: `unknown:${type}`,
-        message: `[ConfigForm] Unknown field type "${type}" at field "${location}". Register it through fieldTypes or use type: "component".`
+        message: `[ConfigForm] Unknown field type "${type}" at field "${location}".${available} Register it through fieldTypes or use type: "component".`
       })
     }
   })
