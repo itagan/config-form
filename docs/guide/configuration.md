@@ -13,7 +13,7 @@ const items = defineFormItems([
 根级属性：
 
 - `model`：受控表单数据。
-- `items`：字段配置数组。
+- `items`：字段配置数组；`fieldKey` 支持点路径和数组下标（`profile.name`、`addresses[0].city`），详见 [ConfigForm API](/api/config-form)。
 - `formProps`：透传给 `el-form`，但 model 由 ConfigForm 管理。
 - `rowProps`：透传给唯一的 `el-row`。
 - `fieldTypes`：当前实例的业务字段类型注册表。
