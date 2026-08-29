@@ -165,7 +165,7 @@ export interface ConfigFormProps<TModel extends FormModel = FormModel> {
 
 export interface ConfigFormRef {
   validate: (callback?: (valid: boolean, fields?: ConfigFormValue) => void) => Promise<boolean>
-  validateField: (props: string | string[], callback?: (message: string) => void) => void
+  validateField: (props: string | string[], callback?: (message: string) => void) => Promise<boolean>
   resetFields: () => void
   clearValidate: (props?: string | string[]) => void
   getFieldValue: (fieldKey: string) => ConfigFormValue
@@ -173,6 +173,8 @@ export interface ConfigFormRef {
   setFieldsValue: (patch: Record<string, ConfigFormValue>) => void
   getModel: () => FormModel
   getFormRef: () => unknown
+  focusField: (fieldKey: string) => Promise<boolean>
+  scrollToFirstError: () => Promise<boolean>
 }
 
 export type ConfigFormComponent<TModel extends FormModel = FormModel> = DefineComponent<
