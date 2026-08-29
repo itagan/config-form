@@ -57,20 +57,56 @@ export type ConfigFormFieldListener<TModel extends FormModel = FormModel> = (
   ...args: unknown[]
 ) => void
 
-export interface FieldModelConfig<
-  TModel extends FormModel = FormModel,
-  TEvents extends Record<keyof TEvents, unknown[]> = FieldTypeEventMap
-> {
+/** 双变签名：允许回调参数按注册协议逆变检查。 */
+type ConfigFormFieldValueFromEvent<TModel extends FormModel, TArgs extends unknown[]> = {
+  bivarianceHack(
+    context: ConfigFormFieldRenderContext<TModel>,
+    ...args: TArgs
+  ): ConfigFormValue
+}['bivarianceHack']
+
+interface BaseFieldModelConfig<TModel extends FormModel> {
   prop?: string
-  event?: Extract<keyof TEvents, string> | (string extends keyof TEvents ? string : never)
   valueToProp?: (
     context: ConfigFormFieldRenderContext<TModel>,
     bindingValue: ConfigFormValue
   ) => ConfigFormValue
-  valueFromEvent?: (
-    context: ConfigFormFieldRenderContext<TModel>,
-    ...args: unknown[]
-  ) => ConfigFormValue
+}
+
+type FieldModelForEvent<
+  TModel extends FormModel,
+  TEvents extends Record<keyof TEvents, unknown[]>,
+  TEvent extends Extract<keyof TEvents, string>
+> = BaseFieldModelConfig<TModel> & {
+  event: TEvent
+  valueFromEvent?: ConfigFormFieldValueFromEvent<TModel, TEvents[TEvent]>
+}
+
+/**
+ * 自定义字段组件的受控值协议；未配置时使用组件原生 Vue 2 v-model。
+ * 显式传入事件表时，event 与 valueFromEvent 参数元组保持关联。
+ */
+export type FieldModelConfig<
+  TModel extends FormModel = FormModel,
+  TEvents extends Record<keyof TEvents, unknown[]> = FieldTypeEventMap
+> = string extends keyof TEvents
+  ? BaseFieldModelConfig<TModel> & {
+      event?: string
+      valueFromEvent?: ConfigFormFieldValueFromEvent<TModel, unknown[]>
+    }
+  : {
+      [TEvent in Extract<keyof TEvents, string>]: FieldModelForEvent<TModel, TEvents, TEvent>
+    }[Extract<keyof TEvents, string>]
+
+/** 按注册协议的事件名收窄的字段组件监听器表。 */
+export type FieldTypeListeners<
+  TModel extends FormModel = FormModel,
+  TEvents extends Record<keyof TEvents, unknown[]> = FieldTypeEventMap
+> = {
+  [TEvent in Extract<keyof TEvents, string>]?: (
+    context: ConfigFormFieldContext<TModel>,
+    ...args: TEvents[TEvent]
+  ) => void
 }
 
 export interface FieldComponentConfig<TModel extends FormModel = FormModel> {
@@ -106,6 +142,7 @@ export type TypedFieldTypeDefinition<
   readonly [FIELD_TYPE_PROTOCOL]: {
     props: TProps
     events: TEvents
+    listeners: FieldTypeListeners<TModel, TEvents>
   }
 }
 

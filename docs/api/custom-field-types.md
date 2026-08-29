@@ -40,6 +40,27 @@ const items = defineFormItems<FormData>([
 
 `defineConfigFormType` 的两段调用用于先固定 model，再推导组件 Props 与事件协议；它只提供类型约束，不注册全局组件。`defineConfigFormTypes` 保留 type 名称字面量，并在运行时拒绝保留名称。
 
+## 事件元组协议
+
+`defineConfigFormType` 的第二个泛型是事件名到参数元组的映射。显式声明后，`model.event` 只能取已声明的事件名，`valueFromEvent` 的参数随之获得对应元组类型：
+
+```ts
+interface MoneyEvents {
+  change: [{ amount: number }]
+  blur: []
+}
+
+const money = defineConfigFormType<FormData>()<MoneyProps, MoneyEvents>({
+  is: MoneyInput,
+  model: {
+    event: 'change',
+    valueFromEvent: (context, next) => next.amount
+  }
+})
+```
+
+未声明事件表时协议保持宽松：`event` 接受任意字符串，`valueFromEvent` 参数为 `unknown[]`。协议中同时保留按事件名收窄的监听器类型 `FieldTypeListeners`，可用于给字段组件的回调表补全签名。
+
 `input`、`select`、全部其他内置 type，以及 `component`、`slot` 不可覆盖。一次性组件优先使用 `type: 'component'`，完全自定义模板使用 `type: 'slot'`。
 
 ## 选择方式
