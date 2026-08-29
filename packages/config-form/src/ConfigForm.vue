@@ -21,6 +21,9 @@
             v-bind="getFormItemProps(item)"
             :prop="item.fieldKey"
             :data-config-form-field-prop="item.fieldKey"
+            :data-config-form-hint="getDelegatedHint(item)"
+            :data-config-form-hint-trigger="getHintTriggerAttr(item)"
+            :data-config-form-hint-field="item.fieldKey"
           >
             <template v-if="getSlot(item.labelSlot)" v-slot:label>
               <SlotRenderer
@@ -61,6 +64,11 @@
       </template>
     </el-row>
     <slot name="append" :model="model" />
+    <ConfigFormHintTooltip
+      v-if="hintTooltipEnabled"
+      :container="hintContainer"
+      :tooltip-props="hintOptions.tooltipProps"
+    />
   </el-form>
 </template>
 
@@ -77,8 +85,9 @@ export default defineComponent({
 </script>
 
 <script lang="ts" setup>
-import { computed, nextTick, ref, useSlots, watchEffect } from 'vue'
+import { computed, nextTick, onMounted, ref, shallowRef, useSlots, watchEffect } from 'vue'
 import ConfigFormHint from './ConfigFormHint'
+import ConfigFormHintTooltip from './ConfigFormHintTooltip.vue'
 import FieldRenderer from './FieldRenderer'
 import SlotRenderer from './SlotRenderer'
 import type {
@@ -99,6 +108,7 @@ import { useControlledFormUpdate } from './composables/useControlledFormUpdate'
 import { createBindingPatch, resolveBindingValue } from './utils/binding'
 import { resolveDynamic, resolveFieldComponent } from './utils/field'
 import { getValueByPath } from './utils/path'
+import { stripManagedHintTitle } from './utils/hint'
 import { collectSchemaDiagnostics } from './utils/schemaDiagnostics'
 
 const props = withDefaults(defineProps<{
@@ -181,6 +191,13 @@ const { handleNavigationKeydown } = useConfigFormKeyboardNavigation({
   focusElement: fieldLocator.focusElement
 })
 
+const hintTooltipEnabled = computed(() => props.hintOptions.mode === 'tooltip')
+const hintContainer = shallowRef<HTMLElement | null>(null)
+
+onMounted(() => {
+  hintContainer.value = (formRef.value?.$el as HTMLElement | undefined) ?? null
+})
+
 function getRenderContext(item: FormItemConfig): ConfigFormFieldRenderContext {
   return {
     get model() { return controlledUpdate.getCurrentModel() },
@@ -232,7 +249,12 @@ function getColProps(item: FormItemConfig) {
 }
 
 function getFormItemProps(item: FormItemConfig) {
-  return resolveDynamic(item.formItemProps, getRenderContext(item)) || {}
+  const formItemProps = resolveDynamic(item.formItemProps, getRenderContext(item)) || {}
+  // Tooltip 模式下自动 Hint 取代原生 title，避免双重提示。
+  if (hintTooltipEnabled.value && getHint(item) !== null) {
+    return stripManagedHintTitle(formItemProps)
+  }
+  return formItemProps
 }
 
 function getInteractionProps(item: FormItemConfig) {
@@ -256,6 +278,15 @@ function getHint(item: FormItemConfig): string | null {
     ? defaultHint(context)
     : context.value == null || context.value === '' ? null : String(context.value)
   return typeof content === 'string' && content !== '' ? content : null
+}
+
+function getDelegatedHint(item: FormItemConfig): string | null {
+  return hintTooltipEnabled.value ? getHint(item) : null
+}
+
+function getHintTriggerAttr(item: FormItemConfig): string | undefined {
+  if (!getDelegatedHint(item)) return undefined
+  return props.hintOptions.hintTrigger === 'content' ? 'content' : undefined
 }
 
 function getResolvedComponent(item: FormItemConfig) {

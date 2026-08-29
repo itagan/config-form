@@ -6,6 +6,7 @@ export type ComponentProps = Record<string, ConfigFormValue>
 export type DynamicValue<T, TContext> = T | ((context: TContext) => T)
 export type ConfigFormHintValue = string | false | null | undefined
 export type ConfigFormHintMode = false | 'title' | 'tooltip'
+export type ConfigFormHintTrigger = 'item' | 'content'
 export type FieldTypeEventMap = Record<string, unknown[]>
 
 export interface FormItemOption {
@@ -140,6 +141,8 @@ export interface FormItemConfig<TModel extends FormModel = FormModel> {
 
 export interface ConfigFormHintOptions<TModel extends FormModel = FormModel> {
   mode?: ConfigFormHintMode
+  /** Tooltip 模式下的触发区域：item 为整个 FormItem，content 仅限字段内容根节点。 */
+  hintTrigger?: ConfigFormHintTrigger
   field?: boolean | ((context: ConfigFormFieldRenderContext<TModel>) => ConfigFormHintValue)
   tooltipProps?: ComponentProps
 }
