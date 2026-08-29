@@ -467,4 +467,145 @@ describe('ConfigForm', () => {
       wrapper.destroy()
     }
   })
+
+  it('delegates tooltip hints through a single singleton tooltip', () => {
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: {
+        model: { name: 'Ada', remark: '', plain: '' },
+        hintOptions: { mode: 'tooltip', field: true },
+        items: [
+          { fieldKey: 'name', type: 'input' },
+          { fieldKey: 'remark', type: 'input' },
+          { fieldKey: 'plain', type: 'input', hint: false }
+        ]
+      }
+    })
+
+    expect(wrapper.findAllComponents({ name: 'ElTooltip' })).toHaveLength(1)
+    const nameItem = wrapper.find('[data-config-form-field-prop="name"]')
+    const remarkItem = wrapper.find('[data-config-form-field-prop="remark"]')
+    const plainItem = wrapper.find('[data-config-form-field-prop="plain"]')
+    expect(nameItem.attributes('data-config-form-hint')).toBe('Ada')
+    expect(remarkItem.attributes('data-config-form-hint')).toBeUndefined()
+    expect(plainItem.attributes('data-config-form-hint')).toBeUndefined()
+    expect(wrapper.find('.config-form__hint-target').attributes('title')).toBeUndefined()
+    wrapper.destroy()
+  })
+
+  it('replaces native title with the delegated tooltip in tooltip mode', () => {
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: {
+        model: { name: 'Ada' },
+        hintOptions: { mode: 'tooltip' },
+        items: [{
+          fieldKey: 'name',
+          type: 'input',
+          hint: '姓名提示',
+          formItemProps: { title: '原生标题' }
+        }]
+      }
+    })
+
+    const nameItem = wrapper.find('[data-config-form-field-prop="name"]')
+    expect(nameItem.attributes('data-config-form-hint')).toBe('姓名提示')
+    expect(nameItem.attributes('title')).toBeUndefined()
+    wrapper.destroy()
+  })
+
+  it('keeps hintTrigger content as a trigger-area marker', () => {
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: {
+        model: { name: 'Ada', remark: '' },
+        hintOptions: { mode: 'tooltip', hintTrigger: 'content', field: true },
+        items: [
+          { fieldKey: 'name', type: 'input' },
+          { fieldKey: 'remark', type: 'input' }
+        ]
+      }
+    })
+
+    expect(wrapper.find('[data-config-form-field-prop="name"]')
+      .attributes('data-config-form-hint-trigger')).toBe('content')
+    expect(wrapper.find('[data-config-form-field-prop="remark"]')
+      .attributes('data-config-form-hint-trigger')).toBeUndefined()
+    wrapper.destroy()
+  })
+
+  it('shows the singleton tooltip on field focus and manages aria-describedby', async () => {
+    vi.useFakeTimers()
+    try {
+      const wrapper = mount(ConfigFormForTest, {
+        attachTo: document.body,
+        propsData: {
+          model: { name: 'Ada' },
+          hintOptions: { mode: 'tooltip' },
+          items: [{ fieldKey: 'name', type: 'input', hint: '姓名提示' }]
+        }
+      })
+
+      const input = wrapper.find('input').element as HTMLInputElement
+      await Vue.nextTick()
+      // jsdom 的 programmatic focus 不派发冒泡的 focusin，直接模拟浏览器焦点行为。
+      input.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+      await Vue.nextTick()
+      const tooltip = wrapper.findComponent({ name: 'ElTooltip' })
+      const tooltipId = (tooltip.vm as any).tooltipId as string
+
+      expect(input.getAttribute('aria-describedby')).toBe(tooltipId)
+      vi.advanceTimersByTime(300)
+      await Vue.nextTick()
+      expect((tooltip.vm as any).showPopper).toBe(true)
+
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+      await Vue.nextTick()
+      expect((tooltip.vm as any).showPopper).toBe(false)
+      expect(input.getAttribute('aria-describedby')).toBeNull()
+      wrapper.destroy()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('limits content-trigger hints to the field content area', async () => {
+    vi.useFakeTimers()
+    try {
+      const wrapper = mount(ConfigFormForTest, {
+        attachTo: document.body,
+        propsData: {
+          model: { name: 'Ada' },
+          hintOptions: { mode: 'tooltip', hintTrigger: 'content' },
+          items: [{
+            fieldKey: 'name',
+            type: 'input',
+            hint: '姓名提示',
+            formItemProps: { label: '姓名' }
+          }]
+        }
+      })
+
+      const nameItem = wrapper.find('[data-config-form-field-prop="name"]').element
+      const label = nameItem.querySelector('.el-form-item__label') as HTMLElement
+      const input = nameItem.querySelector('input') as HTMLInputElement
+      const hover = (target: HTMLElement) => target.dispatchEvent(
+        new MouseEvent('mouseover', { bubbles: true })
+      )
+
+      await Vue.nextTick()
+      hover(label)
+      await Vue.nextTick()
+      vi.advanceTimersByTime(300)
+      await Vue.nextTick()
+      const tooltip = wrapper.findComponent({ name: 'ElTooltip' })
+      expect((tooltip.vm as any).showPopper).toBe(false)
+
+      hover(input)
+      await Vue.nextTick()
+      vi.advanceTimersByTime(300)
+      await Vue.nextTick()
+      expect((tooltip.vm as any).showPopper).toBe(true)
+      wrapper.destroy()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
 })
