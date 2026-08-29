@@ -293,4 +293,95 @@ describe('ConfigForm', () => {
     })
     expect(wrapper.emitted('field-change')).toHaveLength(2)
   })
+
+  it('focuses a mounted field and reports unmapped targets', async () => {
+    const wrapper = mount(ConfigFormForTest, {
+      attachTo: document.body,
+      propsData: {
+        model: { name: 'Ada', hidden: 'x' },
+        items: [
+          { fieldKey: 'name', type: 'input' },
+          { fieldKey: 'hidden', type: 'input', visible: () => false }
+        ]
+      }
+    })
+
+    try {
+      await expect((wrapper.vm as any).focusField('name')).resolves.toBe(true)
+      const input = wrapper.find('input').element as HTMLInputElement
+      expect(document.activeElement).toBe(input)
+
+      await expect((wrapper.vm as any).focusField('unknown')).resolves.toBe(false)
+      await expect((wrapper.vm as any).focusField('hidden')).resolves.toBe(false)
+    } finally {
+      wrapper.destroy()
+    }
+  })
+
+  it('validates single fields through a Promise and tolerates unknown props', async () => {
+    const model = { name: '' }
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: {
+        model,
+        formProps: { rules: { name: [{ required: true, message: 'name required' }] } },
+        items: [{ fieldKey: 'name', type: 'input' }]
+      }
+    })
+
+    const vm = wrapper.vm as any
+    await expect(vm.validateField('name')).resolves.toBe(false)
+    expect(wrapper.find('.el-form-item__error').text()).toBe('name required')
+
+    vm.setFieldValue('name', 'Ada')
+    const nextModel = wrapper.emitted('update:model')?.at(-1)?.[0] as typeof model
+    wrapper.setProps({ model: nextModel })
+    await Vue.nextTick()
+    await expect(vm.validateField('name')).resolves.toBe(true)
+
+    let callbackMessage: string | undefined
+    await expect(vm.validateField('unknown', (message: string) => { callbackMessage = message }))
+      .resolves.toBe(false)
+    expect(callbackMessage).toBeUndefined()
+  })
+
+  it('scrolls to the first error field and focuses it', async () => {
+    const scrollIntoView = vi.fn()
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView
+    HTMLElement.prototype.scrollIntoView = scrollIntoView as never
+    try {
+      const wrapper = mount(ConfigFormForTest, {
+        attachTo: document.body,
+        propsData: {
+          model: { name: '', remark: '' },
+          formProps: {
+            rules: {
+              name: [{ required: true, message: 'name required' }],
+              remark: [{ required: true, message: 'remark required' }]
+            }
+          },
+          items: [
+            { fieldKey: 'name', type: 'input' },
+            { fieldKey: 'remark', type: 'input' }
+          ]
+        }
+      })
+
+      await expect((wrapper.vm as any).validate()).resolves.toBe(false)
+      await expect((wrapper.vm as any).scrollToFirstError()).resolves.toBe(true)
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: 'center', inline: 'nearest' })
+      expect(document.activeElement).toBe(wrapper.findAll('input').at(0)?.element)
+
+      wrapper.findAllComponents({ name: 'ElInput' }).at(0).vm.$emit('input', 'Ada')
+      const nextModel = wrapper.emitted('update:model')?.at(-1)?.[0] as Record<string, string>
+      wrapper.setProps({ model: nextModel })
+      await Vue.nextTick()
+      await (wrapper.vm as any).validate()
+      await expect((wrapper.vm as any).scrollToFirstError()).resolves.toBe(true)
+      expect(document.activeElement).toBe(wrapper.findAll('input').at(1)?.element)
+
+      wrapper.destroy()
+    } finally {
+      HTMLElement.prototype.scrollIntoView = originalScrollIntoView
+    }
+  })
 })
