@@ -1,10 +1,11 @@
 # FormItem API
 
+`FormItemConfig` 是按 `type` 区分的联合类型；传入字段类型注册表后，自定义 type 的 `component` 配置会按注册协议收窄。以下为基础属性形状：
+
 ```ts
-interface FormItemConfig<TModel extends FormModel = FormModel> {
+interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
   key?: string
   fieldKey: string
-  type: FormItemType
   binding?: FieldBindingConfig
   meta?: Record<string, unknown>
   labelSlot?: string
@@ -15,7 +16,6 @@ interface FormItemConfig<TModel extends FormModel = FormModel> {
   hint?: DynamicValue<string | false | null | undefined, ConfigFormFieldRenderContext<TModel>>
   colProps?: DynamicValue<object, ConfigFormFieldRenderContext<TModel>>
   formItemProps?: DynamicValue<object, ConfigFormFieldRenderContext<TModel>>
-  component?: FieldComponentConfig<TModel>
 }
 ```
 
@@ -31,7 +31,14 @@ interface FormItemConfig<TModel extends FormModel = FormModel> {
 | `readonly` | 否 | 将字段同时设为 disabled 和 readonly，支持动态值 |
 | `colProps` | 否 | 透传给 `el-col`，与默认 `{ span: 24 }` 合并 |
 | `formItemProps` | 否 | 透传给 `el-form-item`；`prop` 始终由 `fieldKey` 管理 |
-| `component` | 否 | 字段组件、Props、监听器、选项和 model 协议 |
+| `component` | 视 type | 字段组件、Props、监听器、选项和 model 协议；`component`/`slot` type 必填 |
+
+## 按 type 区分的联合分支
+
+- 内置 type：`component` 可选，只能覆盖 Props、监听器、选项和 model；`component.is`、`resolveComponent`、`slot` 在类型上禁止。
+- `component`：`component` 必填，且必须提供 `is` 或 `resolveComponent` 之一；`options`/`optionProps` 不可用。
+- `slot`：`component.slot` 必填，且不能再指定 `is`/`resolveComponent`。
+- 注册的业务 type：`component` 的 `props`/`listeners`/`model` 按注册协议收窄，渲染协议键全部禁止，详见[自定义字段类型](/api/custom-field-types)。
 | `binding` | 否 | 多个 model 路径与一个复合组件值的双向映射 |
 | `hint` | 否 | 提示文本、动态函数或 `false`；优先于全局提示策略 |
 | `labelSlot` | 否 | 自定义 label 的具名 Slot |

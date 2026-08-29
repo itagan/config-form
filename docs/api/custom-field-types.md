@@ -40,6 +40,35 @@ const items = defineFormItems<FormData>([
 
 `defineConfigFormType` 的两段调用用于先固定 model，再推导组件 Props 与事件协议；它只提供类型约束，不注册全局组件。`defineConfigFormTypes` 保留 type 名称字面量，并在运行时拒绝保留名称。
 
+## 按注册表收窄字段配置
+
+把注册表的字面量类型传给 `defineFormItems`（或 `createConfigForm`）后，自定义 type 字段项的 `component` 配置按注册协议收窄：
+
+```ts
+const fieldTypes = defineConfigFormTypes<FormData>()({ money })
+const Form = createConfigForm<FormData, typeof fieldTypes>()
+
+const items = defineFormItems<FormData, typeof fieldTypes>([
+  {
+    fieldKey: 'amount',
+    type: 'money',
+    component: {
+      props: { currency: 'CNY' },
+      model: { event: 'change' }
+    }
+  }
+])
+```
+
+收窄规则：
+
+- `component.props` 只接受注册时声明的 Props（或同步函数）。
+- `component.model.event` 与 `valueFromEvent` 参数按注册的事件元组协议联动。
+- `component.is`、`resolveComponent`、`slot`、`options`、`optionProps` 在类型上禁止；需要自定义渲染时改用 `type: 'component'` 或 `'slot'`。
+- 未注册的 type 名直接编译错误；运行时诊断会在开发环境给出同样的提示。
+
+不传注册表泛型时（`defineFormItems([...])`、`<ConfigForm :items="...">`），配置保持宽松视图，合法性由配置诊断兜底。
+
 ## 事件元组协议
 
 `defineConfigFormType` 的第二个泛型是事件名到参数元组的映射。显式声明后，`model.event` 只能取已声明的事件名，`valueFromEvent` 的参数随之获得对应元组类型：
