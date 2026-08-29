@@ -215,14 +215,42 @@ const items = [{ fieldKey: 'amount', type: 'money' }]
 
 `hintOptions.mode` 支持 `title`、`tooltip` 和 `false`；`field: true` 会默认使用当前字段值，也可以传入统一格式化函数。字段自身的 `hint` 优先级更高。
 
+`tooltip` 模式使用表单级单例 Tooltip 事件委托展示：悬停或键盘焦点进入字段时出现，`aria-describedby` 自动维护，Escape 可临时关闭。`hintTrigger` 可把触发范围从整个 FormItem（`item`，默认）收窄到字段内容根节点（`content`）。
+
 根级 `disabled`、`readonly` 会作用于全部字段；字段配置中的动态 `disabled`、`readonly` 可以单独控制。对于完全自定义的 Slot，业务模板仍应按自身交互要求处理只读展示。
+
+## 校验聚焦与键盘导航
+
+```ts
+async function submit() {
+  if (!await formRef.value?.validate()) {
+    await formRef.value?.scrollToFirstError()
+    return
+  }
+  // 提交 formRef.value.getModel()
+}
+```
+
+- `scrollToFirstError()`：滚动到第一个校验失败的字段（居中）并尝试聚焦。
+- `focusField(fieldKey)`：聚焦已挂载字段的第一个可聚焦元素，字段隐藏或未知时返回 `false`。
+- `validateField(props, callback?)` 返回 `Promise<boolean>`；未挂载或未知字段直接视为失败。
+
+```vue
+<ConfigForm
+  v-model="formModel"
+  :items="items"
+  :navigation-options="{ enabled: true }"
+/>
+```
+
+传入 `navigationOptions` 后，Enter 跳到下一个已挂载字段（Shift+Enter 返回）；隐藏、禁用、只读字段自动跳过，textarea 与输入法组合状态不接管。省略该 prop 时不改变 Enter 原生行为。
 
 ## 事件与 Ref
 
 - `update:model(model)`：受控 model 更新。
 - `field-change(payload)`：字段粒度更新，包含 `fieldKey`、新旧值、下一份 model 和 item 配置。
 - `form-validate(prop, valid, message)`：透传 Element Form 的逐字段校验结果。
-- Ref 校验方法：`validate()`、`validateField()`、`resetFields()`、`clearValidate()`、`getFormRef()`。
+- Ref 校验方法：`validate()`、`validateField()`、`resetFields()`、`clearValidate()`、`getFormRef()`、`scrollToFirstError()`、`focusField()`。
 - Ref 数据方法：`getModel()`、`getFieldValue()`、`setFieldValue()`、`setFieldsValue()`。
 
 连续调用 `setFieldValue()` 或字段上下文更新助手时，本轮更新会自动基于最近一次结果继续合并；父组件尚未回写 model 时也不会丢失前一次修改。
