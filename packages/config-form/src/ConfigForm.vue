@@ -5,6 +5,7 @@
     v-bind="formProps"
     :model="model"
     :disabled="disabled || readonly"
+    data-config-form-root=""
     @validate="handleValidate"
   >
     <slot name="prepend" :model="model" />
@@ -18,6 +19,7 @@
           <el-form-item
             v-bind="getFormItemProps(item)"
             :prop="item.fieldKey"
+            :data-config-form-field-prop="item.fieldKey"
           >
             <template v-if="getSlot(item.labelSlot)" v-slot:label>
               <SlotRenderer
@@ -89,6 +91,7 @@ import type {
   FormItemConfig,
   FormModel
 } from './types'
+import { useConfigFormFieldLocator } from './composables/useConfigFormFieldLocator'
 import { useControlledFormUpdate } from './composables/useControlledFormUpdate'
 import { createBindingPatch, resolveBindingValue } from './utils/binding'
 import { resolveDynamic, resolveFieldComponent } from './utils/field'
@@ -161,6 +164,11 @@ const controlledUpdate = useControlledFormUpdate({
   resolveItem,
   emitUpdate: nextModel => emit('update:model', nextModel),
   emitFieldChange: payload => emit('field-change', payload)
+})
+
+const fieldLocator = useConfigFormFieldLocator({
+  getContainer: () => (formRef.value?.$el as HTMLElement | undefined) ?? null,
+  getForm: () => formRef.value
 })
 
 function getRenderContext(item: FormItemConfig): ConfigFormFieldRenderContext {
@@ -286,11 +294,13 @@ async function validate(callback?: (valid: boolean, fields?: ConfigFormValue) =>
   }
 }
 
+function validateField(fieldProps: string | string[], callback?: (message: string) => void) {
+  return fieldLocator.validateField(fieldProps, callback)
+}
+
 defineExpose({
   validate,
-  validateField: (fieldProps: string | string[], callback?: (message: string) => void) => (
-    formRef.value?.validateField(fieldProps, callback)
-  ),
+  validateField,
   resetFields: () => {
     controlledUpdate.replaceModel(cloneValue(initialModel) as FormModel)
     nextTick(() => formRef.value?.clearValidate())
@@ -302,7 +312,9 @@ defineExpose({
   ),
   setFieldsValue: (patch: Record<string, ConfigFormValue>) => controlledUpdate.updateModel(patch),
   getModel: () => controlledUpdate.getCurrentModel(),
-  getFormRef: () => formRef.value
+  getFormRef: () => formRef.value,
+  focusField: fieldLocator.focusField,
+  scrollToFirstError: fieldLocator.scrollToFirstError
 })
 </script>
 
