@@ -384,4 +384,87 @@ describe('ConfigForm', () => {
       HTMLElement.prototype.scrollIntoView = originalScrollIntoView
     }
   })
+
+  it('navigates fields with Enter and Shift+Enter, skipping disabled fields', async () => {
+    const wrapper = mount(ConfigFormForTest, {
+      attachTo: document.body,
+      propsData: {
+        navigationOptions: { enabled: true },
+        model: { first: '', second: '', third: '' },
+        items: [
+          { fieldKey: 'first', type: 'input' },
+          { fieldKey: 'second', type: 'input', disabled: true },
+          { fieldKey: 'third', type: 'input' }
+        ]
+      }
+    })
+
+    try {
+      const inputs = () => Array.from((wrapper.element as HTMLElement).querySelectorAll('input'))
+      const press = (target: HTMLElement, init: KeyboardEventInit = {}) => {
+        target.focus()
+        return target.dispatchEvent(new KeyboardEvent('keydown', {
+          key: 'Enter', bubbles: true, cancelable: true, ...init
+        }))
+      }
+
+      press(inputs()[0])
+      await Vue.nextTick()
+      expect(document.activeElement).toBe(inputs()[2])
+
+      press(inputs()[2])
+      await Vue.nextTick()
+      expect(document.activeElement).toBe(inputs()[2])
+
+      press(inputs()[2], { shiftKey: true })
+      await Vue.nextTick()
+      expect(document.activeElement).toBe(inputs()[0])
+    } finally {
+      wrapper.destroy()
+    }
+  })
+
+  it('leaves Enter untouched when navigation is off, composing or modified', async () => {
+    const wrapper = mount(ConfigFormForTest, {
+      attachTo: document.body,
+      propsData: {
+        navigationOptions: { enabled: true },
+        model: { first: '', second: '' },
+        items: [
+          { fieldKey: 'first', type: 'input' },
+          { fieldKey: 'second', type: 'input' }
+        ]
+      }
+    })
+
+    try {
+      const inputs = () => Array.from((wrapper.element as HTMLElement).querySelectorAll('input'))
+      const press = (target: HTMLElement, init: KeyboardEventInit = {}) => {
+        target.focus()
+        return target.dispatchEvent(new KeyboardEvent('keydown', {
+          key: 'Enter', bubbles: true, cancelable: true, ...init
+        }))
+      }
+
+      press(inputs()[0], { isComposing: true })
+      await Vue.nextTick()
+      expect(document.activeElement).toBe(inputs()[0])
+
+      press(inputs()[0], { ctrlKey: true })
+      await Vue.nextTick()
+      expect(document.activeElement).toBe(inputs()[0])
+
+      await wrapper.setProps({ navigationOptions: { enabled: false } })
+      press(inputs()[0])
+      await Vue.nextTick()
+      expect(document.activeElement).toBe(inputs()[0])
+
+      await wrapper.setProps({ navigationOptions: undefined })
+      press(inputs()[0])
+      await Vue.nextTick()
+      expect(document.activeElement).toBe(inputs()[0])
+    } finally {
+      wrapper.destroy()
+    }
+  })
 })
