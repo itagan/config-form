@@ -5,6 +5,17 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## Unreleased
+
+### Added
+
+- `FormItemConfig` 重构为按 `type` 区分的判别联合；`defineFormItems` / `createConfigForm` 接受字段类型注册表泛型，自定义 type 字段项的 `component.props/listeners/model` 按注册协议收窄，未注册的 type 名在类型上直接报错。
+- 配置诊断新增注册表 model 成员校验、unknown type 可用注册名提示与自定义类型 item 级渲染键检查。
+
+### Changed
+
+- `type: 'component'` 在类型上必须提供 `component.is` 或 `component.resolveComponent`；`type: 'slot'` 必须提供 `component.slot`；内置 type 的 `component` 配置不可再指定渲染目标。运行时校验行为不变。
+
 ## 0.2.0 - 2026-08-30
 
 ### Added

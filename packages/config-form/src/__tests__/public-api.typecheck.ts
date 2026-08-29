@@ -1,7 +1,15 @@
 import type { Component } from 'vue'
 import {
+  createConfigForm,
   defineConfigFormType,
-  defineConfigFormTypes
+  defineConfigFormTypes,
+  defineFormItems
+} from '../index'
+import type {
+  ConfigFormFieldRenderContext,
+  ConfigFormProps,
+  ConfigFormRef,
+  EmptyFieldTypeRegistry
 } from '../index'
 
 interface BusinessModel {
@@ -79,3 +87,67 @@ defineConfigFormType<BusinessModel>()<MoneyProps, MoneyEvents>({
 declare const moneyItems: [{ type: 'money' }]
 
 void moneyItems
+
+const narrowFieldTypes = defineConfigFormTypes<BusinessModel>()({ money })
+const NarrowForm = createConfigForm<BusinessModel, typeof narrowFieldTypes>()
+const narrowItems = defineFormItems<BusinessModel, typeof narrowFieldTypes>([
+  {
+    fieldKey: 'amount',
+    type: 'money',
+    component: {
+      props: { currency: 'USD' },
+      model: { event: 'change', valueFromEvent: (_context, next: { amount: number }) => next.amount }
+    }
+  },
+  { fieldKey: 'name', type: 'input', component: { props: { clearable: true } } }
+])
+
+declare const narrowRef: ConfigFormRef
+void NarrowForm
+void narrowItems
+void narrowRef
+
+defineFormItems<BusinessModel, typeof narrowFieldTypes>([
+  // @ts-expect-error registered types cannot override the render target
+  {
+    fieldKey: 'amount',
+    type: 'money',
+    component: { is: MoneyInput }
+  }
+])
+
+const strictItems: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['items'] = [
+  { fieldKey: 'name', type: 'input' }
+]
+void strictItems
+
+const strictUnknown: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['items'] = [
+  // @ts-expect-error unregistered types are rejected without a field type registry
+  { fieldKey: 'amount', type: 'money' }
+]
+void strictUnknown
+
+defineFormItems<BusinessModel, typeof narrowFieldTypes>([
+  // @ts-expect-error currency must match the registered props protocol
+  {
+    fieldKey: 'amount',
+    type: 'money',
+    component: {
+      props: { currency: 42 }
+    }
+  }
+])
+
+defineFormItems<BusinessModel, typeof narrowFieldTypes>([
+  // @ts-expect-error blur declares an empty payload tuple
+  {
+    fieldKey: 'amount',
+    type: 'money',
+    component: {
+      model: {
+        event: 'blur',
+        valueFromEvent: (_context: ConfigFormFieldRenderContext<BusinessModel>, next: { amount: number }) => next.amount
+      }
+    }
+  }
+])
