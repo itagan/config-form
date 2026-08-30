@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import ConfigForm, { defineConfigFormItems } from '@itagan/config-form'
 import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
 import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
@@ -60,22 +60,21 @@ export default defineComponent({
       freight: '120.00',
       status: '已审核'
     })
-    const items = defineFormItems([
+    const items = computed(() => defineConfigFormItems([
       { fieldKey: 'orderNo', type: 'input', colProps: { span: 12 }, formItemProps: { label: '订单号' }, hint: '业务系统生成的唯一单号，不可修改' },
-      { fieldKey: 'customer', type: 'input', colProps: { span: 12 }, formItemProps: { label: '客户' }, hint: '客户全称与档案系统一致' },
+      { fieldKey: 'customer', type: 'input', colProps: { span: 12 }, formItemProps: { label: '客户' }, hint: '客户全称与档案系统一致', hintTrigger: hintTrigger.value },
       { fieldKey: 'contact', type: 'input', colProps: { span: 12 }, formItemProps: { label: '联系人' }, hint: false },
       { fieldKey: 'phone', type: 'input', colProps: { span: 12 }, formItemProps: { label: '联系电话' }, hint: '手机号或座机，座机需含区号' },
       { fieldKey: 'delivery', type: 'date', colProps: { span: 12 }, formItemProps: { label: '交付日期' }, hint: '预计发货日期，可提前不可延后' },
       { fieldKey: 'warehouse', type: 'select', colProps: { span: 12 }, formItemProps: { label: '仓库' }, component: { options: [{ label: '华东一号仓', value: 'east-1' }, { label: '华南二号仓', value: 'south-2' }] }, hint: '按收货地址自动推荐' },
       { fieldKey: 'freight', type: 'input', colProps: { span: 12 }, formItemProps: { label: '运费' }, hint: '含税金额，单位元' },
       { fieldKey: 'status', type: 'input', colProps: { span: 12 }, formItemProps: { label: '状态' }, hint: '订单当前流转状态' }
-    ])
+    ]))
     const hintOptions = computed(() => ({
-      mode: mode.value,
-      hintTrigger: mode.value === 'tooltip' ? hintTrigger.value : undefined
+      mode: mode.value
     }))
 
-        const configCode = formatConfigFormConfig(items)
+        const configCode = computed(() => formatConfigFormConfig(items.value))
     return { mode, hintTrigger, formModel, items, hintOptions, configCode }
   }
 })

@@ -9,7 +9,7 @@
 排查顺序：
 
 1. 确认用的是 `v-model`（等价于 `:model` + `@update:model`），而不是只传了 `:model`。
-2. 受控组件约定是父组件持有 model：确认没有在子组件或监听器里直接修改传入对象，而应使用 `updateModel` / `setValue` / Ref 的 `setFieldsValue` 让 ConfigForm 生成下一份 model。
+2. 受控组件约定是父组件持有 model：页面逻辑不可变替换 model；字段 Slot 或监听器使用 `updateModel` / `setValue`，不要直接修改传入对象。
 3. 字段配置了 `binding` 时，写回目标是 `fieldPath` 而不是 `fieldKey`；检查映射的路径拼写。
 4. `component.model` 被配置为 `false` 时自动写回是关闭的（设计行为）。
 
@@ -26,7 +26,7 @@
 
 ## 类型检查报错：items 不能赋值给 FormItemConfig
 
-- 使用了具体业务 model 类型（如 `defineFormItems<TaskModel>`）时，模板里的组件也要用对应的泛型实例：`createConfigForm<TaskModel>()` 返回的组件与 `FormItemConfig<TaskModel>[]` 匹配。
+- 使用了具体业务 model 类型（如 `defineConfigFormItems<TaskModel>`）时，模板里的组件也要用对应的泛型实例：`createConfigForm<TaskModel>()` 返回的组件与 `FormItemConfig<TaskModel>[]` 匹配。
 - 直接写 `type: 'money'` 这类未注册名报错时，要么通过 `fieldTypes` 注册（见[扩展模型](/architecture/extension-model)），要么改用 `type: 'component'` + `component.is`。
 - `type: 'component'` 分支下 `options/optionProps` 被类型禁止：业务组件的选项走 `component.props`。
 

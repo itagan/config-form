@@ -27,7 +27,7 @@ const fieldTypes = defineConfigFormTypes<FormData>()({ money })
 字段项的 `component.props/model` 会覆盖注册级配置，适合在个别表单中微调：
 
 ```ts
-const items = defineFormItems<FormData>([
+const items = defineConfigFormItems<FormData>([
   {
     fieldKey: 'amount',
     type: 'money',
@@ -42,13 +42,13 @@ const items = defineFormItems<FormData>([
 
 ## 按注册表收窄字段配置
 
-把注册表的字面量类型传给 `defineFormItems`（或 `createConfigForm`）后，自定义 type 字段项的 `component` 配置按注册协议收窄：
+把注册表的字面量类型传给 `defineConfigFormItems`（或 `createConfigForm`）后，自定义 type 字段项的 `component` 配置按注册协议收窄：
 
 ```ts
 const fieldTypes = defineConfigFormTypes<FormData>()({ money })
 const Form = createConfigForm<FormData, typeof fieldTypes>()
 
-const items = defineFormItems<FormData, typeof fieldTypes>([
+const items = defineConfigFormItems<FormData, typeof fieldTypes>([
   {
     fieldKey: 'amount',
     type: 'money',
@@ -67,7 +67,7 @@ const items = defineFormItems<FormData, typeof fieldTypes>([
 - `component.is`、`resolveComponent`、`slot`、`options`、`optionProps` 在类型上禁止；需要自定义渲染时改用 `type: 'component'` 或 `'slot'`。
 - 未注册的 type 名直接编译错误；运行时诊断会在开发环境给出同样的提示。
 
-不传注册表泛型时（`defineFormItems([...])`、`<ConfigForm :items="...">`），配置保持宽松视图，合法性由配置诊断兜底。
+不传注册表泛型时，配置只接受内置、`component` 和 `slot` 类型；使用自定义 type 时必须同时传入注册表泛型和 `fieldTypes`。
 
 ## 事件元组协议
 

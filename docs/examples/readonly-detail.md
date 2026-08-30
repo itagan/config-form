@@ -19,7 +19,7 @@ ConfigForm 没有根级 `readonly` / `disabled` Props——详情态由业务层
 const disabled = ref(true)
 const formProps = computed(() => ({ labelWidth: '100px', disabled: disabled.value }))
 
-const items = defineFormItems([
+const items = defineConfigFormItems([
   {
     fieldKey: 'code',
     type: 'text',
@@ -36,8 +36,8 @@ const items = defineFormItems([
     fieldKey: 'remark',
     type: 'input',
     colProps: { span: 24 },
-    readonly: ({ model }) => model.status === 'enabled',
-    formItemProps: { label: '备注' }
+    formItemProps: { label: '备注' },
+    component: { props: ({ model }) => ({ readonly: model.status === 'enabled' }) }
   }
 ])
 ```
@@ -46,7 +46,7 @@ const items = defineFormItems([
 
 - `formProps.disabled`：整表禁用，Element Form 原生下沉，适合"详情态不可编辑"的交互锁定。
 - `type: 'text'`：始终以纯文本展示，适合编号、状态快照等无需编辑的字段。
-- 字段级动态 `readonly` / `disabled`：只锁定部分字段，例如审批后锁定备注（见示例中的备注字段）。
+- 动态 `component.props`：直接把 `readonly` / `disabled` 交给实际字段组件。
 - `disabled` 只表达禁止交互，不表达"这是详情"的语义；详情页的展示形态由业务决定。
 
 ## 边界

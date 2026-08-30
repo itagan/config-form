@@ -9,20 +9,20 @@
 
 ### Added
 
-- 新增字段 `readonlyStrategy`，可在原生 readonly 与 disabled 回退之间显式选择。
-- 新增 `cloneModel` Prop，并扩展默认 reset 快照对 Date、Map、Set、对象原型和循环引用的支持。
+- 新增 `ConfigFormFieldBindingContext`、Slot 上下文、`ConfigFormEmits` 和泛型 `ConfigFormExpose` 公共类型。
 - 新增文档一致性检查、PR/push 发布级 CI、发布元数据检查与防误发布检查。
 
 ### Changed
 
-- 根组件拆分为字段项、字段内容和展示计算模块，公共 API 与受控数据协议保持不变。
-- 支持原生 readonly 的内置字段默认保留聚焦和复制，不再一律转为 disabled。
+- 根组件拆分为字段项、字段内容和展示计算模块。
+- API 与 FormTable 对齐：`defineConfigFormItems` 命名、严格字段类型注册、字段级 `hintTrigger`、最小 `field-change` 载荷和 `Expose` 实例类型。
+- 移除字段级 disabled/readonly 策略、左右装饰 Slot、cloneModel、根 prepend/append Slot 和 Ref model 读写方法；交互状态改为 Element Props 透传，操作区改用默认 Slot。
 
 ## 0.3.0 - 2026-08-30
 
 ### Added
 
-- `FormItemConfig` 重构为按 `type` 区分的判别联合；`defineFormItems` / `createConfigForm` 接受字段类型注册表泛型，自定义 type 字段项的 `component.props/listeners/model` 按注册协议收窄，未注册的 type 名在类型上直接报错。
+- `FormItemConfig` 重构为按 `type` 区分的判别联合；配置 helper / `createConfigForm` 接受字段类型注册表泛型，自定义 type 字段项的 `component.props/listeners/model` 按注册协议收窄，未注册的 type 名在类型上直接报错。
 - 配置诊断新增注册表 model 成员校验、unknown type 可用注册名提示与自定义类型 item 级渲染键检查。
 
 ### Changed
@@ -36,7 +36,7 @@
 - Ref 新增 `focusField(fieldKey)` 与 `scrollToFirstError()`，用于程序化聚焦和提交失败后滚动定位；`validateField()` 返回 `Promise<boolean>`，未挂载或未知字段直接视为校验失败。
 - 新增 `navigationOptions` prop：启用后 Enter / Shift+Enter 在已挂载字段间导航，自动跳过隐藏、禁用、只读字段，textarea 与输入法组合状态不接管。
 - Tooltip 提示模式重构为表单级单例 + 事件委托：实例数从 O(字段数) 降为 O(1)，自动维护 `aria-describedby`，支持 Escape 临时关闭与指针/焦点仲裁。
-- 新增 `hintOptions.hintTrigger`（`item` | `content`），控制 Tooltip 触发范围是整个 FormItem 还是字段内容根节点。
+- 新增字段 `hintTrigger`（`item` | `content`），控制 Tooltip 触发范围是整个 FormItem 还是字段内容根节点。
 - 字段类型协议支持事件元组：`defineConfigFormType` 显式声明事件表后，`model.event` 与 `valueFromEvent` 参数类型联动，协议保留按事件名收窄的 `FieldTypeListeners`。
 - Playground 新增「校验聚焦与键盘导航」「提示与 Tooltip 单例」演示页。
 

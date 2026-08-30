@@ -31,23 +31,17 @@ ConfigForm 固定的渲染结构是：一个 `el-form`、一个 `el-row`，每�
 
 ## 根级 Slot
 
-根 `ConfigForm` 上有两个与字段并列的插入点，作用域都暴露当前 `model`：
+根 `ConfigForm` 使用 Element Form 的默认内容插槽，渲染在字段列表之后，并暴露当前 `model`：
 
 ```vue
 <TaskConfigForm v-model="model" :items="items">
-  <template #prepend>
-    <el-alert title="以下信息仅本单据可见" type="info" :closable="false" />
-  </template>
-  <template #append>
+  <template #default>
     <div class="actions">
       <el-button type="primary" @click="submit">提交</el-button>
     </div>
   </template>
 </TaskConfigForm>
 ```
-
-- `prepend`：渲染在字段列表之前。
-- `append`：渲染在字段列表之后，通常放提交、重置等操作按钮。
 
 ## 字段级 Slot
 

@@ -20,7 +20,7 @@ packages/config-form/src/
   FieldRenderer.ts           # 字段组件解析与渲染（组件目标/Props/事件/选项/model 协议）
   SlotRenderer.ts            # 具名 Slot 的通用渲染器
   ConfigFormHint.ts / .vue   # Hint 策略与单例 Tooltip
-  defineFormItems.ts         # items 的类型收窄入口
+  defineConfigFormItems.ts   # items 的类型收窄入口
   defineConfigFormType(s).ts # 业务字段类型注册的类型协议
   composables/               # 字段展示、受控写回、校验、导航、Hint 等组合式逻辑
   types.ts / public-types.ts # 完整公共类型（包入口直接导出）

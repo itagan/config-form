@@ -36,7 +36,7 @@ const fieldTypes = defineConfigFormTypes<FormData>()({ money })
 ## 配置复合字段和 Slot
 
 ```ts
-const items = defineFormItems<FormData>([
+const items = defineConfigFormItems<FormData>([
   {
     fieldKey: 'amount',
     type: 'money',

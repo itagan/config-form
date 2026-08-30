@@ -12,4 +12,4 @@ ConfigForm 不维护第二份长期表单状态：
 
 因此父组件应在 `update:model` 中同步采用 `$event`（`v-model` / `.sync` 已满足）。如果业务需要异步确认、服务端合并或跨任务队列，应在父层保存草稿并把确认后的 model 重新传入；ConfigForm 不会让内部快照越过微任务继续覆盖外部状态。
 
-`resetFields` 发出初始 model 的副本并清除校验，不允许 Element Form 直接修改传入对象。默认快照器支持 Date、RegExp、Map、Set、数组、对象原型和循环引用；带有不可枚举内部状态的复杂模型可通过 `cloneModel` Prop 提供业务克隆函数。
+`resetFields` 发出初始 model 的内部快照副本并清除校验，不允许 Element Form 直接修改传入对象。快照器支持 Date、RegExp、Map、Set、数组、对象原型和循环引用。

@@ -3,7 +3,7 @@
 ConfigForm 固定渲染一个 `el-form` 和一个 `el-row`，每个可见字段对应一个 `el-col` 与 `el-form-item`。
 
 ```ts
-const items = defineFormItems([
+const items = defineConfigFormItems([
   { fieldKey: 'name', type: 'input', colProps: { span: 12 } },
   { fieldKey: 'phone', type: 'input', colProps: { span: 12 } },
   { fieldKey: 'address', type: 'input', colProps: { span: 24 } }

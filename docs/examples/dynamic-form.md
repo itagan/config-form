@@ -2,14 +2,14 @@
 
 <PlaygroundLink route="/dynamic" />
 
-这个示例演示 `items` 由业务派生的完整形态：数组路径字段、稳定 key、动态显隐禁用和批量事务写回。
+这个示例演示 `items` 由业务派生的完整形态：数组路径字段、稳定 key、动态显隐和组件 Props 透传。
 
 ## 数组路径与稳定 key
 
 标签字段的数量跟随 `model.tags` 派生。`key` 用标签内容而非下标，删除中间标签时其余字段的组件实例身份不变：
 
 ```ts
-const items = computed(() => defineFormItems<TaskModel>([
+const items = computed(() => defineConfigFormItems<TaskModel>([
   // ...固定字段
   ...formModel.value.tags.map((tag, index): FormItemConfig<TaskModel> => ({
     key: `tag-${tag}`,
@@ -48,21 +48,20 @@ function removeTag(index: number) {
   fieldKey: 'discount',
   type: 'slider',
   visible: ({ model }) => model.priority === 'high',
-  disabled: ({ model }) => model.budget <= 0,
-  component: { props: { min: 50, max: 100 } }
+  component: { props: ({ model }) => ({ min: 50, max: 100, disabled: model.budget <= 0 }) }
 }
 ```
 
-## 批量事务写回
+## 多字段写回
 
-「一键填充默认值」调用 `setFieldsValue` 在一次事务中写入三个路径，每个实际变化的路径各触发一次 `field-change`。Playground 页面底部的"最近变化"行会显示 `fieldKey` 与 `previousValue → value`：
+「一键填充默认值」直接替换父组件持有的 model：
 
 ```ts
-formRef.value.setFieldsValue({
+formModel.value = {
+  ...formModel.value,
   title: '季度巡检',
-  'owner.name': 'Ada',
-  'owner.phone': '13800000000'
-})
+  owner: { ...formModel.value.owner, name: 'Ada', phone: '13800000000' }
+}
 ```
 
 ## 适用边界
