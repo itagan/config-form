@@ -1,7 +1,10 @@
 <template>
   <section class="demo-page">
-    <h1>扩展、Slot 与复合字段</h1>
-    <p>展示注册字段 type、具名 Slot，以及 binding.map 的双向拆装。</p>
+    <header>
+      <router-link class="back-link" to="/">← 返回</router-link>
+      <h1>扩展、Slot 与复合字段</h1>
+      <p>展示注册字段 type、具名 Slot，以及 binding.map 的双向拆装。</p>
+    </header>
     <div class="demo-card">
       <ConfigForm v-model="model" :items="items" :field-types="fieldTypes" :form-props="{ labelWidth: '110px' }">
         <template #summary="{ model: currentModel }">

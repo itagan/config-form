@@ -1,9 +1,12 @@
 <template>
   <section class="demo-page">
-    <h1>提示与 Tooltip 单例</h1>
-    <p>
-      tooltip 模式下整个表单只挂载一个单例 Tooltip，通过事件委托展示：悬停或键盘焦点进入字段时出现，Escape 可临时关闭。
-    </p>
+    <header>
+      <router-link class="back-link" to="/">← 返回</router-link>
+      <h1>提示与 Tooltip 单例</h1>
+      <p>
+        tooltip 模式下整个表单只挂载一个单例 Tooltip，通过事件委托展示：悬停或键盘焦点进入字段时出现，Escape 可临时关闭。
+      </p>
+    </header>
     <div class="demo-card">
       <div class="controls">
         <span>展示方式：</span>

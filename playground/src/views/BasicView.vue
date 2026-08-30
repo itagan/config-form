@@ -1,7 +1,10 @@
 <template>
   <section class="demo-page">
-    <h1>基础、校验与动态联动</h1>
-    <p>单个 el-row 配合字段级 el-col；企业名称根据类型动态显示。</p>
+    <header>
+      <router-link class="back-link" to="/">← 返回</router-link>
+      <h1>基础、校验与动态联动</h1>
+      <p>单个 el-row 配合字段级 el-col；企业名称根据类型动态显示。</p>
+    </header>
     <div class="demo-card">
       <ConfigForm
         ref="formRef"

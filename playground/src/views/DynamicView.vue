@@ -1,7 +1,10 @@
 <template>
   <section class="demo-page">
-    <h1>动态字段与增删</h1>
-    <p>items 由 computed 派生：标签行走数组路径 fieldKey 并携带稳定 key，嵌套对象用点路径寻址；批量写回走受控事务。</p>
+    <header>
+      <router-link class="back-link" to="/">← 返回</router-link>
+      <h1>动态字段与增删</h1>
+      <p>items 由 computed 派生：标签行走数组路径 fieldKey 并携带稳定 key，嵌套对象用点路径寻址；批量写回走受控事务。</p>
+    </header>
     <div class="demo-card">
       <TaskConfigForm
         ref="formRef"
