@@ -5,13 +5,20 @@
     <div class="demo-card">
       <ConfigForm v-model="model" :items="items" :form-props="{ labelWidth: '110px' }" />
     </div>
-    <pre class="model-preview">{{ model }}</pre>
+    <DemoCollapsiblePanel class="demo-card" title="字段配置">
+      <pre>{{ configCode }}</pre>
+    </DemoCollapsiblePanel>
+    <DemoCollapsiblePanel class="demo-card" title="当前数据">
+      <pre>{{ JSON.stringify(model, null, 2) }}</pre>
+    </DemoCollapsiblePanel>
   </section>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
+import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
 const businessOptions = [
   { text: '研发', code: 'rd', locked: false },
@@ -21,7 +28,7 @@ const businessOptions = [
 const optionProps = { label: 'text', value: 'code', disabled: 'locked' }
 
 export default defineComponent({
-  components: { ConfigForm },
+  components: { ConfigForm, DemoCollapsiblePanel },
   setup() {
     const model = ref({ department: 'rd', role: 'design', permissions: ['rd'] })
     const items = defineFormItems([
@@ -29,7 +36,8 @@ export default defineComponent({
       { fieldKey: 'role', type: 'radio', colProps: { span: 12 }, formItemProps: { label: '角色' }, component: { options: businessOptions, optionProps } },
       { fieldKey: 'permissions', type: 'checkbox', colProps: { span: 24 }, formItemProps: { label: '权限' }, component: { options: businessOptions, optionProps } }
     ])
-    return { model, items }
+        const configCode = formatConfigFormConfig(items)
+return { model, items, configCode }
   }
 })
 </script>

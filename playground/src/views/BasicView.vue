@@ -22,7 +22,12 @@
         </template>
       </ConfigForm>
     </div>
-    <pre class="model-preview">{{ formModel }}</pre>
+    <DemoCollapsiblePanel class="demo-card" title="字段配置">
+      <pre>{{ configCode }}</pre>
+    </DemoCollapsiblePanel>
+    <DemoCollapsiblePanel class="demo-card" title="当前数据">
+      <pre>{{ JSON.stringify(formModel, null, 2) }}</pre>
+    </DemoCollapsiblePanel>
     <p v-if="lastChange">最近变化：{{ lastChange.fieldKey }}</p>
   </section>
 </template>
@@ -31,9 +36,11 @@
 import { defineComponent, ref } from 'vue'
 import { Message } from 'element-ui'
 import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
+import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
 export default defineComponent({
-  components: { ConfigForm },
+  components: { ConfigForm, DemoCollapsiblePanel },
   setup() {
     const formRef = ref<any>(null)
     const formModel = ref({
@@ -95,7 +102,8 @@ export default defineComponent({
       if (valid) Message.success('校验通过')
     }
     const reset = () => formRef.value?.resetFields()
-    return { formRef, formModel, items, lastChange, submit, reset }
+        const configCode = formatConfigFormConfig(items)
+return { formRef, formModel, items, lastChange, configCode, submit, reset }
   }
 })
 </script>
