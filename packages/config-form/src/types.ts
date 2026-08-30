@@ -14,6 +14,8 @@ export type ConfigFormHintValue = string | false | null | undefined
 export type ConfigFormHintMode = false | 'title' | 'tooltip'
 /** Tooltip 触发区域：整个 FormItem 或仅字段内容根节点。 */
 export type ConfigFormHintTrigger = 'item' | 'content'
+/** 只读字段向实际组件下沉的策略。 */
+export type ConfigFormReadonlyStrategy = 'auto' | 'native' | 'disabled'
 /** 自定义字段类型可选的事件名到原始参数元组协议。 */
 export type FieldTypeEventMap = Record<string, unknown[]>
 
@@ -241,9 +243,9 @@ export interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
   labelSlot?: string
   /** 根 ConfigForm 上用于渲染错误信息的具名 Slot。 */
   errorSlot?: string
-  /** 根 ConfigForm 上用于渲染字段内容左侧装饰的具名 Slot；与主内容同行（评估中）。 */
+  /** 根 ConfigForm 上用于渲染字段内容左侧装饰的具名 Slot；与主内容同行。 */
   leftSlot?: string
-  /** 根 ConfigForm 上用于渲染字段内容右侧装饰的具名 Slot；与主内容同行（评估中）。 */
+  /** 根 ConfigForm 上用于渲染字段内容右侧装饰的具名 Slot；与主内容同行。 */
   rightSlot?: string
   /** 是否渲染当前字段；返回 false 时字段卸载且不参与校验。 */
   visible?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
@@ -251,6 +253,8 @@ export interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
   disabled?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
   /** 是否只读当前字段的组件。 */
   readonly?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
+  /** 只读状态下使用原生 readonly、disabled，或按内置类型自动选择；默认 auto。 */
+  readonlyStrategy?: DynamicValue<ConfigFormReadonlyStrategy, ConfigFormFieldRenderContext<TModel>>
   /** 字段自动提示内容；`false` 单独关闭，未声明时回退 hintOptions.field。 */
   hint?: DynamicValue<ConfigFormHintValue, ConfigFormFieldRenderContext<TModel>>
   /** 透传给当前字段 el-col 的属性；默认 `{ span: 24 }`。 */
@@ -412,6 +416,16 @@ export interface ConfigFormProps<
   hintOptions?: ConfigFormHintOptions<TModel>
   /** Enter 键字段导航；省略时不接管键盘。 */
   navigationOptions?: ConfigFormNavigationOptions
+  /** 自定义 resetFields 初始快照方式；默认克隆 Date、Map、Set、数组和对象。 */
+  cloneModel?: (model: Readonly<TModel>) => TModel
+}
+
+/** ConfigForm 实际使用到的 Element Form 实例能力。 */
+export interface ConfigFormElementFormRef {
+  $el?: HTMLElement
+  validate?: () => Promise<boolean>
+  validateField?: (prop: string, callback: (message: string) => void) => void
+  clearValidate?: (props?: string | string[]) => void
 }
 
 /** ConfigForm 实例暴露的方法集合；通过模板 Ref 获取。 */
@@ -433,7 +447,7 @@ export interface ConfigFormRef {
   /** 获取包含尚未被父组件回写更新的本轮最新 model。 */
   getModel: () => FormModel
   /** 获取底层 Element UI el-form 实例。 */
-  getFormRef: () => unknown
+  getFormRef: () => ConfigFormElementFormRef | null
   /** 聚焦已挂载字段的第一个可聚焦元素；字段隐藏或未知时返回 false。 */
   focusField: (fieldKey: string) => Promise<boolean>
   /** 滚动到第一个校验失败的字段（居中）并尝试聚焦；无报错字段时返回 false。 */

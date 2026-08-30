@@ -10,6 +10,7 @@
     "docs:dev": "pnpm --dir docs --ignore-workspace dev",
     "docs:build": "run-s docs:install docs:build-only",
     "docs:build-only": "pnpm --dir docs --ignore-workspace build",
+    "docs:check": "node scripts/check-docs.mjs",
     "docs:preview": "pnpm --dir docs --ignore-workspace preview",
     "site:dev": "run-p dev docs:dev",
     "build": "run-s build:package build:playground docs:build",
@@ -24,11 +25,15 @@
     "site:preview": "pnpm docs:preview",
     "test": "pnpm --filter @itagan/config-form test",
     "test:coverage": "pnpm --filter @itagan/config-form test:coverage",
+    "test:performance": "pnpm --filter @itagan/config-form test:performance",
     "lint": "eslint --ext .ts,.vue packages/config-form/src packages/config-form-min-peer/src playground/src",
     "type-check": "pnpm -r type-check",
     "compat:check": "pnpm --filter config-form-min-peer-check check",
     "pack:check": "node scripts/check-package.mjs",
-    "release:check": "run-s lint test:coverage type-check build:package compat:check site:build site:check pack:check"
+    "release:meta-check": "node scripts/check-release-metadata.mjs",
+    "publish:ready-check": "node scripts/check-publish-ready.mjs",
+    "publish:check": "run-s release:check publish:ready-check",
+    "release:check": "run-s release:meta-check lint test:coverage type-check build:package compat:check docs:check site:build site:check pack:check"
   },
   "devDependencies": {
     "@types/node": "^16.11.45",

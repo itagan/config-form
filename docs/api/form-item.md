@@ -13,6 +13,7 @@ interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
   visible?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
   disabled?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
   readonly?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
+  readonlyStrategy?: DynamicValue<'auto' | 'native' | 'disabled', ConfigFormFieldRenderContext<TModel>>
   hint?: DynamicValue<string | false | null | undefined, ConfigFormFieldRenderContext<TModel>>
   colProps?: DynamicValue<object, ConfigFormFieldRenderContext<TModel>>
   formItemProps?: DynamicValue<object, ConfigFormFieldRenderContext<TModel>>
@@ -28,7 +29,8 @@ interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
 | `key` | 否 | 稳定渲染身份；默认使用 `fieldKey`，同一路径渲染多次时必须显式区分 |
 | `visible` | 否 | `false` 时不渲染整个 `el-col`；默认为可见 |
 | `disabled` | 否 | 禁用字段，支持动态值 |
-| `readonly` | 否 | 将字段同时设为 disabled 和 readonly，支持动态值 |
+| `readonly` | 否 | 将字段切换为只读状态，支持动态值 |
+| `readonlyStrategy` | 否 | `auto` 按内置类型选择原生 readonly 或 disabled；也可显式强制 `native` / `disabled` |
 | `colProps` | 否 | 透传给 `el-col`，与默认 `{ span: 24 }` 合并 |
 | `formItemProps` | 否 | 透传给 `el-form-item`；`prop` 始终由 `fieldKey` 管理 |
 | `component` | 视 type | 字段组件、Props、监听器、选项和 model 协议；`component`/`slot` type 必填 |
@@ -47,7 +49,7 @@ interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
 
 ## 动态值
 
-`visible`、`disabled`、`readonly`、`hint`、`colProps`、`formItemProps` 均可写为静态值或同步函数：
+`visible`、`disabled`、`readonly`、`readonlyStrategy`、`hint`、`colProps`、`formItemProps` 均可写为静态值或同步函数。默认 `auto` 对 input、日期、时间和 autocomplete 使用原生 readonly，保留聚焦与复制；select、switch、radio 等没有可靠只读协议的控件回退为 disabled：
 
 ```ts
 {

@@ -41,6 +41,7 @@ await formRef.value.focusField('remark') // 聚焦指定字段的第一个可聚
 
 - 表单的"初始值"在组件挂载那一刻固定，之后外部对 model 的修改不会成为新的重置基线。
 - 编辑页在异步详情加载后需要新的重置基线时，两种做法：数据就绪后再挂载 ConfigForm，或用 `:key` 在数据就绪时重建组件。
+- 默认快照器支持 Date、RegExp、Map、Set、数组、对象原型和循环引用；含 WeakMap、DOM 节点或不可枚举内部状态的模型应通过 `cloneModel` 提供业务克隆函数。
 - `clearValidate(props?)` 只清校验状态，不动数据。
 
 ## 读写 model 的 Ref 方法

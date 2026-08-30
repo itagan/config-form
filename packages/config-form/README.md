@@ -4,6 +4,8 @@
 
 ## 安装
 
+组件当前尚未发布到 npm Registry。仓库开发和联调阶段使用 workspace alias 或 Git 依赖；正式发布后安装命令为：
+
 ```bash
 pnpm add @itagan/config-form
 ```
@@ -209,7 +211,7 @@ const items = [{ fieldKey: 'amount', type: 'money' }]
   v-model="formModel"
   :items="items"
   :hint-options="{ mode: 'tooltip', field: true }"
-  :readonly="detailMode"
+  :form-props="{ disabled: detailMode }"
 />
 ```
 
@@ -217,7 +219,7 @@ const items = [{ fieldKey: 'amount', type: 'money' }]
 
 `tooltip` 模式使用表单级单例 Tooltip 事件委托展示：悬停或键盘焦点进入字段时出现，`aria-describedby` 自动维护，Escape 可临时关闭。`hintTrigger` 可把触发范围从整个 FormItem（`item`，默认）收窄到字段内容根节点（`content`）。
 
-根级 `disabled`、`readonly` 会作用于全部字段；字段配置中的动态 `disabled`、`readonly` 可以单独控制。对于完全自定义的 Slot，业务模板仍应按自身交互要求处理只读展示。
+ConfigForm 不提供根级 `disabled`、`readonly` Props。全局禁用通过 `formProps.disabled` 交给 Element Form 下沉；字段配置中的动态 `disabled`、`readonly` 用于单独控制。默认情况下，Input、日期和时间等支持原生只读的内置类型保留聚焦与复制，其他控件回退为 disabled；`readonlyStrategy` 可显式覆盖。对于完全自定义的 Slot，业务模板仍应按自身交互要求处理只读展示。
 
 ## 校验聚焦与键盘导航
 
@@ -255,4 +257,6 @@ async function submit() {
 
 连续调用 `setFieldValue()` 或字段上下文更新助手时，本轮更新会自动基于最近一次结果继续合并；父组件尚未回写 model 时也不会丢失前一次修改。
 
-本地运行 `pnpm dev` 查看示例，运行 `pnpm test`、`pnpm type-check` 和 `pnpm build` 完成验证。
+`resetFields()` 默认使用支持 Date、RegExp、Map、Set、对象原型和循环引用的快照器。含不可枚举内部状态的复杂业务模型可传入 `cloneModel(model)` 覆盖快照方式。同步组合只覆盖当前微任务；父组件应通过 `v-model`、`.sync` 或同步 `update:model` 处理器及时采用下一份 model。
+
+本地运行 `pnpm dev` 查看示例，运行 `pnpm test`、`pnpm type-check` 和 `pnpm build` 完成验证；`pnpm test:performance` 可执行 200 字段本地性能基线。

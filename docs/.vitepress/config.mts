@@ -79,6 +79,7 @@ export default defineConfig({
           { text: '配置总览', link: '/guide/configuration' },
           { text: '动态配置', link: '/guide/dynamic-configuration' },
           { text: '开发与质量检查', link: '/guide/development' },
+          { text: '性能基线与大表单', link: '/guide/performance' },
           { text: '排错指南', link: '/guide/troubleshooting' }
         ]
       },

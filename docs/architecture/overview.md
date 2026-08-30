@@ -14,14 +14,17 @@ ConfigForm 是 Vue 2.7 + Element UI 的配置驱动表单组件，负责三件�
 
 ```text
 packages/config-form/src/
-  index.vue                  # 根组件：布局、Slot、诊断入口
+  index.vue                  # 根组件：表单编排、诊断与公开 Ref
+  ConfigFormItem.vue         # 单字段 Col/FormItem、Slot 与装饰布局
+  ConfigFormFieldContent.vue # Hint、字段 Slot 与实际组件内容
   FieldRenderer.ts           # 字段组件解析与渲染（组件目标/Props/事件/选项/model 协议）
   SlotRenderer.ts            # 具名 Slot 的通用渲染器
   ConfigFormHint.ts / .vue   # Hint 策略与单例 Tooltip
   defineFormItems.ts         # items 的类型收窄入口
   defineConfigFormType(s).ts # 业务字段类型注册的类型协议
-  composables/               # 受控写回、校验、导航、Hint 等组合式逻辑
+  composables/               # 字段展示、受控写回、校验、导航、Hint 等组合式逻辑
   types.ts / public-types.ts # 完整公共类型（包入口直接导出）
+  types/internal.ts          # Slot 与内部更新协议，不进入公共 API
 ```
 
 ## 渲染管线

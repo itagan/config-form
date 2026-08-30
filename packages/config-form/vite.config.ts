@@ -15,15 +15,16 @@ export default defineConfig({
       exclude: [
         'src/**/*.d.ts',
         'src/**/__tests__/**',
+        'src/types/**',
         'src/types.ts',
         'src/public-types.ts',
         'src/vue-shim.d.ts'
       ],
       thresholds: {
-        statements: 80,
-        branches: 70,
-        functions: 75,
-        lines: 80
+        statements: 90,
+        branches: 80,
+        functions: 85,
+        lines: 90
       }
     }
   },

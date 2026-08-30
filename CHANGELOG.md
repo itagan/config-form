@@ -5,6 +5,19 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## Unreleased
+
+### Added
+
+- 新增字段 `readonlyStrategy`，可在原生 readonly 与 disabled 回退之间显式选择。
+- 新增 `cloneModel` Prop，并扩展默认 reset 快照对 Date、Map、Set、对象原型和循环引用的支持。
+- 新增文档一致性检查、PR/push 发布级 CI、发布元数据检查与防误发布检查。
+
+### Changed
+
+- 根组件拆分为字段项、字段内容和展示计算模块，公共 API 与受控数据协议保持不变。
+- 支持原生 readonly 的内置字段默认保留聚焦和复制，不再一律转为 disabled。
+
 ## 0.3.0 - 2026-08-30
 
 ### Added
