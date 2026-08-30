@@ -241,6 +241,10 @@ export interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
   labelSlot?: string
   /** 根 ConfigForm 上用于渲染错误信息的具名 Slot。 */
   errorSlot?: string
+  /** 根 ConfigForm 上用于渲染字段内容左侧装饰的具名 Slot；与主内容同行（评估中）。 */
+  leftSlot?: string
+  /** 根 ConfigForm 上用于渲染字段内容右侧装饰的具名 Slot；与主内容同行（评估中）。 */
+  rightSlot?: string
   /** 是否渲染当前字段；返回 false 时字段卸载且不参与校验。 */
   visible?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
   /** 是否禁用当前字段的组件。 */

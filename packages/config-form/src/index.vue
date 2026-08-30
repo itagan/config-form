@@ -38,7 +38,53 @@
               />
             </template>
 
+            <div
+              v-if="hasSideSlots(item)"
+              class="config-form__field-row"
+            >
+              <span
+                v-if="getSlot(item.leftSlot)"
+                class="config-form__field-row-side"
+              >
+                <SlotRenderer
+                  :slot-fn="getSlot(item.leftSlot)"
+                  :slot-props="getFormItemSlotContext(item)"
+                />
+              </span>
+              <span class="config-form__field-row-main">
+                <ConfigFormHint
+                  :content="getHint(item)"
+                  :mode="hintOptions.mode"
+                  :tooltip-props="hintOptions.tooltipProps"
+                >
+                  <SlotRenderer
+                    v-if="item.type === 'slot' && getFieldSlot(item)"
+                    :slot-fn="getFieldSlot(item)"
+                    :slot-props="getSlotContext(item)"
+                  />
+                  <span v-else-if="item.type === 'slot'" />
+                  <FieldRenderer
+                    v-else
+                    :type="item.type"
+                    :value="getBindingValue(item)"
+                    :component="getResolvedComponent(item)"
+                    :model-context="getRenderContext(item)"
+                    :on-model-input="getModelInputHandler(item)"
+                  />
+                </ConfigFormHint>
+              </span>
+              <span
+                v-if="getSlot(item.rightSlot)"
+                class="config-form__field-row-side"
+              >
+                <SlotRenderer
+                  :slot-fn="getSlot(item.rightSlot)"
+                  :slot-props="getFormItemSlotContext(item)"
+                />
+              </span>
+            </div>
             <ConfigFormHint
+              v-else
               :content="getHint(item)"
               :mode="hintOptions.mode"
               :tooltip-props="hintOptions.tooltipProps"
@@ -300,6 +346,10 @@ function getSlot(name?: string) {
   return name ? slots[name] : undefined
 }
 
+function hasSideSlots(item: FormItemConfig) {
+  return Boolean(getSlot(item.leftSlot) || getSlot(item.rightSlot))
+}
+
 function getFieldSlot(item: FormItemConfig) {
   return item.component?.slot ? getSlot(item.component.slot) : undefined
 }
@@ -363,6 +413,22 @@ defineExpose({
   }
 
   :deep(.el-form-item) {
+    min-width: 0;
+  }
+
+  :deep(.config-form__field-row) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  :deep(.config-form__field-row-side) {
+    flex: 0 0 auto;
+  }
+
+  :deep(.config-form__field-row-main) {
+    flex: 1 1 auto;
     min-width: 0;
   }
 }

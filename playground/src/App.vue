@@ -15,6 +15,7 @@ const docsSiteUrl = import.meta.env.VITE_DOCS_SITE_URL
       <router-link to="/options">选项与映射</router-link>
       <router-link to="/dynamic">动态字段与增删</router-link>
       <router-link to="/schema">JSON Schema 驱动</router-link>
+      <router-link to="/adorn">字段左右插槽（评估）</router-link>
       <router-link to="/extensions">扩展与复合字段</router-link>
       <router-link to="/readonly">详情与只读</router-link>
       <router-link to="/interaction">校验聚焦与键盘导航</router-link>
