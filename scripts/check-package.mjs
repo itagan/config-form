@@ -63,7 +63,7 @@ for (const [format, entry] of [['ESM', esmEntry], ['CommonJS', cjsEntry]]) {
   if (entry.default !== entry.ConfigForm || entry.createConfigForm() !== entry.ConfigForm) {
     throw new Error(`${format} public component exports are inconsistent.`)
   }
-  for (const helper of ['defineFormItems', 'defineConfigFormType', 'defineConfigFormTypes']) {
+  for (const helper of ['defineConfigFormItems', 'defineConfigFormType', 'defineConfigFormTypes']) {
     if (typeof entry[helper] !== 'function') throw new Error(`${format} entry is missing ${helper}.`)
   }
 }

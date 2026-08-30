@@ -25,33 +25,7 @@
         />
       </template>
 
-      <div
-        v-if="presentation.hasSideSlots.value"
-        class="config-form__field-row"
-      >
-        <span
-          v-if="presentation.getSlot(item.leftSlot)"
-          class="config-form__field-row-side"
-        >
-          <SlotRenderer
-            :slot-fn="presentation.getSlot(item.leftSlot)"
-            :slot-props="formItemSlotContext"
-          />
-        </span>
-        <span class="config-form__field-row-main">
-          <ConfigFormFieldContent v-bind="fieldContentProps" />
-        </span>
-        <span
-          v-if="presentation.getSlot(item.rightSlot)"
-          class="config-form__field-row-side"
-        >
-          <SlotRenderer
-            :slot-fn="presentation.getSlot(item.rightSlot)"
-            :slot-props="formItemSlotContext"
-          />
-        </span>
-      </div>
-      <ConfigFormFieldContent v-else v-bind="fieldContentProps" />
+      <ConfigFormFieldContent v-bind="fieldContentProps" />
     </el-form-item>
   </el-col>
 </template>

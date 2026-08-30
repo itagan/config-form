@@ -1,10 +1,11 @@
 import type {
   BuiltinFormItemType,
+  ConfigFormFieldBindingContext,
   ConfigFormFieldRenderContext,
   FieldComponentConfig,
   FieldTypeDefinition,
   FormModel,
-  ResolvedFieldComponent
+  ResolvedComponentConfig
 } from '../types'
 
 const componentTypeMap: Record<BuiltinFormItemType, string> = {
@@ -32,9 +33,9 @@ export function resolveFieldComponent<TModel extends FormModel>(
   config: FieldComponentConfig<TModel> | undefined,
   registry: Record<string, FieldTypeDefinition<TModel>>,
   renderContext: ConfigFormFieldRenderContext<TModel>,
-  fieldContext: any,
-  interactionProps: Record<string, unknown> = {}
-): ResolvedFieldComponent<TModel> {
+  bindingContext: ConfigFormFieldBindingContext<TModel>,
+  fieldContext: any
+): ResolvedComponentConfig<TModel> {
   const definition = !isBuiltinType(type) && type !== 'component' && type !== 'slot'
     ? registry[type]
     : undefined
@@ -54,9 +55,8 @@ export function resolveFieldComponent<TModel extends FormModel>(
       || definition?.is
       || (isBuiltinType(type) ? componentTypeMap[type] : undefined),
     props: {
-      ...(resolveDynamic(definition?.props, renderContext) || {}),
-      ...(resolveDynamic(component.props, renderContext) || {}),
-      ...interactionProps
+      ...(resolveDynamic(definition?.props, bindingContext) || {}),
+      ...(resolveDynamic(component.props, bindingContext) || {})
     },
     listeners,
     options: resolveDynamic(component.options, renderContext) || [],

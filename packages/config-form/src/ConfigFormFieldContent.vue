@@ -32,7 +32,7 @@ import type {
   ConfigFormHintMode,
   ConfigFormValue,
   FormItemConfig,
-  ResolvedFieldComponent
+  ResolvedComponentConfig
 } from './types'
 import type { ConfigFormSlot } from './types/internal'
 
@@ -44,7 +44,7 @@ defineProps({
   fieldSlot: { type: Function as PropType<ConfigFormSlot>, default: undefined },
   slotContext: { type: Object as PropType<Record<string, unknown>>, required: true },
   bindingValue: { default: undefined as ConfigFormValue },
-  resolvedComponent: { type: Object as PropType<ResolvedFieldComponent>, required: true },
+  resolvedComponent: { type: Object as PropType<ResolvedComponentConfig>, required: true },
   renderContext: { type: Object as PropType<ConfigFormFieldRenderContext>, required: true },
   onModelInput: {
     type: Function as PropType<(value: ConfigFormValue) => void>,

@@ -1,18 +1,16 @@
 import type { VNode } from 'vue'
-import type { ConfigFormValue, FormItemConfig, FormModel } from '../types'
+import type { ConfigFormSlots, ConfigFormValue, FormModel } from '../types'
 
 export type ConfigFormSlot = (props: any) => VNode[] | VNode | undefined
-export type ConfigFormRootSlots = Readonly<Record<string, ConfigFormSlot | undefined>>
+export type ConfigFormRootSlots = Readonly<ConfigFormSlots>
 
 export interface ConfigFormUpdateApi {
   getCurrentModel: () => FormModel
   setFieldValue: (
     fieldKey: string,
-    value: ConfigFormValue,
-    originItem?: FormItemConfig
+    value: ConfigFormValue
   ) => void
   updateModel: (
-    patch: Record<string, ConfigFormValue>,
-    originItem?: FormItemConfig
+    patch: Record<string, ConfigFormValue>
   ) => void
 }

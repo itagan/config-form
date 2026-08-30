@@ -7,7 +7,6 @@ describe('useControlledFormUpdate', () => {
     const emitUpdate = vi.fn()
     const update = useControlledFormUpdate({
       getModel: () => source,
-      resolveItem: fieldKey => ({ fieldKey, type: 'input' }),
       emitUpdate,
       emitFieldChange: vi.fn()
     })
@@ -24,7 +23,6 @@ describe('useControlledFormUpdate', () => {
     const emitUpdate = vi.fn()
     const update = useControlledFormUpdate({
       getModel: () => source,
-      resolveItem: fieldKey => ({ fieldKey, type: 'input' }),
       emitUpdate,
       emitFieldChange: vi.fn()
     })

@@ -7,7 +7,7 @@ import ConfigForm, {
   createConfigForm,
   defineConfigFormType,
   defineConfigFormTypes,
-  defineFormItems
+  defineConfigFormItems
 } from '@itagan/config-form'
 import '@itagan/config-form/style.css'
 
@@ -19,7 +19,7 @@ describe('minimum peer package consumer', () => {
     expect(ElementUI.version).toBe('2.4.9')
     expect(NamedConfigForm).toBe(ConfigForm)
     expect(createConfigForm()).toBe(ConfigForm)
-    expect(defineFormItems([])).toEqual([])
+    expect(defineConfigFormItems([])).toEqual([])
     const field = { is: 'custom-field' }
     expect(defineConfigFormType()(field)).toBe(field)
     const fields = { custom: field }

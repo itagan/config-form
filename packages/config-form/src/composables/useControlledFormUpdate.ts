@@ -1,14 +1,12 @@
 import type {
   ConfigFormFieldChangePayload,
   ConfigFormValue,
-  FormItemConfig,
   FormModel
 } from '../types'
 import { getValueByPath, setValueByPath } from '../utils/path'
 
 interface Options {
   getModel: () => FormModel
-  resolveItem: (fieldKey: string) => FormItemConfig | undefined
   emitUpdate: (model: FormModel) => void
   emitFieldChange: (payload: ConfigFormFieldChangePayload) => void
 }
@@ -36,8 +34,7 @@ export function useControlledFormUpdate(options: Options) {
   }
 
   const updateModel = (
-    patch: Record<string, ConfigFormValue>,
-    originItem?: FormItemConfig
+    patch: Record<string, ConfigFormValue>
   ) => {
     const source = getCurrentModel()
     let nextModel = source
@@ -54,9 +51,7 @@ export function useControlledFormUpdate(options: Options) {
     if (!changes.length) return
     commitModel(nextModel)
     changes.forEach(change => {
-      const itemConfig = options.resolveItem(change.fieldKey) || originItem
-      if (!itemConfig) return
-      options.emitFieldChange({ ...change, model: nextModel, itemConfig })
+      options.emitFieldChange(change)
     })
   }
 
@@ -64,8 +59,8 @@ export function useControlledFormUpdate(options: Options) {
     getCurrentModel,
     replaceModel: (model: FormModel) => commitModel(model),
     updateModel,
-    setFieldValue: (fieldKey: string, value: ConfigFormValue, originItem?: FormItemConfig) => (
-      updateModel({ [fieldKey]: value }, originItem)
+    setFieldValue: (fieldKey: string, value: ConfigFormValue) => (
+      updateModel({ [fieldKey]: value })
     )
   }
 }

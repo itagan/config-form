@@ -3,7 +3,8 @@
   "include": [
     "src/vue-shim.d.ts",
     "src/public-types.ts",
-    "src/defineFormItems.ts",
+    "src/types.public.ts",
+    "src/defineConfigFormItems.ts",
     "src/defineConfigFormType.ts",
     "src/defineConfigFormTypes.ts",
     "src/index.ts",

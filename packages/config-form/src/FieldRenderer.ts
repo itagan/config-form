@@ -5,13 +5,13 @@ import type {
   FormItemOption,
   FormModel,
   OptionPropsConfig,
-  ResolvedFieldComponent
+  ResolvedComponentConfig
 } from './types'
 
 interface Props {
   type: string
   value: ConfigFormValue
-  component: ResolvedFieldComponent
+  component: ResolvedComponentConfig
   modelContext: ConfigFormFieldRenderContext
   onModelInput: (value: ConfigFormValue) => void
 }
@@ -48,7 +48,7 @@ function createOptions(
   })
 }
 
-function createData(component: ResolvedFieldComponent): ModelVNodeData {
+function createData(component: ResolvedComponentConfig): ModelVNodeData {
   const { class: className, style, ...attrs } = component.props
   return { attrs, class: className, style, on: { ...component.listeners } }
 }

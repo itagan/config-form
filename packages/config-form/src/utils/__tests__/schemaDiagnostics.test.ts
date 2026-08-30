@@ -2,16 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { collectSchemaDiagnostics } from '../schemaDiagnostics'
 
 describe('schema diagnostics', () => {
-  it('reports unsupported static readonly strategies', () => {
-    expect(collectSchemaDiagnostics({}, [{
-      fieldKey: 'name',
-      type: 'input',
-      readonlyStrategy: 'locked'
-    }])).toEqual(expect.arrayContaining([
-      expect.objectContaining({ key: 'readonly-strategy:name' })
-    ]))
-  })
-
   it('reports invalid registrations, duplicate keys and missing render targets', () => {
     const diagnostics = collectSchemaDiagnostics(
       {

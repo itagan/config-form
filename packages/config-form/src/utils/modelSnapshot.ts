@@ -2,7 +2,7 @@ import type { ConfigFormValue, FormModel } from '../types'
 
 /**
  * 为 resetFields 建立独立快照。克隆常见表单值并保留对象原型与循环引用；
- * WeakMap/WeakSet、函数和 DOM 节点等不可枚举状态保持引用，复杂模型可通过 cloneModel 覆盖。
+ * WeakMap/WeakSet、函数和 DOM 节点等不可枚举状态保持引用。
  */
 export function cloneFormValue(value: ConfigFormValue, seen = new WeakMap<object, object>()): ConfigFormValue {
   if (value === null || typeof value !== 'object') return value
