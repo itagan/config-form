@@ -14,10 +14,9 @@ const items = defineFormItems([
 
 - `model`：受控表单数据。
 - `items`：字段配置数组；`fieldKey` 支持点路径和数组下标（`profile.name`、`addresses[0].city`），详见 [ConfigForm API](/api/config-form)。
-- `formProps`：透传给 `el-form`，但 model 由 ConfigForm 管理。
+- `formProps`：透传给 `el-form`，但 model 由 ConfigForm 管理；全局禁用通过 `formProps.disabled` 由 Element 原生下沉。
 - `rowProps`：透传给唯一的 `el-row`。
 - `fieldTypes`：当前实例的业务字段类型注册表。
 - `hintOptions`：字段提示策略。
-- `disabled`、`readonly`：全局交互状态。
 
 内置 type 包括 input、select、date、time、time-select、number、switch、radio、checkbox、text、rate、slider、color、cascader 和 autocomplete。

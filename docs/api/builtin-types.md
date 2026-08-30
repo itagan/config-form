@@ -41,7 +41,7 @@
 ## 通用组件行为
 
 - `component.props` 可以是对象，也可以是接收字段渲染上下文的同步函数。
-- 根级或字段级 `disabled/readonly` 会合并为组件的 `disabled`、`readonly` Props。
+- 字段级 `disabled/readonly` 配置会合并为组件的 `disabled`、`readonly` Props；整表禁用走 `formProps.disabled`。
 - 内置字段使用 Vue 组件自身的 model 协议；自定义协议由 `component.model` 配置。
 - `text` 对 `null` 和 `undefined` 显示为空字符串，其他值使用 `String(value)`。
 

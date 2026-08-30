@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import Vue from 'vue'
 import { describe, expect, it, vi } from 'vitest'
-import ConfigForm from '../ConfigForm.vue'
+import ConfigForm from '../index.vue'
 import { defineConfigFormTypes } from '../defineConfigFormTypes'
 
 const ConfigFormForTest = ConfigForm as any
@@ -192,13 +192,12 @@ describe('ConfigForm', () => {
     expect(onChange.mock.calls[0][0]).toMatchObject({ fieldKey: 'enabled', value: false })
   })
 
-  it('renders field hints and applies form-level interaction state', () => {
+  it('renders field hints and applies item-level interaction state', () => {
     const wrapper = mount(ConfigFormForTest, {
       propsData: {
         model: { name: 'Ada' },
-        readonly: true,
         hintOptions: { mode: 'title' },
-        items: [{ fieldKey: 'name', type: 'input', hint: '只读姓名' }]
+        items: [{ fieldKey: 'name', type: 'input', hint: '只读姓名', readonly: true }]
       }
     })
 

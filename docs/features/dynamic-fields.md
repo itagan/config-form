@@ -38,7 +38,7 @@ const items = defineFormItems<TaskModel>([
 行为约定：
 
 - `visible` 返回 `false` 时字段卸载，**不参与校验**，也不占栅格。
-- `disabled`、`readonly` 与根级 `disabled`、`readonly` 取并集：任一为真即生效。
+- `disabled`、`readonly` 只作用于当前字段的组件；整表禁用通过 `formProps: { disabled: true }` 由 Element 原生下沉。
 - 函数必须同步、无副作用。异步数据应由页面加载后写入 model 或配置，再触发重渲染。
 
 ## 数组与嵌套路径
