@@ -129,6 +129,16 @@ export function collectSchemaDiagnostics(
     } else if (identity) identities.set(identity, index)
 
     const component = isRecord(value.component) ? value.component : undefined
+    if (
+      value.readonlyStrategy !== undefined
+      && typeof value.readonlyStrategy !== 'function'
+      && !['auto', 'native', 'disabled'].includes(String(value.readonlyStrategy))
+    ) {
+      diagnostics.push({
+        key: `readonly-strategy:${identity || index}`,
+        message: `[ConfigForm] Invalid field "${location}": readonlyStrategy must be "auto", "native" or "disabled".`
+      })
+    }
     if (type === 'component' && !(
       component && (isComponentTarget(component.is) || typeof component.resolveComponent === 'function')
     )) {

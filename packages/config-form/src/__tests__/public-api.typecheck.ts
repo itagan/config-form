@@ -117,9 +117,25 @@ defineFormItems<BusinessModel, typeof narrowFieldTypes>([
 ])
 
 const strictItems: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['items'] = [
-  { fieldKey: 'name', type: 'input' }
+  { fieldKey: 'name', type: 'input', readonly: true, readonlyStrategy: 'native' }
 ]
 void strictItems
+
+const businessProps: ConfigFormProps<BusinessModel> = {
+  model: { amount: 20, currency: 'CNY' },
+  cloneModel: model => ({ ...model })
+}
+void businessProps
+
+const invalidReadonlyItems: ConfigFormProps<BusinessModel>['items'] = [
+  {
+    fieldKey: 'name',
+    type: 'input',
+    // @ts-expect-error unsupported readonly strategy
+    readonlyStrategy: 'locked'
+  }
+]
+void invalidReadonlyItems
 
 const strictUnknown: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['items'] = [
   // @ts-expect-error unregistered types are rejected without a field type registry

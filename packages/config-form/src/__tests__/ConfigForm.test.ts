@@ -202,7 +202,7 @@ describe('ConfigForm', () => {
     })
 
     expect(wrapper.find('.config-form__hint-target').attributes('title')).toBe('只读姓名')
-    expect(wrapper.findComponent({ name: 'ElInput' }).props('disabled')).toBe(true)
+    expect(wrapper.findComponent({ name: 'ElInput' }).props('disabled')).toBe(false)
     expect(wrapper.findComponent({ name: 'ElInput' }).props('readonly')).toBe(true)
   })
 
