@@ -206,6 +206,45 @@ describe('ConfigForm', () => {
     expect(wrapper.findComponent({ name: 'ElInput' }).props('readonly')).toBe(true)
   })
 
+  it('renders left and right side slots beside the field content', () => {
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: {
+        model: { amount: 100 },
+        items: [{
+          fieldKey: 'amount',
+          type: 'input',
+          leftSlot: 'amountPrefix',
+          rightSlot: 'amountSuffix'
+        }]
+      },
+      scopedSlots: {
+        amountPrefix: '<span class="adorn-left">￥</span>',
+        amountSuffix: '<span class="adorn-right">万元</span>'
+      }
+    })
+
+    expect(wrapper.find('.config-form__field-row').exists()).toBe(true)
+    expect(wrapper.find('.config-form__field-row-side .adorn-left').text()).toBe('￥')
+    expect(wrapper.find('.config-form__field-row-main input').exists()).toBe(true)
+    expect(wrapper.find('.config-form__field-row-side .adorn-right').text()).toBe('万元')
+  })
+
+  it('focuses the field content instead of side decorations', async () => {
+    const wrapper = mount(ConfigFormForTest, {
+      attachTo: document.body,
+      propsData: {
+        model: { keyword: '' },
+        items: [{ fieldKey: 'keyword', type: 'input', leftSlot: 'searchAction' }]
+      },
+      scopedSlots: {
+        searchAction: '<button class="adorn-button" type="button">检索</button>'
+      }
+    })
+
+    await (wrapper.vm as any).focusField('keyword')
+    expect(document.activeElement).toBe(wrapper.find('.config-form__field-row-main input').element)
+  })
+
   it('merges registered field type defaults with item props', () => {
     const MoneyEditor = Vue.extend({
       name: 'MoneyEditor',

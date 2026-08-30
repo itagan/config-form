@@ -12,6 +12,9 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"]):not([aria-disabled="true"])'
 ].join(',')
 
+// 聚焦范围限定主内容：hint 包裹层或装饰行主区，左右装饰不参与 focusField 与字段导航。
+const FOCUS_SCOPE_SELECTOR = '.config-form__hint-target, .config-form__field-row-main'
+
 interface ConfigFormFieldLocatorOptions {
   getContainer: () => HTMLElement | null
   getForm: () => {
@@ -53,8 +56,9 @@ export function useConfigFormFieldLocator(options: ConfigFormFieldLocatorOptions
   }
 
   const findFocusable = (element: HTMLElement) => {
-    if (element.matches(FOCUSABLE_SELECTOR)) return element
-    return element.querySelector<HTMLElement>(FOCUSABLE_SELECTOR) || undefined
+    const scope = element.querySelector<HTMLElement>(FOCUS_SCOPE_SELECTOR) ?? element
+    if (scope.matches(FOCUSABLE_SELECTOR)) return scope
+    return scope.querySelector<HTMLElement>(FOCUSABLE_SELECTOR) || undefined
   }
 
   const focusElement = (element: HTMLElement) => {

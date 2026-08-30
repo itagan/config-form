@@ -10,6 +10,8 @@ const HINT_ROOT_SELECTOR = `[${CONFIG_FORM_ROOT_ATTRIBUTE}]`
 const FORM_ITEM_SELECTOR = '.el-form-item'
 const FORM_ITEM_CONTENT_SELECTOR = '.el-form-item__content'
 const FORM_ITEM_ERROR_SELECTOR = '.el-form-item__error'
+const HINT_TARGET_SELECTOR = '.config-form__hint-target'
+const FIELD_ROW_MAIN_SELECTOR = '.config-form__field-row-main'
 
 /** 查找 FormItem 内容区中可用于触发和定位的直接根节点。 */
 function findVisibleContentRoots(target: HTMLElement): HTMLElement[] {
@@ -29,6 +31,14 @@ function findVisibleContentRoots(target: HTMLElement): HTMLElement[] {
   })
 }
 
+/** 左右装饰行内优先取主内容：hint 包裹层优先，其次装饰行主区，保证定位与触发语义只属于字段本身。 */
+function preferMainContent(roots: HTMLElement[]): HTMLElement[] {
+  if (roots.length !== 1) return roots
+  const scoped = roots[0].querySelector<HTMLElement>(HINT_TARGET_SELECTOR)
+    ?? roots[0].querySelector<HTMLElement>(FIELD_ROW_MAIN_SELECTOR)
+  return scoped ? [scoped] : roots
+}
+
 /** 隔离 Hint DOM 目标解析和 content 回退诊断。 */
 export function createHintTooltipTargetResolver(
   getContainer: () => HTMLElement | null
@@ -46,7 +56,7 @@ export function createHintTooltipTargetResolver(
   }
 
   const resolveContentTarget = (target: HTMLElement): HTMLElement => {
-    const candidates = findVisibleContentRoots(target)
+    const candidates = preferMainContent(findVisibleContentRoots(target))
     if (candidates.length === 1) return candidates[0]
 
     if (import.meta.env.DEV) {
@@ -66,10 +76,10 @@ export function createHintTooltipTargetResolver(
   /** 默认字段只改变定位；content 字段同时使用唯一内容根节点限制触发区域。 */
   const resolveReferenceTarget = (target: HTMLElement): HTMLElement => {
     if (!target.matches(FORM_ITEM_SELECTOR)) return target
+    const candidates = preferMainContent(findVisibleContentRoots(target))
     if (target.getAttribute(CONFIG_FORM_HINT_TRIGGER_ATTRIBUTE) === 'content') {
       return resolveContentTarget(target)
     }
-    const candidates = findVisibleContentRoots(target)
     return candidates.length === 1 ? candidates[0] : target
   }
 
