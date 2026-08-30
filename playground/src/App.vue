@@ -1,8 +1,16 @@
+<script setup lang="ts">
+// 同站部署时复用统一站点基址，本地开发默认跳转 VitePress 文档端口。
+const docsSiteUrl = import.meta.env.VITE_DOCS_SITE_URL
+  || import.meta.env.VITE_SITE_BASE
+  || 'http://localhost:5174/'
+</script>
+
 <template>
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">ConfigForm</div>
       <div class="subtitle">Vue 2.7 + Element UI</div>
+      <a class="docs-link" :href="docsSiteUrl">← 返回文档</a>
       <router-link to="/">基础与联动</router-link>
       <router-link to="/options">选项与映射</router-link>
       <router-link to="/extensions">扩展与复合字段</router-link>
@@ -21,6 +29,7 @@ body { margin: 0; color: #303133; background: #f5f7fa; font-family: Inter, "Ping
 .sidebar { position: fixed; width: 240px; height: 100vh; padding: 28px 20px; background: #fff; border-right: 1px solid #ebeef5; }
 .brand { font-size: 24px; font-weight: 700; color: #409eff; }
 .subtitle { margin: 4px 0 28px; color: #909399; font-size: 13px; }
+.docs-link { margin-bottom: 16px; padding: 10px 12px; border: 1px solid #ebeef5; border-radius: 6px; color: #047857 !important; font-size: 13px; background: #f0fdf4; }
 .sidebar a { display: block; margin: 5px 0; padding: 10px 12px; border-radius: 6px; color: #606266; text-decoration: none; }
 .sidebar a.router-link-exact-active { color: #409eff; background: #ecf5ff; }
 .content { width: calc(100% - 240px); margin-left: 240px; padding: 36px; }
