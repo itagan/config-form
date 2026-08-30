@@ -1,4 +1,4 @@
-import ConfigForm from './ConfigForm.vue'
+import ConfigForm from './index.vue'
 import type { ConfigFormComponent, EmptyFieldTypeRegistry, FieldTypeRegistry, FormModel } from './types'
 
 export { defineFormItems } from './defineFormItems'

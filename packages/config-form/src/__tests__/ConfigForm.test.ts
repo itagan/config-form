@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import Vue from 'vue'
 import { describe, expect, it, vi } from 'vitest'
-import ConfigForm from '../ConfigForm.vue'
+import ConfigForm from '../index.vue'
 import { defineConfigFormTypes } from '../defineConfigFormTypes'
 
 const ConfigFormForTest = ConfigForm as any
