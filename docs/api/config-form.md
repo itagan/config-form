@@ -13,10 +13,8 @@
 | `fieldTypes` | `FieldTypeRegistry` | `{}` | 当前实例的业务字段类型注册表 |
 | `hintOptions` | `ConfigFormHintOptions` | 见下文 | 全局提示策略 |
 | `navigationOptions` | `ConfigFormNavigationOptions` | 省略 | Enter 键字段导航；省略时不接管键盘，详见[键盘导航](/features/keyboard-navigation) |
-| `disabled` | `boolean` | `false` | 禁用全部字段 |
-| `readonly` | `boolean` | `false` | 全局只读；同时禁用 Element Form 交互 |
 
-`formProps.disabled` 不建议使用。全局状态应使用根级 `disabled` 或 `readonly`，它们会同时下沉到字段组件。
+ConfigForm 不提供根级 `disabled` / `readonly` Props。全局禁用通过 `formProps: { disabled: true }` 透传，由 Element Form 原生下沉到全部字段组件；详情态的展示语义（`type: 'text'`、字段级动态 `readonly` 等）由业务层组合，见[详情与只读模式示例](/examples/readonly-detail)。
 
 ```vue
 <ConfigForm
