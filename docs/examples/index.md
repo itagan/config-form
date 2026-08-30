@@ -14,10 +14,10 @@
 在仓库根目录分别启动两个站点：
 
 ```bash
-pnpm dev       # Playground：http://localhost:5173
-pnpm docs:dev  # 文档：http://localhost:5174
+pnpm dev       # Playground，端口 5173
+pnpm docs:dev  # 文档，端口 5174
 ```
 
 文档页面给出可复制的关键代码，Playground 展示完整运行效果。Playground 从 workspace 包入口加载 `@itagan/config-form`，因此也会验证真实的包导出方式。
 
-部署文档时设置 `VITE_PLAYGROUND_URL` 即可让导航和页面内入口指向线上 Playground；未设置时默认使用本地 `http://localhost:5173`。
+同站部署时设置 `VITE_SITE_BASE`（如 GitHub Pages 的 `/config-form/`），Playground 会随 `pnpm site:build` 并入文档站 `/playground` 子路径，导航和页面内入口自动使用站内地址。如需指向独立部署的线上 Playground，设置 `VITE_PLAYGROUND_URL`；未设置时默认使用本地开发端口。

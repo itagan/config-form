@@ -15,13 +15,20 @@
     "build": "run-s build:package build:playground docs:build",
     "build:package": "pnpm --filter @itagan/config-form build",
     "build:playground": "pnpm --filter configform-playground build",
+    "build:playground:site": "pnpm --filter configform-playground build:site",
+    "site:build": "VITE_SITE_BASE=/ run-s site:build:base",
+    "site:build:base": "run-s docs:build build:playground:site",
+    "site:build:github": "VITE_SITE_BASE=/config-form/ run-s site:build:base",
+    "site:check": "node scripts/check-site-build.mjs",
+    "site:check:github": "VITE_SITE_BASE=/config-form/ node scripts/check-site-build.mjs",
+    "site:preview": "pnpm docs:preview",
     "test": "pnpm --filter @itagan/config-form test",
     "test:coverage": "pnpm --filter @itagan/config-form test:coverage",
     "lint": "eslint --ext .ts,.vue packages/config-form/src packages/config-form-min-peer/src playground/src",
     "type-check": "pnpm -r type-check",
     "compat:check": "pnpm --filter config-form-min-peer-check check",
     "pack:check": "node scripts/check-package.mjs",
-    "release:check": "run-s lint test:coverage type-check build:package compat:check build:playground docs:build pack:check"
+    "release:check": "run-s lint test:coverage type-check build:package compat:check site:build site:check pack:check"
   },
   "devDependencies": {
     "@types/node": "^16.11.45",
