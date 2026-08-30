@@ -15,6 +15,9 @@ const playgroundUrl = process.env.VITE_PLAYGROUND_URL || localPlaygroundUrl
 const playgroundSiteUrl = isEmbeddedPlayground ? '/playground/' : playgroundUrl
 // PlaygroundLink 组件在构建期取最终地址，嵌入式构建不携带 localhost 兜底字符串。
 const clientPlaygroundUrl = isEmbeddedPlayground ? `${siteBase}playground/` : playgroundUrl
+// markdown 里的本地 Playground 链接在构建期改写为最终地址（源链接自带的尾斜杠保留），
+// 避免 localhost 残留与路由拦截。
+const markdownPlaygroundUrl = isEmbeddedPlayground ? `${siteBase}playground` : playgroundUrl
 const playgroundPathPattern = isEmbeddedPlayground ? /^\/playground(?:\/|$)/ : /^$/
 
 export default defineConfig({
@@ -33,6 +36,29 @@ export default defineConfig({
     /^http:\/\/localhost:517[34](?:\/|$)/,
     playgroundPathPattern
   ],
+  markdown: {
+    config(md) {
+      const defaultLinkOpen = md.renderer.rules.link_open
+
+      md.renderer.rules.link_open = (tokens, index, options, env, self) => {
+        const hrefIndex = tokens[index].attrIndex('href')
+        if (hrefIndex >= 0) {
+          const href = tokens[index].attrs?.[hrefIndex]?.[1]
+          if (href?.startsWith(localPlaygroundUrl)) {
+            tokens[index].attrSet(
+              'href',
+              `${markdownPlaygroundUrl}${href.slice(localPlaygroundUrl.length)}`
+            )
+            if (isEmbeddedPlayground) tokens[index].attrSet('target', '_self')
+          }
+        }
+
+        return defaultLinkOpen
+          ? defaultLinkOpen(tokens, index, options, env, self)
+          : self.renderToken(tokens, index, options)
+      }
+    }
+  },
   themeConfig: {
     nav: [
       { text: '指南', link: '/guide/quick-start' },
@@ -52,7 +78,8 @@ export default defineConfig({
           { text: '快速开始', link: '/guide/quick-start' },
           { text: '配置总览', link: '/guide/configuration' },
           { text: '动态配置', link: '/guide/dynamic-configuration' },
-          { text: '开发与质量检查', link: '/guide/development' }
+          { text: '开发与质量检查', link: '/guide/development' },
+          { text: '排错指南', link: '/guide/troubleshooting' }
         ]
       },
       {
@@ -70,6 +97,11 @@ export default defineConfig({
       {
         text: '功能',
         items: [
+          { text: '动态字段与显隐', link: '/features/dynamic-fields' },
+          { text: '校验与聚焦', link: '/features/validation-and-focus' },
+          { text: '自定义组件接入', link: '/features/custom-components' },
+          { text: '复合字段映射', link: '/features/composite-binding' },
+          { text: '布局与 Slot', link: '/features/layout-and-slots' },
           { text: '键盘导航', link: '/features/keyboard-navigation' },
           { text: 'Tooltip 提示单例', link: '/features/hint-tooltip' }
         ]
@@ -80,14 +112,20 @@ export default defineConfig({
           { text: '示例索引', link: '/examples/' },
           { text: '基础、校验与联动', link: '/examples/basic-form' },
           { text: '选项字段映射', link: '/examples/options-mapping' },
+          { text: '动态字段与增删', link: '/examples/dynamic-form' },
           { text: '扩展、Slot 与复合字段', link: '/examples/extensions' },
-          { text: '详情与只读模式', link: '/examples/readonly-detail' }
+          { text: 'JSON Schema 驱动', link: '/examples/schema-driven' },
+          { text: '详情与只读模式', link: '/examples/readonly-detail' },
+          { text: '校验聚焦与键盘导航', link: '/examples/interaction-validation' },
+          { text: '提示与 Tooltip 单例', link: '/examples/hint-modes' }
         ]
       },
       {
         text: '架构',
         items: [
-          { text: '受控数据流', link: '/architecture/controlled-data-flow' }
+          { text: '架构总览', link: '/architecture/overview' },
+          { text: '受控数据流', link: '/architecture/controlled-data-flow' },
+          { text: '扩展模型', link: '/architecture/extension-model' }
         ]
       }
     ],
