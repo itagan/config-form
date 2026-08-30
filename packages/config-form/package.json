@@ -16,14 +16,30 @@
   },
   "files": ["dist", "README.md", "LICENSE"],
   "sideEffects": ["*.css", "**/*.css"],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "author": "itagan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itagan/config-form.git",
+    "directory": "packages/config-form"
+  },
+  "homepage": "https://github.com/itagan/config-form#readme",
+  "bugs": {
+    "url": "https://github.com/itagan/config-form/issues"
+  },
   "scripts": {
     "build": "run-s build:lib build:types",
     "build:lib": "vite build",
     "build:types": "tsc -p tsconfig.build.json",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:performance": "CONFIG_FORM_BENCHMARK=1 vitest run src/__tests__/ConfigForm.performance.test.ts --reporter=verbose",
     "type-check": "vue-tsc -p tsconfig.json --noEmit",
-    "prepack": "pnpm build"
+    "prepack": "pnpm build",
+    "prepublishOnly": "pnpm --workspace-root publish:check"
   },
   "peerDependencies": {
     "element-ui": "^2.4.9",

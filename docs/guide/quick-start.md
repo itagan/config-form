@@ -6,8 +6,11 @@
 - Element UI `>=2.4.9 <3.0.0`
 
 ```bash
+# 当前尚未发布到 npm；此命令仅表示正式发布后的安装方式
 pnpm add @itagan/config-form
 ```
+
+仓库开发和联调阶段请使用 workspace alias 或 Git 依赖，不要假设 npm Registry 已存在该包。
 
 ```ts
 import ConfigForm, { defineFormItems } from '@itagan/config-form'

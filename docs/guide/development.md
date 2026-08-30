@@ -7,12 +7,16 @@ pnpm dev              # Vue 2 Playground，端口 5173
 pnpm docs:dev         # VitePress，端口 5174
 pnpm lint
 pnpm test:coverage
+pnpm test:performance
 pnpm type-check
 pnpm compat:check
+pnpm docs:check
 pnpm release:check
 ```
 
-`release:check` 会执行 lint、覆盖率、类型、组件构建、最低 peer、Playground、文档和发布包入口检查。它不会创建提交、tag 或发布 npm 包。
+`release:check` 会执行发布元数据、lint、覆盖率、类型、组件构建、最低 peer、文档语义、Playground、站点和发布包入口检查。它不会创建提交、tag 或发布 npm 包。
+
+`publish:check` 在 `release:check` 之后额外要求 Changelog 不再包含 `Unreleased` 内容；包的 `prepublishOnly` 会调用它，从而阻止未分配新版本的变更被误发布。本仓库日常开发和合并只运行 `release:check`。
 
 ## 兼容环境
 
