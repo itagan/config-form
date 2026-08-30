@@ -1,10 +1,13 @@
 <template>
   <section class="demo-page">
-    <h1>详情与只读模式</h1>
-    <p>
-      全局禁用通过 formProps.disabled 透传给 el-form，由 Element 原生下沉到全部字段组件；
-      text 类型用于纯展示，部分锁定用字段级 readonly 动态配置。
-    </p>
+    <header>
+      <router-link class="back-link" to="/">← 返回</router-link>
+      <h1>详情与只读模式</h1>
+      <p>
+        全局禁用通过 formProps.disabled 透传给 el-form，由 Element 原生下沉到全部字段组件；
+        text 类型用于纯展示，部分锁定用字段级 readonly 动态配置。
+      </p>
+    </header>
     <el-switch v-model="disabled" active-text="详情态" inactive-text="编辑" class="mode-switch" />
     <div class="demo-card">
       <ConfigForm v-model="model" :items="items" :form-props="formProps" :hint-options="{ mode: 'title', field: true }" />

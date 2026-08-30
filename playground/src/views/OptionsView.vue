@@ -1,7 +1,10 @@
 <template>
   <section class="demo-page">
-    <h1>选项与字段映射</h1>
-    <p>Select、Radio 和 Checkbox 使用同一套 options/optionProps 配置。</p>
+    <header>
+      <router-link class="back-link" to="/">← 返回</router-link>
+      <h1>选项与字段映射</h1>
+      <p>Select、Radio 和 Checkbox 使用同一套 options/optionProps 配置。</p>
+    </header>
     <div class="demo-card">
       <ConfigForm v-model="model" :items="items" :form-props="{ labelWidth: '110px' }" />
     </div>

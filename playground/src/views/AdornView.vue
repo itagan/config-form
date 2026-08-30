@@ -1,10 +1,13 @@
 <template>
   <section class="demo-page">
-    <h1>字段左右插槽（评估）</h1>
-    <p>
-      leftSlot / rightSlot 与主内容同行：宽度由 flex 分配，主内容占据剩余空间；
-      Tooltip 锚点仍指向输入框，focusField 不会被装饰内容抢焦点。
-    </p>
+    <header>
+      <router-link class="back-link" to="/">← 返回</router-link>
+      <h1>字段左右插槽（评估）</h1>
+      <p>
+        leftSlot / rightSlot 与主内容同行：宽度由 flex 分配，主内容占据剩余空间；
+        Tooltip 锚点仍指向输入框，focusField 不会被装饰内容抢焦点。
+      </p>
+    </header>
     <div class="demo-card">
       <ConfigForm
         ref="formRef"

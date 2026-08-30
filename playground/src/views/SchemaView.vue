@@ -1,10 +1,13 @@
 <template>
   <section class="demo-page">
-    <h1>JSON Schema 驱动</h1>
-    <p>
-      items 来自可序列化 JSON（模拟远程下发）：内置 type 直接渲染，组件目标由客户端注册表在运行时绑定；
-      labelSlot / errorSlot 演示自定义标签与错误渲染。
-    </p>
+    <header>
+      <router-link class="back-link" to="/">← 返回</router-link>
+      <h1>JSON Schema 驱动</h1>
+      <p>
+        items 来自可序列化 JSON（模拟远程下发）：内置 type 直接渲染，组件目标由客户端注册表在运行时绑定；
+        labelSlot / errorSlot 演示自定义标签与错误渲染。
+      </p>
+    </header>
     <div class="controls">
       <span>切换下发的 Schema：</span>
       <el-radio-group v-model="schemaName" size="small">

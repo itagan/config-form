@@ -1,9 +1,12 @@
 <template>
   <section class="demo-page">
-    <h1>校验聚焦与键盘导航</h1>
-    <p>
-      长表单中直接按 Enter 跳到下一个字段（Shift+Enter 返回）；提交失败时自动滚动并聚焦第一个报错字段；也可以用按钮程序化跳转。
-    </p>
+    <header>
+      <router-link class="back-link" to="/">← 返回</router-link>
+      <h1>校验聚焦与键盘导航</h1>
+      <p>
+        长表单中直接按 Enter 跳到下一个字段（Shift+Enter 返回）；提交失败时自动滚动并聚焦第一个报错字段；也可以用按钮程序化跳转。
+      </p>
+    </header>
     <div class="demo-card">
       <ConfigForm
         ref="formRef"

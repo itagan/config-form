@@ -74,10 +74,10 @@ if (fs.existsSync(path.join(playgroundDist, 'index.html'))) {
 
 const playgroundAssets = path.join(playgroundDist, 'assets')
 if (fs.existsSync(playgroundAssets)) {
-  // esbuild 会把非 ASCII 文本转义成 \uXXXX，这里用稳定的 docs-link 类名定位入口脚本。
+  // esbuild 会把非 ASCII 文本转义成 \uXXXX，这里用稳定的 docs-site-link 类名定位入口脚本。
   const docsLinkBundle = fs.readdirSync(playgroundAssets).find(file => {
     if (!/\.js$/.test(file)) return false
-    return fs.readFileSync(path.join(playgroundAssets, file), 'utf8').includes('docs-link')
+    return fs.readFileSync(path.join(playgroundAssets, file), 'utf8').includes('docs-site-link')
   })
   if (!docsLinkBundle) {
     errors.push('Playground 缺少返回文档入口的现代浏览器脚本。')

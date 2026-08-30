@@ -6,7 +6,7 @@
 
 | 示例 | 核心能力 | Playground |
 | --- | --- | --- |
-| [基础、校验与联动](/examples/basic-form) | 栅格、规则、提交、重置、显隐、事件 | <PlaygroundLink route="/">打开</PlaygroundLink> |
+| [基础、校验与联动](/examples/basic-form) | 栅格、规则、提交、重置、显隐、事件 | <PlaygroundLink route="/basic-form">打开</PlaygroundLink> |
 | [选项字段映射](/examples/options-mapping) | Select、Radio、Checkbox、optionProps | <PlaygroundLink route="/options">打开</PlaygroundLink> |
 
 ## 进阶

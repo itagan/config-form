@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 import BasicView from '../views/BasicView.vue'
 import DynamicView from '../views/DynamicView.vue'
 import SchemaView from '../views/SchemaView.vue'
@@ -15,7 +16,8 @@ Vue.use(VueRouter)
 export default new VueRouter({
   mode: 'hash',
   routes: [
-    { path: '/', component: BasicView },
+    { path: '/', component: HomeView },
+    { path: '/basic-form', component: BasicView },
     { path: '/options', component: OptionsView },
     { path: '/dynamic', component: DynamicView },
     { path: '/schema', component: SchemaView },
