@@ -25,7 +25,12 @@
     <p class="demo-tip">
       Try：在任意输入框按 Enter / Shift+Enter 连续录入；清空姓名或手机号后点击“校验并提交”。
     </p>
-    <pre class="model-preview">{{ formModel }}</pre>
+    <DemoCollapsiblePanel class="demo-card" title="字段配置">
+      <pre>{{ configCode }}</pre>
+    </DemoCollapsiblePanel>
+    <DemoCollapsiblePanel class="demo-card" title="当前数据">
+      <pre>{{ JSON.stringify(formModel, null, 2) }}</pre>
+    </DemoCollapsiblePanel>
   </section>
 </template>
 
@@ -33,9 +38,11 @@
 import { defineComponent, ref } from 'vue'
 import { Message } from 'element-ui'
 import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
+import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
 export default defineComponent({
-  components: { ConfigForm },
+  components: { ConfigForm, DemoCollapsiblePanel },
   setup() {
     const formRef = ref<any>(null)
     const formModel = ref({
@@ -126,7 +133,8 @@ export default defineComponent({
       formRef.value?.resetFields()
     }
 
-    return { formRef, formModel, items, submit, jumpToRemark, reset }
+        const configCode = formatConfigFormConfig(items)
+return { formRef, formModel, items, configCode, submit, jumpToRemark, reset }
   }
 })
 </script>

@@ -30,7 +30,12 @@
     <p v-if="lastChange" class="demo-tip">
       最近变化：{{ lastChange.fieldKey }}（{{ lastChange.previousValue }} → {{ lastChange.value }}）
     </p>
-    <pre class="model-preview">{{ formModel }}</pre>
+    <DemoCollapsiblePanel class="demo-card" title="字段配置">
+      <pre>{{ configCode }}</pre>
+    </DemoCollapsiblePanel>
+    <DemoCollapsiblePanel class="demo-card" title="当前数据">
+      <pre>{{ JSON.stringify(formModel, null, 2) }}</pre>
+    </DemoCollapsiblePanel>
   </section>
 </template>
 
@@ -39,6 +44,8 @@ import { computed, defineComponent, ref } from 'vue'
 import { Message } from 'element-ui'
 import { createConfigForm, defineFormItems } from '@itagan/config-form'
 import type { FormItemConfig } from '@itagan/config-form'
+import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
+import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
 interface TaskModel {
   title: string
@@ -52,7 +59,7 @@ interface TaskModel {
 const TaskConfigForm = createConfigForm<TaskModel>()
 
 export default defineComponent({
-  components: { TaskConfigForm },
+  components: { TaskConfigForm, DemoCollapsiblePanel },
   setup() {
     const formRef = ref<any>(null)
     const formModel = ref<TaskModel>({
@@ -143,7 +150,8 @@ export default defineComponent({
       formRef.value?.resetFields()
     }
 
-    return { formRef, formModel, items, lastChange, addTag, removeTag, fillDefaults, reset }
+        const configCode = computed(() => formatConfigFormConfig(items.value))
+return { formRef, formModel, items, lastChange, configCode, addTag, removeTag, fillDefaults, reset }
   }
 })
 </script>

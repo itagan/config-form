@@ -9,15 +9,22 @@
     <div class="demo-card">
       <ConfigForm v-model="model" :items="items" :form-props="formProps" :hint-options="{ mode: 'title', field: true }" />
     </div>
-    <pre class="model-preview">{{ model }}</pre>
+    <DemoCollapsiblePanel class="demo-card" title="字段配置">
+      <pre>{{ configCode }}</pre>
+    </DemoCollapsiblePanel>
+    <DemoCollapsiblePanel class="demo-card" title="当前数据">
+      <pre>{{ JSON.stringify(model, null, 2) }}</pre>
+    </DemoCollapsiblePanel>
   </section>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
+import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 export default defineComponent({
-  components: { ConfigForm },
+  components: { ConfigForm, DemoCollapsiblePanel },
   setup() {
     const disabled = ref(true)
     const model = ref({ code: 'CF-2026-001', owner: 'Ada', status: 'enabled', remark: '季度例检记录' })
@@ -34,7 +41,8 @@ export default defineComponent({
         formItemProps: { label: '备注' }
       }
     ])
-    return { disabled, formProps, model, items }
+        const configCode = formatConfigFormConfig(items)
+return { disabled, formProps, model, items, configCode }
   }
 })
 </script>

@@ -24,6 +24,12 @@
         :hint-options="hintOptions"
       />
     </div>
+    <DemoCollapsiblePanel class="demo-card" title="字段配置">
+      <pre>{{ configCode }}</pre>
+    </DemoCollapsiblePanel>
+    <DemoCollapsiblePanel class="demo-card" title="当前数据">
+      <pre>{{ JSON.stringify(formModel, null, 2) }}</pre>
+    </DemoCollapsiblePanel>
     <p class="demo-tip">
       Try：切到 tooltip 后悬停标签区域和输入框对比触发范围；用 Tab 进入字段体验键盘可达性（aria-describedby）。
     </p>
@@ -33,9 +39,11 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
+import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
 export default defineComponent({
-  components: { ConfigForm },
+  components: { ConfigForm, DemoCollapsiblePanel },
   setup() {
     const mode = ref<'title' | 'tooltip'>('tooltip')
     const hintTrigger = ref<'item' | 'content'>('item')
@@ -64,7 +72,8 @@ export default defineComponent({
       hintTrigger: mode.value === 'tooltip' ? hintTrigger.value : undefined
     }))
 
-    return { mode, hintTrigger, formModel, items, hintOptions }
+        const configCode = formatConfigFormConfig(items)
+    return { mode, hintTrigger, formModel, items, hintOptions, configCode }
   }
 })
 </script>

@@ -28,13 +28,20 @@
       </ConfigForm>
     </div>
     <p class="demo-tip">Try：反馈表里不给评分直接看自定义错误文案；切换 Schema 观察字段与 model 的整体替换。</p>
-    <pre class="model-preview">{{ formModel }}</pre>
+    <DemoCollapsiblePanel class="demo-card" title="字段配置">
+      <pre>{{ configCode }}</pre>
+    </DemoCollapsiblePanel>
+    <DemoCollapsiblePanel class="demo-card" title="当前数据">
+      <pre>{{ JSON.stringify(formModel, null, 2) }}</pre>
+    </DemoCollapsiblePanel>
   </section>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from 'vue'
 import ConfigForm from '@itagan/config-form'
+import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
+import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 import MoneyInput from '../components/MoneyInput.vue'
 
 // 远程 JSON 不包含任何函数：组件目标用 meta.component 声明，由客户端注册表绑定。
@@ -105,7 +112,7 @@ const schemaDefaults: Record<string, Record<string, any>> = {
 const componentRegistry: Record<string, unknown> = { money: MoneyInput }
 
 export default defineComponent({
-  components: { ConfigForm },
+  components: { ConfigForm, DemoCollapsiblePanel },
   setup() {
     const formRef = ref<any>(null)
     const schemaName = ref<'feedback' | 'worklog'>('feedback')
@@ -131,7 +138,8 @@ export default defineComponent({
       formRef.value?.clearValidate()
     })
 
-    return { formRef, schemaName, formModel, items }
+        const configCode = computed(() => formatConfigFormConfig(items.value))
+return { formRef, schemaName, formModel, items, configCode }
   }
 })
 </script>

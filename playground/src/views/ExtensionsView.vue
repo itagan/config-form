@@ -9,18 +9,25 @@
         </template>
       </ConfigForm>
     </div>
-    <pre class="model-preview">{{ model }}</pre>
+    <DemoCollapsiblePanel class="demo-card" title="字段配置">
+      <pre>{{ configCode }}</pre>
+    </DemoCollapsiblePanel>
+    <DemoCollapsiblePanel class="demo-card" title="当前数据">
+      <pre>{{ JSON.stringify(model, null, 2) }}</pre>
+    </DemoCollapsiblePanel>
   </section>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import ConfigForm, { defineConfigFormType, defineConfigFormTypes, defineFormItems } from '@itagan/config-form'
+import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
+import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 import MoneyInput from '../components/MoneyInput.vue'
 import TimeRangeEditor from '../components/TimeRangeEditor.vue'
 
 export default defineComponent({
-  components: { ConfigForm },
+  components: { ConfigForm, DemoCollapsiblePanel },
   setup() {
     const model = ref({ project: 'ConfigForm', amount: 1200, start: '09:00', end: '18:00', summary: '' })
     const money = defineConfigFormType()<{ currency: string }>({ is: MoneyInput, props: { currency: 'CNY' } })
@@ -35,7 +42,8 @@ export default defineComponent({
       },
       { fieldKey: 'summary', type: 'slot', colProps: { span: 24 }, formItemProps: { label: '摘要' }, component: { slot: 'summary' } }
     ])
-    return { model, items, fieldTypes }
+        const configCode = formatConfigFormConfig(items)
+return { model, items, fieldTypes, configCode }
   }
 })
 </script>

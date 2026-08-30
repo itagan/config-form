@@ -42,7 +42,12 @@
     <p class="demo-tip">
       Try：悬停"项目金额"输入框，Tooltip 应指向输入框而非"万元"装饰；点"聚焦关键词"，焦点应落在输入框而非左侧"检索"按钮。
     </p>
-    <pre class="model-preview">{{ formModel }}</pre>
+    <DemoCollapsiblePanel class="demo-card" title="字段配置">
+      <pre>{{ configCode }}</pre>
+    </DemoCollapsiblePanel>
+    <DemoCollapsiblePanel class="demo-card" title="当前数据">
+      <pre>{{ JSON.stringify(formModel, null, 2) }}</pre>
+    </DemoCollapsiblePanel>
   </section>
 </template>
 
@@ -50,9 +55,11 @@
 import { defineComponent, ref } from 'vue'
 import { Message } from 'element-ui'
 import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
+import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
 export default defineComponent({
-  components: { ConfigForm },
+  components: { ConfigForm, DemoCollapsiblePanel },
   setup() {
     const formRef = ref<any>(null)
     const formModel = ref({
@@ -117,7 +124,8 @@ export default defineComponent({
       formRef.value?.resetFields()
     }
 
-    return { formRef, formModel, items, search, explain, jumpToKeyword, reset }
+        const configCode = formatConfigFormConfig(items)
+    return { formRef, formModel, items, configCode, search, explain, jumpToKeyword, reset }
   }
 })
 </script>
