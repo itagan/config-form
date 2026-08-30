@@ -243,9 +243,9 @@ export interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
   errorSlot?: string
   /** 是否渲染当前字段；返回 false 时字段卸载且不参与校验。 */
   visible?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
-  /** 是否禁用当前字段；与根级 disabled 取并集。 */
+  /** 是否禁用当前字段的组件。 */
   disabled?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
-  /** 是否只读当前字段；与根级 readonly 取并集。 */
+  /** 是否只读当前字段的组件。 */
   readonly?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
   /** 字段自动提示内容；`false` 单独关闭，未声明时回退 hintOptions.field。 */
   hint?: DynamicValue<ConfigFormHintValue, ConfigFormFieldRenderContext<TModel>>
@@ -398,7 +398,7 @@ export interface ConfigFormProps<
   model: TModel
   /** 字段配置数组，按数组顺序渲染。 */
   items?: FormItemConfig<TModel, TFieldTypes>[]
-  /** 透传给 el-form；model 与 disabled 由 ConfigForm 管理。 */
+  /** 透传给 el-form；model 由 ConfigForm 管理。全局禁用通过 `disabled` 透传，由 Element Form 原生下沉。 */
   formProps?: ComponentProps & { model?: never }
   /** 透传给唯一的 el-row；默认 `{ gutter: 16 }`。 */
   rowProps?: ComponentProps
@@ -408,10 +408,6 @@ export interface ConfigFormProps<
   hintOptions?: ConfigFormHintOptions<TModel>
   /** Enter 键字段导航；省略时不接管键盘。 */
   navigationOptions?: ConfigFormNavigationOptions
-  /** 禁用全部字段并下沉到字段组件。 */
-  disabled?: boolean
-  /** 全局只读；同时禁用 Element Form 交互。 */
-  readonly?: boolean
 }
 
 /** ConfigForm 实例暴露的方法集合；通过模板 Ref 获取。 */

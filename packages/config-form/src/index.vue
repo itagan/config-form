@@ -4,7 +4,6 @@
     class="config-form"
     v-bind="formProps"
     :model="model"
-    :disabled="disabled || readonly"
     data-config-form-root=""
     @validate="handleValidate"
     @keydown.native="handleNavigationKeydown"
@@ -119,17 +118,13 @@ const props = withDefaults(defineProps<{
   fieldTypes?: FieldTypeRegistry
   hintOptions?: ConfigFormHintOptions
   navigationOptions?: ConfigFormNavigationOptions
-  disabled?: boolean
-  readonly?: boolean
 }>(), {
   model: () => ({}),
   items: () => [],
   formProps: () => ({}),
   rowProps: () => ({ gutter: 16 }),
   fieldTypes: () => ({}),
-  hintOptions: () => ({ mode: 'title', field: false, tooltipProps: {} }),
-  disabled: false,
-  readonly: false
+  hintOptions: () => ({ mode: 'title', field: false, tooltipProps: {} })
 })
 
 const emit = defineEmits<{
@@ -261,8 +256,9 @@ function getInteractionProps(item: FormItemConfig) {
   const context = getRenderContext(item)
   const itemDisabled = resolveDynamic(item.disabled, context) === true
   const itemReadonly = resolveDynamic(item.readonly, context) === true
-  if (!props.disabled && !props.readonly && !itemDisabled && !itemReadonly) return {}
-  return { disabled: true, readonly: props.readonly || itemReadonly }
+  if (!itemDisabled && !itemReadonly) return {}
+  // 只读同时下沉 disabled，保证 el-select 等没有原生 readonly 的组件也被锁定。
+  return { disabled: true, readonly: itemReadonly }
 }
 
 function getHint(item: FormItemConfig): string | null {
