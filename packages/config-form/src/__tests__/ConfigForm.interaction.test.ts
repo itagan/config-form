@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import ConfigForm from '../index.vue'
+import type { ConfigFormFieldBindingContext } from '../types'
 
 const ConfigFormForTest = ConfigForm as any
 const wrappers: Array<ReturnType<typeof mount>> = []
@@ -15,12 +16,12 @@ afterEach(() => {
   wrappers.splice(0).forEach(wrapper => wrapper.destroy())
 })
 
-describe('ConfigForm interaction strategies', () => {
-  it('uses native readonly for compatible built-in fields', () => {
+describe('ConfigForm Element prop passthrough', () => {
+  it('uses component props for field interaction state', () => {
     const wrapper = mountForm({
       propsData: {
         model: { name: 'Ada' },
-        items: [{ fieldKey: 'name', type: 'input', readonly: true }]
+        items: [{ fieldKey: 'name', type: 'input', component: { props: { readonly: true } } }]
       }
     })
 
@@ -29,55 +30,51 @@ describe('ConfigForm interaction strategies', () => {
     expect(input.props('disabled')).toBe(false)
   })
 
-  it('falls back to disabled for controls without native readonly', () => {
+  it('uses el-form disabled for native state propagation', () => {
     const wrapper = mountForm({
       propsData: {
         model: { status: 'enabled' },
+        formProps: { disabled: true },
         items: [{
           fieldKey: 'status',
           type: 'select',
-          readonly: true,
           component: { options: [{ label: '启用', value: 'enabled' }] }
         }]
       }
     })
 
-    expect(wrapper.findComponent({ name: 'ElSelect' }).props('disabled')).toBe(true)
+    expect(wrapper.findComponent({ name: 'ElForm' }).props('disabled')).toBe(true)
   })
 
-  it('allows callers to override the readonly strategy', () => {
+  it('resolves dynamic component props with bindingValue', () => {
+    const BindingProbe = {
+      name: 'BindingProbe',
+      props: ['value', 'title'],
+      render(createElement: any) { return createElement('span') }
+    }
     const wrapper = mountForm({
       propsData: {
-        model: { name: 'Ada', status: 'enabled' },
-        items: [
-          {
-            fieldKey: 'name',
-            type: 'input',
-            readonly: true,
-            readonlyStrategy: 'disabled'
-          },
-          {
-            fieldKey: 'status',
-            type: 'select',
-            readonly: true,
-            readonlyStrategy: 'native'
+        model: { amount: 12, currency: 'CNY' },
+        items: [{
+          fieldKey: 'amount',
+          type: 'component',
+          binding: { map: [{ fieldPath: 'amount', valuePath: 'amount' }, { fieldPath: 'currency', valuePath: 'currency' }] },
+          component: {
+            is: BindingProbe,
+            props: (context: ConfigFormFieldBindingContext) => ({ title: context.bindingValue.currency })
           }
-        ]
+        }]
       }
     })
 
-    expect(wrapper.findComponent({ name: 'ElInput' }).props('disabled')).toBe(true)
-    expect(wrapper.findComponent({ name: 'ElSelect' }).props('disabled')).toBe(false)
-    expect(wrapper.findComponent({ name: 'ElSelect' }).attributes('readonly')).toBe('readonly')
+    expect(wrapper.findComponent(BindingProbe).props('title')).toBe('CNY')
   })
 
-  it('uses cloneModel when resetting complex business models', async () => {
+  it('resets from the internal model snapshot', async () => {
     const source = { profile: { name: 'Ada' } }
-    const cloneModel = (model: typeof source) => ({ profile: { name: model.profile.name } })
     const wrapper = mountForm({
       propsData: {
         model: source,
-        cloneModel,
         items: [{ fieldKey: 'profile.name', type: 'input' }]
       }
     })

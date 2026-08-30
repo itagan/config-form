@@ -41,7 +41,7 @@ const fieldTypes = defineConfigFormTypes()({ money })
 
 ### 类型收窄
 
-`defineConfigFormType` 的返回类型携带品牌协议（仅存在于类型系统）。把注册表传入 `createConfigForm<TModel>()` 或 `defineFormItems<TModel, TFieldTypes>` 后：
+`defineConfigFormType` 的返回类型携带品牌协议（仅存在于类型系统）。把注册表传入 `createConfigForm<TModel>()` 或 `defineConfigFormItems<TModel, TFieldTypes>` 后：
 
 - `type: 'money'` 成为合法的联合分支，其 `component.props` 按注册的 Props 协议收窄。
 - 未注册的 type 名在类型检查阶段直接报错，而不是等到运行时警告。

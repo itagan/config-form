@@ -8,7 +8,6 @@
     @validate="handleValidate"
     @keydown.native="handleNavigationKeydown"
   >
-    <slot name="prepend" :model="model" />
     <el-row v-bind="rowProps">
       <ConfigFormItem
         v-for="item in items"
@@ -20,7 +19,7 @@
         :update-api="controlledUpdate"
       />
     </el-row>
-    <slot name="append" :model="model" />
+    <slot :model="model" />
     <ConfigFormHintTooltip
       v-if="hintTooltipEnabled"
       :container="hintContainer"
@@ -59,7 +58,6 @@ import type {
 import { useConfigFormFieldLocator } from './composables/useConfigFormFieldLocator'
 import { useConfigFormKeyboardNavigation } from './composables/useConfigFormKeyboardNavigation'
 import { useControlledFormUpdate } from './composables/useControlledFormUpdate'
-import { getValueByPath } from './utils/path'
 import { cloneFormModel } from './utils/modelSnapshot'
 import { collectSchemaDiagnostics } from './utils/schemaDiagnostics'
 
@@ -71,7 +69,6 @@ const props = withDefaults(defineProps<{
   fieldTypes?: FieldTypeRegistry
   hintOptions?: ConfigFormHintOptions
   navigationOptions?: ConfigFormNavigationOptions
-  cloneModel?: (model: Readonly<FormModel>) => FormModel
 }>(), {
   model: () => ({}),
   items: () => [],
@@ -104,24 +101,16 @@ if (import.meta.env.DEV) {
 }
 
 // 与 Element Form 一致，以组件创建时的 model 作为 resetFields 初始值。
-const cloneModel = (model: Readonly<FormModel>) => (
-  props.cloneModel ? props.cloneModel(model) : cloneFormModel(model)
-)
-const initialModel = cloneModel(props.model)
-
-function resolveItem(fieldKey: string) {
-  return allItems.value.find(item => item.fieldKey === fieldKey)
-}
+const initialModel = cloneFormModel(props.model)
 
 const controlledUpdate = useControlledFormUpdate({
   getModel: () => props.model,
-  resolveItem,
   emitUpdate: nextModel => emit('update:model', nextModel),
   emitFieldChange: payload => emit('field-change', payload)
 })
 
 const fieldLocator = useConfigFormFieldLocator({
-  getContainer: () => formRef.value?.$el ?? null,
+  getContainer: () => formRef.value?.$el as HTMLElement | null,
   getForm: () => formRef.value
 })
 
@@ -135,7 +124,7 @@ const hintTooltipEnabled = computed(() => props.hintOptions.mode === 'tooltip')
 const hintContainer = shallowRef<HTMLElement | null>(null)
 
 onMounted(() => {
-  hintContainer.value = formRef.value?.$el ?? null
+  hintContainer.value = formRef.value?.$el as HTMLElement | null
 })
 
 function handleValidate(prop: string, valid: boolean, message: string | null) {
@@ -161,16 +150,10 @@ defineExpose({
   validate,
   validateField,
   resetFields: () => {
-    controlledUpdate.replaceModel(cloneModel(initialModel))
+    controlledUpdate.replaceModel(cloneFormModel(initialModel))
     nextTick(() => formRef.value?.clearValidate?.())
   },
   clearValidate: (fieldProps?: string | string[]) => formRef.value?.clearValidate?.(fieldProps),
-  getFieldValue: (fieldKey: string) => getValueByPath(controlledUpdate.getCurrentModel(), fieldKey),
-  setFieldValue: (fieldKey: string, value: ConfigFormValue) => (
-    controlledUpdate.setFieldValue(fieldKey, value, resolveItem(fieldKey))
-  ),
-  setFieldsValue: (patch: Record<string, ConfigFormValue>) => controlledUpdate.updateModel(patch),
-  getModel: () => controlledUpdate.getCurrentModel(),
   getFormRef: () => formRef.value,
   focusField: fieldLocator.focusField,
   scrollToFirstError: fieldLocator.scrollToFirstError
@@ -188,20 +171,5 @@ defineExpose({
     min-width: 0;
   }
 
-  :deep(.config-form__field-row) {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-  }
-
-  :deep(.config-form__field-row-side) {
-    flex: 0 0 auto;
-  }
-
-  :deep(.config-form__field-row-main) {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
 }
 </style>

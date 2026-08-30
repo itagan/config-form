@@ -4,7 +4,7 @@ import ConfigFormDefault, {
   createConfigForm,
   defineConfigFormType,
   defineConfigFormTypes,
-  defineFormItems
+  defineConfigFormItems
 } from '../index'
 
 describe('public entry', () => {
@@ -14,7 +14,7 @@ describe('public entry', () => {
   })
 
   it('exports configuration helpers', () => {
-    expect(defineFormItems([])).toEqual([])
+    expect(defineConfigFormItems([])).toEqual([])
     expect(typeof defineConfigFormType).toBe('function')
     expect(typeof defineConfigFormTypes).toBe('function')
   })

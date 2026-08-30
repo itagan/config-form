@@ -2,110 +2,45 @@
 
 ## 上下文层级
 
-动态配置函数收到只读渲染上下文：
+动态布局和 Hint 使用只读 `ConfigFormFieldRenderContext`。注册级与字段级 `component.props` 使用 `ConfigFormFieldBindingContext`，它额外提供已解析的只读 `bindingValue`：
 
 ```ts
-interface ConfigFormFieldRenderContext<TModel> {
-  model: Readonly<TModel>
-  fieldKey: string
-  value: any
-  itemConfig: Readonly<FormItemConfig<TModel>>
+interface ConfigFormFieldBindingContext<TModel> extends ConfigFormFieldRenderContext<TModel> {
+  readonly bindingValue: any
 }
 ```
 
-字段监听器和 Slot 收到完整字段上下文，并增加更新助手：
+监听器和 Slot 使用可写的 `ConfigFormFieldContext`：
 
 ```ts
-interface ConfigFormFieldContext<TModel>
-  extends ConfigFormFieldRenderContext<TModel> {
-  bindingValue: any
+interface ConfigFormFieldContext<TModel> extends ConfigFormFieldBindingContext<TModel> {
   setValue(value: any): void
   setBindingValue(value: any): void
   updateModel(patch: Partial<TModel> & Record<string, any>): void
 }
 ```
 
-| 成员 | 用途 |
-| --- | --- |
-| `value` | `fieldKey` 对应的原始 model 值 |
-| `bindingValue` | 应用 `binding.map` 后传给组件的值；无 binding 时等于 `value` |
-| `setValue` | 仅更新 `fieldKey` |
-| `setBindingValue` | 按 binding 拆分写回；无 binding 时等同 `setValue` |
-| `updateModel` | 按路径批量更新 model，例如 `{ 'profile.name': 'Ada' }` |
+## 根默认 Slot
 
-连续同步调用更新助手时会基于本轮最新结果合并，不必等待父组件完成回写。
-
-## 根级 Slot
-
-| Slot | 参数 | 位置 |
-| --- | --- | --- |
-| `prepend` | `{ model }` | `el-row` 之前、`el-form` 内部 |
-| `append` | `{ model }` | `el-row` 之后、`el-form` 内部 |
+根默认 Slot 渲染在生成的 `el-row` 之后、`el-form` 内部，适合放操作区，并接收 `{ model }`：
 
 ```vue
 <ConfigForm v-model="model" :items="items">
-  <template #prepend="{ model: currentModel }">
-    <el-alert :title="`正在编辑：${currentModel.name || '未命名'}`" />
-  </template>
-  <template #append>
-    <el-button @click="submit">提交</el-button>
+  <template #default="{ model: currentModel }">
+    <el-button @click="submit(currentModel)">提交</el-button>
   </template>
 </ConfigForm>
 ```
 
 ## 字段 Slot
 
-### 自定义字段
-
-配置 `type: 'slot'` 和 `component.slot`：
-
-```ts
-{
-  fieldKey: 'amount',
-  type: 'slot',
-  component: { slot: 'amountEditor' },
-  formItemProps: { label: '金额' }
-}
-```
+`type: 'slot'` 通过 `component.slot` 指向根组件具名 Slot。其上下文为 `ConfigFormSlotContext`，包含字段完整上下文、`propPath` 和已解析的 `ResolvedComponentConfig`。
 
 ```vue
-<template #amountEditor="{ value, setValue, model, propPath }">
-  <MoneyInput
-    :value="value"
-    :currency="model.currency"
-    @input="setValue"
-  />
+<template #amountEditor="{ bindingValue, setBindingValue, propPath }">
+  <MoneyInput :value="bindingValue" @input="setBindingValue" />
   <small>{{ propPath }}</small>
 </template>
 ```
 
-字段 Slot 在完整字段上下文之外还提供：
-
-- `propPath`：当前 `fieldKey`；
-- `component`：已合并 type 定义、字段配置和交互状态后的 `ResolvedFieldComponent`。
-
-完全自定义 Slot 不会自动应用组件的 disabled/readonly 行为，应根据业务需要从 `itemConfig`、model 或外部状态自行处理。
-
-### Label 与 Error
-
-```ts
-{
-  fieldKey: 'email',
-  type: 'input',
-  labelSlot: 'emailLabel',
-  errorSlot: 'emailError'
-}
-```
-
-```vue
-<template #emailLabel="{ value }">
-  邮箱 <small v-if="value">已填写</small>
-</template>
-
-<template #emailError="{ error, setValue }">
-  <span class="error">{{ error }}</span>
-  <el-button type="text" @click="setValue('')">清空</el-button>
-</template>
-```
-
-label Slot 获得字段上下文与 `propPath`；error Slot另有 `error: string`。
+label Slot 使用 `ConfigFormFormItemSlotContext`；error Slot 使用额外带 `error` 的 `ConfigFormFormItemErrorSlotContext`。所有 Slot 函数可由 `ConfigFormSlots` / `ConfigFormSlotFn` 表达。

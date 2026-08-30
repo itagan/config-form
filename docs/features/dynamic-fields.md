@@ -1,6 +1,6 @@
 # 动态字段与显隐
 
-`visible`、`disabled`、`readonly` 以及组件 Props、选项、布局属性都接受同步函数。函数在每次渲染相关字段时求值，收到同一份字段渲染上下文：
+`visible`、组件 Props、选项和布局属性都接受同步函数。函数在每次渲染相关字段时求值：
 
 ```ts
 interface ConfigFormFieldRenderContext<TModel> {
@@ -18,19 +18,19 @@ interface ConfigFormFieldRenderContext<TModel> {
 ## 显隐与交互状态
 
 ```ts
-const items = defineFormItems<TaskModel>([
+const items = defineConfigFormItems<TaskModel>([
   {
     fieldKey: 'budget',
     type: 'number',
     visible: ({ model }) => model.priority === 'high',
-    disabled: ({ model }) => model.budget <= 0,
-    formItemProps: { label: '预算' }
+    formItemProps: { label: '预算' },
+    component: { props: ({ model }) => ({ disabled: model.budget <= 0 }) }
   },
   {
     fieldKey: 'remark',
     type: 'input',
-    readonly: ({ model }) => model.locked,
-    formItemProps: { label: '备注' }
+    formItemProps: { label: '备注' },
+    component: { props: ({ model }) => ({ readonly: model.locked }) }
   }
 ])
 ```
@@ -38,7 +38,7 @@ const items = defineFormItems<TaskModel>([
 行为约定：
 
 - `visible` 返回 `false` 时字段卸载，**不参与校验**，也不占栅格。
-- `disabled`、`readonly` 只作用于当前字段的组件；整表禁用通过 `formProps: { disabled: true }` 由 Element 原生下沉。
+- 单字段禁用和只读通过 `component.props` 透传；整表禁用通过 `formProps: { disabled: true }` 由 Element 原生下沉。
 - 函数必须同步、无副作用。异步数据应由页面加载后写入 model 或配置，再触发重渲染。
 
 ## 数组与嵌套路径
@@ -56,7 +56,7 @@ const items = defineFormItems<TaskModel>([
 字段增删由业务侧驱动：`items` 本身可以是 computed，随 model 数组长度派生。为每个动态字段提供 `key`，删除中间项时保持其余字段的组件实例身份（焦点、滚动位置、内部状态不丢失）：
 
 ```ts
-const items = computed(() => defineFormItems<TaskModel>([
+const items = computed(() => defineConfigFormItems<TaskModel>([
   ...formModel.value.tags.map((tag, index): FormItemConfig<TaskModel> => ({
     key: `tag-${tag}`,
     fieldKey: `tags.${index}`,
@@ -76,15 +76,15 @@ formModel.value = { ...formModel.value, tags: [...formModel.value.tags, next] }
 
 注意 `key` 的取值：用下标作 key 时删除中间项会导致后续字段 key 全部平移、实例重建；用稳定业务标识（如标签内容、行 ID）作 key 才能保持实例。完整交互见[动态字段与增删示例](/examples/dynamic-form)。
 
-## 批量更新
+## 多字段更新
 
-一次修改多个路径时使用 Ref 的 `setFieldsValue`（或 Slot/监听器上下文中的 `updateModel`），所有写回在同一次受控事务中完成，每个实际变化的路径各触发一次 `field-change`：
+页面逻辑直接不可变替换父组件 model；字段 Slot 或监听器内部可使用 `updateModel`：
 
 ```ts
-formRef.value.setFieldsValue({
-  'owner.name': 'Ada',
-  'owner.phone': '13800000000'
-})
+formModel.value = {
+  ...formModel.value,
+  owner: { ...formModel.value.owner, name: 'Ada', phone: '13800000000' }
+}
 ```
 
 ## 相关文档

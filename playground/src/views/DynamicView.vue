@@ -13,7 +13,7 @@
         :form-props="{ labelWidth: '96px', size: 'small' }"
         @field-change="lastChange = $event"
       >
-        <template #append>
+        <template #default>
           <div class="actions">
             <el-button type="primary" size="small" @click="fillDefaults">一键填充默认值</el-button>
             <el-button size="small" @click="reset">重置</el-button>
@@ -45,7 +45,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import { Message } from 'element-ui'
-import { createConfigForm, defineFormItems } from '@itagan/config-form'
+import { createConfigForm, defineConfigFormItems } from '@itagan/config-form'
 import type { FormItemConfig } from '@itagan/config-form'
 import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
 import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
@@ -77,7 +77,7 @@ export default defineComponent({
     let tagSeq = 0
 
     // items 跟随 tags 派生：key 基于标签内容而非下标，删除中间项时其余字段实例身份不变。
-    const items = computed(() => defineFormItems<TaskModel>([
+    const items = computed(() => defineConfigFormItems<TaskModel>([
       {
         fieldKey: 'title',
         type: 'input',
@@ -108,9 +108,8 @@ export default defineComponent({
         type: 'slider',
         colProps: { span: 12 },
         visible: ({ model }) => model.priority === 'high',
-        disabled: ({ model }) => model.budget <= 0,
         formItemProps: { label: '折扣 (%)' },
-        component: { props: { min: 50, max: 100 } }
+        component: { props: ({ model }) => ({ min: 50, max: 100, disabled: model.budget <= 0 }) }
       },
       ...formModel.value.tags.map((tag, index): FormItemConfig<TaskModel> => ({
         key: `tag-${tag}`,
@@ -139,14 +138,13 @@ export default defineComponent({
       }
     }
 
-    // 一次事务更新多个路径；每个实际变化的路径都会各触发一次 field-change。
     function fillDefaults() {
-      formRef.value?.setFieldsValue({
+      formModel.value = {
+        ...formModel.value,
         title: '季度巡检',
-        'owner.name': 'Ada',
-        'owner.phone': '13800000000'
-      })
-      Message.success('已批量写入 3 个路径')
+        owner: { ...formModel.value.owner, name: 'Ada', phone: '13800000000' }
+      }
+      Message.success('已填充默认值')
     }
 
     function reset() {

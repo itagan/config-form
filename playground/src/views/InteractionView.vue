@@ -16,7 +16,7 @@
         :navigation-options="{ enabled: true }"
         :hint-options="{ mode: 'title' }"
       >
-        <template #append>
+        <template #default>
           <div class="actions">
             <el-button type="primary" size="small" @click="submit">校验并提交</el-button>
             <el-button size="small" @click="jumpToRemark">跳转到备注</el-button>
@@ -40,7 +40,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { Message } from 'element-ui'
-import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import ConfigForm, { defineConfigFormItems } from '@itagan/config-form'
 import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
 import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
@@ -58,7 +58,7 @@ export default defineComponent({
       budget: 0,
       remark: ''
     })
-    const items = defineFormItems([
+    const items = defineConfigFormItems([
       {
         fieldKey: 'name',
         type: 'input',

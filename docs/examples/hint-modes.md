@@ -14,9 +14,15 @@
 
 ```ts
 const hintOptions = computed(() => ({
-  mode: mode.value,
-  hintTrigger: mode.value === 'tooltip' ? hintTrigger.value : undefined
+  mode: mode.value
 }))
+
+const items = computed(() => [{
+  fieldKey: 'customer',
+  type: 'input',
+  hint: '客户说明',
+  hintTrigger: hintTrigger.value
+}])
 ```
 
 | 模式 | 行为 |
@@ -27,7 +33,7 @@ const hintOptions = computed(() => ({
 
 ## 触发区域
 
-`hintTrigger` 只在 tooltip 模式下生效，页面可实时切换对比：
+字段级 `hintTrigger` 只在 tooltip 模式下生效，页面可实时切换对比：
 
 - `item`（默认）：悬停整个 FormItem（含标签区域）触发。
 - `content`：仅悬停字段内容根节点触发；Slot 渲染出多个根节点时回退为整个 FormItem 并在开发环境警告。

@@ -1,8 +1,11 @@
-import type { FormItemConfig, FormModel } from '@itagan/config-form'
+import type { FieldTypeRegistry, FormItemConfig, FormModel } from '@itagan/config-form'
 
 /** 将演示页正在使用的 items 配置转换成可读代码，避免维护第二份静态示例。 */
-export function formatConfigFormConfig<TModel extends FormModel>(
-  items: FormItemConfig<TModel>[]
+export function formatConfigFormConfig<
+  TModel extends FormModel,
+  TFieldTypes extends FieldTypeRegistry<TModel>
+>(
+  items: FormItemConfig<TModel, TFieldTypes>[]
 ) {
   return JSON.stringify(items, (key, value) => {
     if (key === 'is' && value && typeof value !== 'string') {

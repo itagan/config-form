@@ -3,12 +3,15 @@ import {
   createConfigForm,
   defineConfigFormType,
   defineConfigFormTypes,
-  defineFormItems
+  defineConfigFormItems
 } from '../index'
 import type {
-  ConfigFormFieldRenderContext,
+  ConfigFormExpose,
+  ConfigFormEmits,
+  ConfigFormFieldBindingContext,
+  ConfigFormFormItemErrorSlotContext,
   ConfigFormProps,
-  ConfigFormRef,
+  ConfigFormSlotContext,
   EmptyFieldTypeRegistry
 } from '../index'
 
@@ -17,6 +20,13 @@ interface BusinessModel {
   currency: string
   [key: string]: any
 }
+
+// @ts-expect-error internal resolved component config is not exported from the package entry
+type RemovedResolvedComponentConfig = import('../index').ResolvedComponentConfig
+// @ts-expect-error the instance type is named ConfigFormExpose
+type RemovedConfigFormRef = import('../index').ConfigFormRef
+void (null as unknown as RemovedResolvedComponentConfig)
+void (null as unknown as RemovedConfigFormRef)
 
 interface MoneyProps {
   currency: string
@@ -90,7 +100,7 @@ void moneyItems
 
 const narrowFieldTypes = defineConfigFormTypes<BusinessModel>()({ money })
 const NarrowForm = createConfigForm<BusinessModel, typeof narrowFieldTypes>()
-const narrowItems = defineFormItems<BusinessModel, typeof narrowFieldTypes>([
+const narrowItems = defineConfigFormItems<BusinessModel, typeof narrowFieldTypes>([
   {
     fieldKey: 'amount',
     type: 'money',
@@ -102,12 +112,35 @@ const narrowItems = defineFormItems<BusinessModel, typeof narrowFieldTypes>([
   { fieldKey: 'name', type: 'input', component: { props: { clearable: true } } }
 ])
 
-declare const narrowRef: ConfigFormRef
+declare const narrowRef: ConfigFormExpose
 void NarrowForm
 void narrowItems
 void narrowRef
 
-defineFormItems<BusinessModel, typeof narrowFieldTypes>([
+const narrowProps: ConfigFormProps<BusinessModel, typeof narrowFieldTypes> = {
+  model: { amount: 20, currency: 'CNY' },
+  items: narrowItems,
+  fieldTypes: narrowFieldTypes
+}
+void narrowProps
+
+// @ts-expect-error a non-empty registry makes fieldTypes required
+const missingRegistryProps: ConfigFormProps<BusinessModel, typeof narrowFieldTypes> = {
+  model: { amount: 20, currency: 'CNY' },
+  items: narrowItems
+}
+void missingRegistryProps
+
+declare const bindingContext: ConfigFormFieldBindingContext<BusinessModel>
+declare const slotContext: ConfigFormSlotContext<BusinessModel>
+declare const errorSlotContext: ConfigFormFormItemErrorSlotContext<BusinessModel>
+declare const emits: ConfigFormEmits<BusinessModel>
+void bindingContext.bindingValue
+slotContext.setBindingValue(slotContext.bindingValue)
+void errorSlotContext.error
+emits['field-change']({ fieldKey: 'amount', value: 21, previousValue: 20 })
+
+defineConfigFormItems<BusinessModel, typeof narrowFieldTypes>([
   // @ts-expect-error registered types cannot override the render target
   {
     fieldKey: 'amount',
@@ -117,25 +150,15 @@ defineFormItems<BusinessModel, typeof narrowFieldTypes>([
 ])
 
 const strictItems: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['items'] = [
-  { fieldKey: 'name', type: 'input', readonly: true, readonlyStrategy: 'native' }
+  { fieldKey: 'name', type: 'input', component: { props: { readonly: true } } }
 ]
 void strictItems
 
 const businessProps: ConfigFormProps<BusinessModel> = {
   model: { amount: 20, currency: 'CNY' },
-  cloneModel: model => ({ ...model })
+  items: []
 }
 void businessProps
-
-const invalidReadonlyItems: ConfigFormProps<BusinessModel>['items'] = [
-  {
-    fieldKey: 'name',
-    type: 'input',
-    // @ts-expect-error unsupported readonly strategy
-    readonlyStrategy: 'locked'
-  }
-]
-void invalidReadonlyItems
 
 const strictUnknown: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['items'] = [
   // @ts-expect-error unregistered types are rejected without a field type registry
@@ -143,7 +166,7 @@ const strictUnknown: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['ite
 ]
 void strictUnknown
 
-defineFormItems<BusinessModel, typeof narrowFieldTypes>([
+defineConfigFormItems<BusinessModel, typeof narrowFieldTypes>([
   // @ts-expect-error currency must match the registered props protocol
   {
     fieldKey: 'amount',
@@ -154,7 +177,7 @@ defineFormItems<BusinessModel, typeof narrowFieldTypes>([
   }
 ])
 
-defineFormItems<BusinessModel, typeof narrowFieldTypes>([
+defineConfigFormItems<BusinessModel, typeof narrowFieldTypes>([
   // @ts-expect-error blur declares an empty payload tuple
   {
     fieldKey: 'amount',
@@ -162,7 +185,7 @@ defineFormItems<BusinessModel, typeof narrowFieldTypes>([
     component: {
       model: {
         event: 'blur',
-        valueFromEvent: (_context: ConfigFormFieldRenderContext<BusinessModel>, next: { amount: number }) => next.amount
+        valueFromEvent: (_context: ConfigFormFieldBindingContext<BusinessModel>, next: { amount: number }) => next.amount
       }
     }
   }

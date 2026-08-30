@@ -20,7 +20,7 @@
 
 ## 触发区域
 
-`hintTrigger` 控制悬停触发范围（仅 tooltip 模式）：
+字段配置的 `hintTrigger` 控制悬停触发范围（仅 tooltip 模式）：
 
 - `item`（默认）：悬停整个 FormItem（含 label）触发，Tooltip 定位在可见内容根节点上。
 - `content`：仅悬停字段内容根节点触发。字段内容 Slot 渲染出 0 个或多个可见根节点时回退为整个 FormItem，并在开发环境给出警告。

@@ -17,10 +17,10 @@ pnpm add @itagan/config-form
 ## 快速开始
 
 ```ts
-import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import ConfigForm, { defineConfigFormItems } from '@itagan/config-form'
 import '@itagan/config-form/style.css'
 
-const items = defineFormItems([
+const items = defineConfigFormItems([
   {
     fieldKey: 'profile.name',
     type: 'input',
@@ -66,7 +66,7 @@ const items = defineFormItems([
 ConfigForm 固定使用一个 `el-row`，所有字段各自渲染为 `el-col`。Element UI 的 24 栅格会在总宽度超过 24 时自动换行，因此不需要额外的多行 Schema：
 
 ```ts
-const items = defineFormItems([
+const items = defineConfigFormItems([
   { fieldKey: 'name', type: 'input', colProps: { span: 12 } },
   { fieldKey: 'phone', type: 'input', colProps: { span: 12 } },
   { fieldKey: 'address', type: 'input', colProps: { span: 24 } }
@@ -87,14 +87,14 @@ const items = defineFormItems([
 | `formItemProps` | 传给 `el-form-item`，包括 label、rules 等 |
 | `component` | 字段组件的 props、listeners、options、model 配置 |
 | `visible` | 布尔值或 `(context) => boolean` |
-| `disabled` / `readonly` | 字段级交互状态，支持动态回调 |
 | `hint` | 字段提示内容，支持动态回调或 `false` 单独关闭 |
+| `hintTrigger` | Tooltip 触发范围：整个 FormItem 或字段内容 |
 | `binding` | 将多个 model 路径映射为一个复合组件值 |
 | `labelSlot` / `errorSlot` | 自定义 label 和校验错误插槽名 |
 
 内置类型与 FormTable 一致：`input`、`select`、`date`、`time`、`time-select`、`number`、`switch`、`radio`、`checkbox`、`text`、`rate`、`slider`、`color`、`cascader`、`autocomplete`。
 
-动态 `visible`、`colProps`、`formItemProps`、`component.props/options/optionProps` 回调都会收到：
+动态 `visible`、`colProps`、`formItemProps`、`component.options/optionProps` 回调收到只读渲染上下文：
 
 ```ts
 interface ConfigFormFieldRenderContext {
@@ -104,6 +104,8 @@ interface ConfigFormFieldRenderContext {
   itemConfig: Readonly<FormItemConfig>
 }
 ```
+
+`component.props` 进一步收到 `ConfigFormFieldBindingContext`，可读取复合映射后的 `bindingValue`。字段禁用、只读等 Element 能力也直接在这里透传。
 
 ## 复合字段映射
 
@@ -219,7 +221,7 @@ const items = [{ fieldKey: 'amount', type: 'money' }]
 
 `tooltip` 模式使用表单级单例 Tooltip 事件委托展示：悬停或键盘焦点进入字段时出现，`aria-describedby` 自动维护，Escape 可临时关闭。`hintTrigger` 可把触发范围从整个 FormItem（`item`，默认）收窄到字段内容根节点（`content`）。
 
-ConfigForm 不提供根级 `disabled`、`readonly` Props。全局禁用通过 `formProps.disabled` 交给 Element Form 下沉；字段配置中的动态 `disabled`、`readonly` 用于单独控制。默认情况下，Input、日期和时间等支持原生只读的内置类型保留聚焦与复制，其他控件回退为 disabled；`readonlyStrategy` 可显式覆盖。对于完全自定义的 Slot，业务模板仍应按自身交互要求处理只读展示。
+ConfigForm 不提供额外的 `disabled`、`readonly` Props。全局禁用通过 `formProps.disabled` 交给 Element Form 下沉；单字段状态通过 `component.props` 直接透传给实际字段组件。
 
 ## 校验聚焦与键盘导航
 
@@ -229,7 +231,7 @@ async function submit() {
     await formRef.value?.scrollToFirstError()
     return
   }
-  // 提交 formRef.value.getModel()
+  // 提交父组件持有的 formModel
 }
 ```
 
@@ -250,13 +252,9 @@ async function submit() {
 ## 事件与 Ref
 
 - `update:model(model)`：受控 model 更新。
-- `field-change(payload)`：字段粒度更新，包含 `fieldKey`、新旧值、下一份 model 和 item 配置。
+- `field-change(payload)`：字段粒度更新，包含 `fieldKey`、新值和旧值。
 - `form-validate(prop, valid, message)`：透传 Element Form 的逐字段校验结果。
 - Ref 校验方法：`validate()`、`validateField()`、`resetFields()`、`clearValidate()`、`getFormRef()`、`scrollToFirstError()`、`focusField()`。
-- Ref 数据方法：`getModel()`、`getFieldValue()`、`setFieldValue()`、`setFieldsValue()`。
-
-连续调用 `setFieldValue()` 或字段上下文更新助手时，本轮更新会自动基于最近一次结果继续合并；父组件尚未回写 model 时也不会丢失前一次修改。
-
-`resetFields()` 默认使用支持 Date、RegExp、Map、Set、对象原型和循环引用的快照器。含不可枚举内部状态的复杂业务模型可传入 `cloneModel(model)` 覆盖快照方式。同步组合只覆盖当前微任务；父组件应通过 `v-model`、`.sync` 或同步 `update:model` 处理器及时采用下一份 model。
+`resetFields()` 使用支持 Date、RegExp、Map、Set、对象原型和循环引用的内部快照器。model 读取与页面级写入由父组件负责；字段内部的组合更新使用上下文 `updateModel`。
 
 本地运行 `pnpm dev` 查看示例，运行 `pnpm test`、`pnpm type-check` 和 `pnpm build` 完成验证；`pnpm test:performance` 可执行 200 字段本地性能基线。

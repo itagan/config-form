@@ -17,7 +17,7 @@
         <template #actions>
           <span />
         </template>
-        <template #append>
+        <template #default>
           <div class="actions">
             <el-button type="primary" size="small" @click="submit">校验</el-button>
             <el-button size="small" @click="reset">重置</el-button>
@@ -38,7 +38,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { Message } from 'element-ui'
-import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import ConfigForm, { defineConfigFormItems } from '@itagan/config-form'
 import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
 import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
@@ -54,7 +54,7 @@ export default defineComponent({
       company: ''
     })
     const lastChange = ref<any>(null)
-    const items = defineFormItems([
+    const items = defineConfigFormItems([
       {
         fieldKey: 'name',
         type: 'input',

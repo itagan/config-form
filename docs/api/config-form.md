@@ -7,15 +7,14 @@
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `model` | `FormModel` | `{}` | 表单数据；支持 `v-model` 或 `:model.sync` |
-| `items` | `FormItemConfig[]` | `[]` | 字段配置，按数组顺序渲染 |
+| `items` | `FormItemConfig[]` | 必填 | 字段配置，按数组顺序渲染 |
 | `formProps` | `object` | `{}` | 透传给 `el-form`；`model` 由 ConfigForm 管理 |
 | `rowProps` | `object` | `{ gutter: 16 }` | 透传给唯一的 `el-row` |
-| `fieldTypes` | `FieldTypeRegistry` | `{}` | 当前实例的业务字段类型注册表 |
+| `fieldTypes` | `FieldTypeRegistry` | 条件必填 | 使用自定义 type 时必填；只有内置类型时不可传 |
 | `hintOptions` | `ConfigFormHintOptions` | 见下文 | 全局提示策略 |
 | `navigationOptions` | `ConfigFormNavigationOptions` | 省略 | Enter 键字段导航；省略时不接管键盘，详见[键盘导航](/features/keyboard-navigation) |
-| `cloneModel` | `(model) => model` | 内置克隆 | 建立和恢复 `resetFields` 初始快照；复杂业务模型可覆盖 |
 
-ConfigForm 不提供根级 `disabled` / `readonly` Props。全局禁用通过 `formProps: { disabled: true }` 透传，由 Element Form 原生下沉到全部字段组件；详情态的展示语义（`type: 'text'`、字段级动态 `readonly` 等）由业务层组合，见[详情与只读模式示例](/examples/readonly-detail)。
+ConfigForm 不提供根级或字段级 `disabled` / `readonly` API。全局禁用通过 `formProps.disabled` 下沉；单字段状态通过 `component.props` 透传给实际 Element 组件。
 
 ```vue
 <ConfigForm
@@ -53,7 +52,7 @@ Vue 2 的组件 model 配置为：
 每项默认获得 `{ span: 24 }`，再合并 `colProps`。24 栅格超过一行时由 Element UI 自动换行：
 
 ```ts
-const items = defineFormItems([
+const items = defineConfigFormItems([
   { fieldKey: 'name', type: 'input', colProps: { span: 12 } },
   { fieldKey: 'phone', type: 'input', colProps: { span: 12 } },
   { fieldKey: 'address', type: 'input' }
@@ -66,7 +65,7 @@ const items = defineFormItems([
 import ConfigForm, {
   ConfigForm as NamedConfigForm,
   createConfigForm,
-  defineFormItems,
+  defineConfigFormItems,
   defineConfigFormType,
   defineConfigFormTypes
 } from '@itagan/config-form'
@@ -83,7 +82,7 @@ interface CustomerForm {
 const CustomerConfigForm = createConfigForm<CustomerForm>()
 ```
 
-所有公开类型均可从包根入口导入，包括 `ConfigFormProps`、`ConfigFormRef`、`FormItemConfig`、`FieldComponentConfig` 与各类上下文类型。
+所有公开类型均可从包根入口导入，包括 `ConfigFormProps`、`ConfigFormExpose`、`ConfigFormEmits`、`FormItemConfig`、`FieldComponentConfig` 与各类上下文类型。
 
 ## 开发环境诊断
 

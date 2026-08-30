@@ -13,10 +13,10 @@ pnpm add @itagan/config-form
 仓库开发和联调阶段请使用 workspace alias 或 Git 依赖，不要假设 npm Registry 已存在该包。
 
 ```ts
-import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import ConfigForm, { defineConfigFormItems } from '@itagan/config-form'
 import '@itagan/config-form/style.css'
 
-const items = defineFormItems([
+const items = defineConfigFormItems([
   {
     fieldKey: 'name',
     type: 'input',

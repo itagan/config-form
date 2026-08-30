@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import type {
+  ConfigFormFieldBindingContext,
   ConfigFormFieldContext,
   ConfigFormFieldRenderContext,
   ConfigFormHintOptions,
@@ -12,8 +13,6 @@ import { createBindingPatch, resolveBindingValue } from '../utils/binding'
 import { resolveDynamic, resolveFieldComponent } from '../utils/field'
 import { stripManagedHintTitle } from '../utils/hint'
 import { getValueByPath } from '../utils/path'
-
-const nativeReadonlyTypes = new Set(['input', 'date', 'time', 'time-select', 'autocomplete'])
 
 interface Options {
   getItem: () => FormItemConfig
@@ -37,11 +36,11 @@ export function useConfigFormFieldPresentation(options: Options) {
 
   const setValue = (value: ConfigFormValue) => {
     const item = getItem()
-    options.updateApi.setFieldValue(item.fieldKey, value, item)
+    options.updateApi.setFieldValue(item.fieldKey, value)
   }
 
   const updateModel = (patch: Record<string, ConfigFormValue>) => {
-    options.updateApi.updateModel(patch, getItem())
+    options.updateApi.updateModel(patch)
   }
 
   const bindingValue = computed(() => {
@@ -57,15 +56,24 @@ export function useConfigFormFieldPresentation(options: Options) {
     else setValue(value)
   }
 
-  const fieldContext = Object.assign(renderContext, {
+  const bindingContext: ConfigFormFieldBindingContext = {
+    get model() { return renderContext.model },
+    get fieldKey() { return renderContext.fieldKey },
+    get value() { return renderContext.value },
+    get itemConfig() { return renderContext.itemConfig },
+    get bindingValue() { return bindingValue.value }
+  }
+
+  const fieldContext: ConfigFormFieldContext = {
+    get model() { return bindingContext.model },
+    get fieldKey() { return bindingContext.fieldKey },
+    get value() { return bindingContext.value },
+    get itemConfig() { return bindingContext.itemConfig },
+    get bindingValue() { return bindingContext.bindingValue },
     setValue,
     setBindingValue,
     updateModel
-  }) as ConfigFormFieldContext
-  Object.defineProperty(fieldContext, 'bindingValue', {
-    enumerable: true,
-    get: () => bindingValue.value
-  })
+  }
 
   const hint = computed<string | null>(() => {
     const item = getItem()
@@ -85,21 +93,6 @@ export function useConfigFormFieldPresentation(options: Options) {
     return typeof content === 'string' && content !== '' ? content : null
   })
 
-  const interactionProps = computed(() => {
-    const item = getItem()
-    const disabled = resolveDynamic(item.disabled, renderContext) === true
-    const readonly = resolveDynamic(item.readonly, renderContext) === true
-    if (disabled) return { disabled: true }
-    if (!readonly) return {}
-
-    const strategy = resolveDynamic(item.readonlyStrategy, renderContext) || 'auto'
-    if (strategy === 'native') return { readonly: true }
-    if (strategy === 'disabled') return { disabled: true }
-    return nativeReadonlyTypes.has(item.type)
-      ? { readonly: true }
-      : { disabled: true }
-  })
-
   const resolvedComponent = computed(() => {
     const item = getItem()
     return resolveFieldComponent(
@@ -107,8 +100,8 @@ export function useConfigFormFieldPresentation(options: Options) {
       item.component,
       options.getFieldTypes(),
       renderContext,
-      fieldContext,
-      interactionProps.value
+      bindingContext,
+      fieldContext
     )
   })
 
@@ -136,14 +129,11 @@ export function useConfigFormFieldPresentation(options: Options) {
     hintTrigger: computed(() => (
       hintTooltipEnabled.value
       && hint.value
-      && options.getHintOptions().hintTrigger === 'content'
+      && getItem().hintTrigger === 'content'
         ? 'content'
         : undefined
     )),
     getSlot,
-    hasSideSlots: computed(() => Boolean(
-      getSlot(getItem().leftSlot) || getSlot(getItem().rightSlot)
-    )),
     setBindingValue
   }
 }

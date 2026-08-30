@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import ConfigForm, { defineFormItems } from '@itagan/config-form'
+import ConfigForm, { defineConfigFormItems } from '@itagan/config-form'
 import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
 import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
 
@@ -34,7 +34,7 @@ export default defineComponent({
   components: { ConfigForm, DemoCollapsiblePanel },
   setup() {
     const model = ref({ department: 'rd', role: 'design', permissions: ['rd'] })
-    const items = defineFormItems([
+    const items = defineConfigFormItems([
       { fieldKey: 'department', type: 'select', colProps: { span: 12 }, formItemProps: { label: '部门' }, component: { options: businessOptions, optionProps } },
       { fieldKey: 'role', type: 'radio', colProps: { span: 12 }, formItemProps: { label: '角色' }, component: { options: businessOptions, optionProps } },
       { fieldKey: 'permissions', type: 'checkbox', colProps: { span: 24 }, formItemProps: { label: '权限' }, component: { options: businessOptions, optionProps } }

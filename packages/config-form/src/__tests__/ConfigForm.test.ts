@@ -192,12 +192,12 @@ describe('ConfigForm', () => {
     expect(onChange.mock.calls[0][0]).toMatchObject({ fieldKey: 'enabled', value: false })
   })
 
-  it('renders field hints and applies item-level interaction state', () => {
+  it('renders field hints and passes interaction state through component props', () => {
     const wrapper = mount(ConfigFormForTest, {
       propsData: {
         model: { name: 'Ada' },
         hintOptions: { mode: 'title' },
-        items: [{ fieldKey: 'name', type: 'input', hint: '只读姓名', readonly: true }]
+        items: [{ fieldKey: 'name', type: 'input', hint: '只读姓名', component: { props: { readonly: true } } }]
       }
     })
 
@@ -206,43 +206,19 @@ describe('ConfigForm', () => {
     expect(wrapper.findComponent({ name: 'ElInput' }).props('readonly')).toBe(true)
   })
 
-  it('renders left and right side slots beside the field content', () => {
+  it('renders the default slot after generated fields', () => {
     const wrapper = mount(ConfigFormForTest, {
       propsData: {
         model: { amount: 100 },
-        items: [{
-          fieldKey: 'amount',
-          type: 'input',
-          leftSlot: 'amountPrefix',
-          rightSlot: 'amountSuffix'
-        }]
+        items: [{ fieldKey: 'amount', type: 'input' }]
       },
       scopedSlots: {
-        amountPrefix: '<span class="adorn-left">￥</span>',
-        amountSuffix: '<span class="adorn-right">万元</span>'
+        default: '<button class="form-action" type="button">提交</button>'
       }
     })
 
-    expect(wrapper.find('.config-form__field-row').exists()).toBe(true)
-    expect(wrapper.find('.config-form__field-row-side .adorn-left').text()).toBe('￥')
-    expect(wrapper.find('.config-form__field-row-main input').exists()).toBe(true)
-    expect(wrapper.find('.config-form__field-row-side .adorn-right').text()).toBe('万元')
-  })
-
-  it('focuses the field content instead of side decorations', async () => {
-    const wrapper = mount(ConfigFormForTest, {
-      attachTo: document.body,
-      propsData: {
-        model: { keyword: '' },
-        items: [{ fieldKey: 'keyword', type: 'input', leftSlot: 'searchAction' }]
-      },
-      scopedSlots: {
-        searchAction: '<button class="adorn-button" type="button">检索</button>'
-      }
-    })
-
-    await (wrapper.vm as any).focusField('keyword')
-    expect(document.activeElement).toBe(wrapper.find('.config-form__field-row-main input').element)
+    expect(wrapper.find('input').exists()).toBe(true)
+    expect(wrapper.find('.form-action').text()).toBe('提交')
   })
 
   it('merges registered field type defaults with item props', () => {
@@ -291,7 +267,7 @@ describe('ConfigForm', () => {
     expect(option.props()).toMatchObject({ label: '启用', value: 'enabled', disabled: true })
   })
 
-  it('composes consecutive controlled field updates before props are written back', () => {
+  it('composes consecutive controlled field updates before props are written back', async () => {
     const wrapper = mount(ConfigFormForTest, {
       propsData: {
         model: { firstName: 'Ada', lastName: 'Lovelace' },
@@ -302,34 +278,14 @@ describe('ConfigForm', () => {
       }
     })
 
-    ;(wrapper.vm as any).setFieldValue('firstName', 'Grace')
-    ;(wrapper.vm as any).setFieldValue('lastName', 'Hopper')
+    const inputs = wrapper.findAllComponents({ name: 'ElInput' })
+    inputs.at(0).vm.$emit('input', 'Grace')
+    inputs.at(1).vm.$emit('input', 'Hopper')
+    await Vue.nextTick()
 
     const updates = wrapper.emitted('update:model') || []
     expect(updates).toHaveLength(2)
     expect(updates[1][0]).toEqual({ firstName: 'Grace', lastName: 'Hopper' })
-    expect((wrapper.vm as any).getModel()).toEqual({ firstName: 'Grace', lastName: 'Hopper' })
-  })
-
-  it('updates multiple paths in one public setFieldsValue transaction', () => {
-    const wrapper = mount(ConfigFormForTest, {
-      propsData: {
-        model: { profile: { name: 'Ada' }, enabled: false },
-        items: [
-          { fieldKey: 'profile.name', type: 'input' },
-          { fieldKey: 'enabled', type: 'switch' }
-        ]
-      }
-    })
-
-    ;(wrapper.vm as any).setFieldsValue({ 'profile.name': 'Grace', enabled: true })
-
-    expect(wrapper.emitted('update:model')).toHaveLength(1)
-    expect(wrapper.emitted('update:model')?.[0]?.[0]).toEqual({
-      profile: { name: 'Grace' },
-      enabled: true
-    })
-    expect(wrapper.emitted('field-change')).toHaveLength(2)
   })
 
   it('focuses a mounted field and reports unmapped targets', async () => {
@@ -370,7 +326,7 @@ describe('ConfigForm', () => {
     await expect(vm.validateField('name')).resolves.toBe(false)
     expect(wrapper.find('.el-form-item__error').text()).toBe('name required')
 
-    vm.setFieldValue('name', 'Ada')
+    wrapper.findComponent({ name: 'ElInput' }).vm.$emit('input', 'Ada')
     const nextModel = wrapper.emitted('update:model')?.at(-1)?.[0] as typeof model
     wrapper.setProps({ model: nextModel })
     await Vue.nextTick()
@@ -431,7 +387,7 @@ describe('ConfigForm', () => {
         model: { first: '', second: '', third: '' },
         items: [
           { fieldKey: 'first', type: 'input' },
-          { fieldKey: 'second', type: 'input', disabled: true },
+          { fieldKey: 'second', type: 'input', component: { props: { disabled: true } } },
           { fieldKey: 'third', type: 'input' }
         ]
       }
@@ -554,9 +510,9 @@ describe('ConfigForm', () => {
     const wrapper = mount(ConfigFormForTest, {
       propsData: {
         model: { name: 'Ada', remark: '' },
-        hintOptions: { mode: 'tooltip', hintTrigger: 'content', field: true },
+        hintOptions: { mode: 'tooltip', field: true },
         items: [
-          { fieldKey: 'name', type: 'input' },
+          { fieldKey: 'name', type: 'input', hintTrigger: 'content' },
           { fieldKey: 'remark', type: 'input' }
         ]
       }
@@ -611,11 +567,12 @@ describe('ConfigForm', () => {
         attachTo: document.body,
         propsData: {
           model: { name: 'Ada' },
-          hintOptions: { mode: 'tooltip', hintTrigger: 'content' },
+          hintOptions: { mode: 'tooltip' },
           items: [{
             fieldKey: 'name',
             type: 'input',
             hint: '姓名提示',
+            hintTrigger: 'content',
             formItemProps: { label: '姓名' }
           }]
         }

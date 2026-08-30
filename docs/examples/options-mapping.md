@@ -18,7 +18,7 @@ const optionProps = {
   disabled: 'locked'
 }
 
-const items = defineFormItems([
+const items = defineConfigFormItems([
   {
     fieldKey: 'department',
     type: 'select',

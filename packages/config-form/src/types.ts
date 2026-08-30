@@ -1,4 +1,5 @@
-import type { Component, DefineComponent } from 'vue'
+import type { Component, DefineComponent, VNode } from 'vue'
+import type { ElForm } from 'element-ui/types/form'
 
 /** 表单数据中的任意值；运行时不做结构约束，结构由业务模型定义。 */
 export type ConfigFormValue = any
@@ -14,8 +15,6 @@ export type ConfigFormHintValue = string | false | null | undefined
 export type ConfigFormHintMode = false | 'title' | 'tooltip'
 /** Tooltip 触发区域：整个 FormItem 或仅字段内容根节点。 */
 export type ConfigFormHintTrigger = 'item' | 'content'
-/** 只读字段向实际组件下沉的策略。 */
-export type ConfigFormReadonlyStrategy = 'auto' | 'native' | 'disabled'
 /** 自定义字段类型可选的事件名到原始参数元组协议。 */
 export type FieldTypeEventMap = Record<string, unknown[]>
 
@@ -75,13 +74,18 @@ export interface ConfigFormFieldRenderContext<TModel extends FormModel = FormMod
   itemConfig: Readonly<FormItemConfig<TModel>>
 }
 
-/** 字段完整上下文：在渲染上下文上提供写回能力，供 Slot、监听器和动态配置使用。 */
-export interface ConfigFormFieldContext<TModel extends FormModel = FormModel>
+/** 组件 Props 使用的只读字段绑定上下文。 */
+export interface ConfigFormFieldBindingContext<TModel extends FormModel = FormModel>
   extends ConfigFormFieldRenderContext<TModel> {
+  /** 复合映射后的组件受控值；未配置 binding 时与 value 一致。 */
+  readonly bindingValue: ConfigFormValue
+}
+
+/** 字段完整上下文：在绑定上下文上提供写回能力，供 Slot 和监听器使用。 */
+export interface ConfigFormFieldContext<TModel extends FormModel = FormModel>
+  extends ConfigFormFieldBindingContext<TModel> {
   /** 按当前字段寻址写入新值。 */
   setValue: (value: ConfigFormValue) => void
-  /** 复合映射后的组件受控值；未配置 binding 时与 value 一致。 */
-  bindingValue: ConfigFormValue
   /** 按复合映射写回组件值。 */
   setBindingValue: (value: ConfigFormValue) => void
   /** 在一次受控事务中更新多个 model 路径。 */
@@ -161,7 +165,7 @@ export interface FieldComponentConfig<TModel extends FormModel = FormModel> {
   /** 根据当前字段上下文同步选择组件；返回 undefined 时回退到 is。 */
   resolveComponent?: FieldComponentResolver<TModel>
   /** 透传给实际字段组件的属性。 */
-  props?: DynamicValue<ComponentProps, ConfigFormFieldRenderContext<TModel>>
+  props?: DynamicValue<ComponentProps, ConfigFormFieldBindingContext<TModel>>
   /** 字段组件事件监听器；回调首参固定为可更新的字段上下文。 */
   listeners?: Record<string, ConfigFormFieldListener<TModel>>
   /** select、radio、checkbox 等选项型组件的数据源。 */
@@ -185,7 +189,7 @@ export interface FieldTypeDefinition<
   /** 必填，组件名称或组件对象。 */
   is: string | Component
   /** 注册级默认 Props；可使用字段渲染上下文。 */
-  props?: DynamicValue<Partial<TProps>, ConfigFormFieldRenderContext<TModel>>
+  props?: DynamicValue<Partial<TProps>, ConfigFormFieldBindingContext<TModel>>
   /** 注册级 model 协议，或 false 关闭自动写回。 */
   model?: FieldModelConfig<TModel, TEvents> | false
 }
@@ -223,9 +227,6 @@ export type ReservedFormItemType = BuiltinFormItemType | 'component' | 'slot'
 /** 未声明自定义字段类型时使用的严格空注册表；此时 Custom 联合分支为 never。 */
 export type EmptyFieldTypeRegistry = Record<never, never>
 
-/** 运行时消费的宽松注册表视图：任意类型名都映射到未收窄定义，合法性交给配置诊断。 */
-export type LooseFieldTypeRegistry<TModel extends FormModel = FormModel> = FieldTypeRegistry<TModel>
-
 /** 已注册的自定义字段类型名称。 */
 export type RegisteredFormItemType<TFieldTypes> = Extract<keyof TFieldTypes, string>
 
@@ -243,24 +244,16 @@ export interface BaseFormItemConfig<TModel extends FormModel = FormModel> {
   labelSlot?: string
   /** 根 ConfigForm 上用于渲染错误信息的具名 Slot。 */
   errorSlot?: string
-  /** 根 ConfigForm 上用于渲染字段内容左侧装饰的具名 Slot；与主内容同行。 */
-  leftSlot?: string
-  /** 根 ConfigForm 上用于渲染字段内容右侧装饰的具名 Slot；与主内容同行。 */
-  rightSlot?: string
   /** 是否渲染当前字段；返回 false 时字段卸载且不参与校验。 */
   visible?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
-  /** 是否禁用当前字段的组件。 */
-  disabled?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
-  /** 是否只读当前字段的组件。 */
-  readonly?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
-  /** 只读状态下使用原生 readonly、disabled，或按内置类型自动选择；默认 auto。 */
-  readonlyStrategy?: DynamicValue<ConfigFormReadonlyStrategy, ConfigFormFieldRenderContext<TModel>>
   /** 字段自动提示内容；`false` 单独关闭，未声明时回退 hintOptions.field。 */
   hint?: DynamicValue<ConfigFormHintValue, ConfigFormFieldRenderContext<TModel>>
+  /** Tooltip 模式下的触发区域；默认整个 FormItem。 */
+  hintTrigger?: ConfigFormHintTrigger
   /** 透传给当前字段 el-col 的属性；默认 `{ span: 24 }`。 */
   colProps?: DynamicValue<ComponentProps, ConfigFormFieldRenderContext<TModel>>
   /** 透传给当前字段 el-form-item 的属性（label、rules 等）。 */
-  formItemProps?: DynamicValue<ComponentProps, ConfigFormFieldRenderContext<TModel>>
+  formItemProps?: DynamicValue<ConfigFormFormItemProps, ConfigFormFieldRenderContext<TModel>>
 }
 
 /** 使用内置字段类型渲染的配置。 */
@@ -330,7 +323,7 @@ type CustomFieldComponentConfig<
 > = {
   props?: DynamicValue<
     Partial<RegisteredFieldTypeProps<TDefinition>>,
-    ConfigFormFieldRenderContext<TModel>
+    ConfigFormFieldBindingContext<TModel>
   >
   listeners?: RegisteredFieldTypeListeners<TModel, TDefinition>
   model?: FieldModelConfig<TModel, RegisteredFieldTypeEvents<TDefinition>> | false
@@ -358,7 +351,7 @@ type CustomFormItemConfig<
  */
 export type FormItemConfig<
   TModel extends FormModel = FormModel,
-  TFieldTypes extends FieldTypeRegistry<TModel> = LooseFieldTypeRegistry<TModel>
+  TFieldTypes extends FieldTypeRegistry<TModel> = EmptyFieldTypeRegistry
 > =
   | BuiltinFormItemConfig<TModel>
   | ComponentFormItemConfig<TModel>
@@ -369,8 +362,6 @@ export type FormItemConfig<
 export interface ConfigFormHintOptions<TModel extends FormModel = FormModel> {
   /** Hint 展示方式；默认使用原生 title，false 关闭全部自动 Hint。 */
   mode?: ConfigFormHintMode
-  /** Tooltip 模式下的触发区域：item 为整个 FormItem，content 仅限字段内容根节点。 */
-  hintTrigger?: ConfigFormHintTrigger
   /** false/未配置关闭默认字段内容；true 默认字符串化；函数统一格式化。 */
   field?: boolean | ((context: ConfigFormFieldRenderContext<TModel>) => ConfigFormHintValue)
   /** tooltip 模式下透传给单例 el-tooltip 的属性，受管属性会被忽略。 */
@@ -384,68 +375,80 @@ export interface ConfigFormNavigationOptions {
 }
 
 /** field-change 事件的载荷。 */
-export interface ConfigFormFieldChangePayload<TModel extends FormModel = FormModel> {
+export interface ConfigFormFieldChangePayload {
   /** 变化字段的 model 寻址路径。 */
   fieldKey: string
   /** 新值。 */
   value: ConfigFormValue
   /** 上一份值。 */
   previousValue: ConfigFormValue
-  /** 触发事件时的下一份 model。 */
-  model: TModel
-  /** 关联的字段配置；未配置在 items 中的路径为 undefined。 */
-  itemConfig: Readonly<FormItemConfig<TModel>>
 }
 
-/** ConfigForm 的完整公共 Props；传入字段类型注册表后 items 按注册协议收窄。 */
-export interface ConfigFormProps<
+export type ConfigFormFormProps = ComponentProps & { model?: never }
+export type ConfigFormFormItemProps = ComponentProps & { prop?: never }
+
+interface BaseConfigFormProps<
   TModel extends FormModel = FormModel,
-  TFieldTypes extends FieldTypeRegistry<TModel> = LooseFieldTypeRegistry<TModel>
+  TFieldTypes extends FieldTypeRegistry<TModel> = EmptyFieldTypeRegistry
 > {
   /** 受控表单数据，v-model 对应的数据源。 */
   model: TModel
   /** 字段配置数组，按数组顺序渲染。 */
-  items?: FormItemConfig<TModel, TFieldTypes>[]
+  items: FormItemConfig<TModel, TFieldTypes>[]
   /** 透传给 el-form；model 由 ConfigForm 管理。全局禁用通过 `disabled` 透传，由 Element Form 原生下沉。 */
-  formProps?: ComponentProps & { model?: never }
+  formProps?: ConfigFormFormProps
   /** 透传给唯一的 el-row；默认 `{ gutter: 16 }`。 */
   rowProps?: ComponentProps
-  /** 当前实例的业务字段类型注册表。 */
-  fieldTypes?: FieldTypeRegistry<TModel>
   /** 全局提示策略。 */
   hintOptions?: ConfigFormHintOptions<TModel>
   /** Enter 键字段导航；省略时不接管键盘。 */
   navigationOptions?: ConfigFormNavigationOptions
-  /** 自定义 resetFields 初始快照方式；默认克隆 Date、Map、Set、数组和对象。 */
-  cloneModel?: (model: Readonly<TModel>) => TModel
 }
 
-/** ConfigForm 实际使用到的 Element Form 实例能力。 */
-export interface ConfigFormElementFormRef {
-  $el?: HTMLElement
-  validate?: () => Promise<boolean>
-  validateField?: (prop: string, callback: (message: string) => void) => void
-  clearValidate?: (props?: string | string[]) => void
+type ConfigFormFieldTypesProp<TFieldTypes> = keyof TFieldTypes extends never
+  ? { fieldTypes?: never }
+  : { fieldTypes: TFieldTypes }
+
+/** ConfigForm 的完整公共 Props；传入字段类型注册表后 fieldTypes 与 items 同步收窄。 */
+export type ConfigFormProps<
+  TModel extends FormModel = FormModel,
+  TFieldTypes extends FieldTypeRegistry<TModel> = EmptyFieldTypeRegistry
+> = BaseConfigFormProps<TModel, TFieldTypes> & ConfigFormFieldTypesProp<TFieldTypes>
+
+/** FormItem label Slot 上下文。 */
+export interface ConfigFormFormItemSlotContext<TModel extends FormModel = FormModel>
+  extends ConfigFormFieldContext<TModel> {
+  propPath: string
 }
+
+/** FormItem error Slot 上下文。 */
+export interface ConfigFormFormItemErrorSlotContext<TModel extends FormModel = FormModel>
+  extends ConfigFormFormItemSlotContext<TModel> {
+  error: string
+}
+
+/** 字段内容 Slot 上下文。 */
+export interface ConfigFormSlotContext<TModel extends FormModel = FormModel>
+  extends ConfigFormFormItemSlotContext<TModel> {
+  component: ResolvedComponentConfig<TModel>
+}
+
+export type ConfigFormSlotFn<T = ConfigFormValue> = (slotProps: T) => VNode[] | VNode | undefined
+export type ConfigFormSlots = Record<string, ConfigFormSlotFn | undefined>
+
+/** ConfigForm 返回当前项目安装的 Element UI Form 原生实例。 */
+export type ConfigFormElementFormRef = ElForm
 
 /** ConfigForm 实例暴露的方法集合；通过模板 Ref 获取。 */
-export interface ConfigFormRef {
+export interface ConfigFormExpose {
   /** 校验全部字段；无论 Element UI resolve 或 reject 都返回 Promise<boolean>。 */
   validate: (callback?: (valid: boolean, fields?: ConfigFormValue) => void) => Promise<boolean>
   /** 校验一个或多个字段；未挂载或未知字段直接视为失败。 */
   validateField: (props: string | string[], callback?: (message: string) => void) => Promise<boolean>
-  /** 恢复为组件创建时 model 的深拷贝，并清除校验状态。 */
+  /** 恢复为组件创建时 model 的内部快照，并清除校验状态。 */
   resetFields: () => void
   /** 清除全部或指定字段校验状态。 */
   clearValidate: (props?: string | string[]) => void
-  /** 按点路径或数组路径读取本轮最新值。 */
-  getFieldValue: (fieldKey: string) => ConfigFormValue
-  /** 更新一个路径。 */
-  setFieldValue: (fieldKey: string, value: ConfigFormValue) => void
-  /** 在一次受控事务中更新多个路径；patch 的 key 可为路径。 */
-  setFieldsValue: (patch: Record<string, ConfigFormValue>) => void
-  /** 获取包含尚未被父组件回写更新的本轮最新 model。 */
-  getModel: () => FormModel
   /** 获取底层 Element UI el-form 实例。 */
   getFormRef: () => ConfigFormElementFormRef | null
   /** 聚焦已挂载字段的第一个可聚焦元素；字段隐藏或未知时返回 false。 */
@@ -454,18 +457,39 @@ export interface ConfigFormRef {
   scrollToFirstError: () => Promise<boolean>
 }
 
+/** ConfigForm 自身事件签名。 */
+export type ConfigFormEmits<TModel extends FormModel = FormModel> = {
+  'update:model': (model: TModel) => void
+  'field-change': (payload: ConfigFormFieldChangePayload) => void
+  'form-validate': (prop: string, valid: boolean, message: string | null) => void
+}
+
+type ConfigFormTemplateProps<
+  TModel extends FormModel,
+  TFieldTypes extends FieldTypeRegistry<TModel>
+> = Omit<ConfigFormProps<TModel, TFieldTypes>, 'model'> & (
+  | { model: TModel, modelValue?: never }
+  | { modelValue: TModel, model?: TModel }
+)
+
 /** ConfigForm 组件的类型视图；运行时与默认导出是同一组件实例。 */
 export type ConfigFormComponent<
   TModel extends FormModel = FormModel,
-  TFieldTypes extends FieldTypeRegistry<TModel> = LooseFieldTypeRegistry<TModel>
+  TFieldTypes extends FieldTypeRegistry<TModel> = EmptyFieldTypeRegistry
 > = DefineComponent<
-  ConfigFormProps<TModel, TFieldTypes>,
+  ConfigFormTemplateProps<TModel, TFieldTypes>,
+  ConfigFormExpose,
   Record<string, never>,
-  any
->
+  Record<string, never>,
+  Record<string, never>,
+  Record<string, never>,
+  Record<string, never>,
+  ConfigFormEmits<TModel>,
+  keyof ConfigFormEmits<TModel>
+> & { model: { prop: 'model', event: 'update:model' } }
 
-/** ConfigForm 内部解析完成后的字段组件配置；供渲染层消费，不作为调用方入口。 */
-export interface ResolvedFieldComponent<TModel extends FormModel = FormModel> {
+/** ConfigForm 内部解析完成后的字段组件配置，不从包根入口导出。 */
+export interface ResolvedComponentConfig<TModel extends FormModel = FormModel> {
   /** 实际渲染的组件目标。 */
   is?: string | Component
   /** 已合并注册级默认值与字段项覆盖的最终属性。 */

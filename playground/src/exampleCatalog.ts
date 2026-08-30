@@ -40,7 +40,7 @@ export const examples: PlaygroundExample[] = [
     category: 'advanced',
     level: 'intermediate',
     type: 'success',
-    tags: ['数组路径', '稳定 key', 'setFieldsValue']
+    tags: ['数组路径', '稳定 key', '受控 model']
   },
   {
     path: '/schema',
@@ -59,15 +59,6 @@ export const examples: PlaygroundExample[] = [
     level: 'intermediate',
     type: 'success',
     tags: ['业务 type', 'binding.map', 'slot']
-  },
-  {
-    path: '/adorn',
-    title: '字段左右插槽（评估）',
-    description: 'leftSlot/rightSlot 与主内容同行，Tooltip 锚点与聚焦语义保持字段本身。',
-    category: 'advanced',
-    level: 'intermediate',
-    type: 'warning',
-    tags: ['leftSlot', 'rightSlot']
   },
   {
     path: '/readonly',

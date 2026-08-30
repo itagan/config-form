@@ -5,9 +5,9 @@
 这个示例覆盖日常表单的最小闭环：双列栅格、动态显隐、Element UI 校验、提交、重置和字段变化事件。
 
 ```ts
-import { defineFormItems } from '@itagan/config-form'
+import { defineConfigFormItems } from '@itagan/config-form'
 
-const items = defineFormItems([
+const items = defineConfigFormItems([
   {
     fieldKey: 'name',
     type: 'input',
@@ -52,7 +52,7 @@ const items = defineFormItems([
   :hint-options="{ mode: 'tooltip' }"
   @field-change="handleFieldChange"
 >
-  <template #append>
+  <template #default>
     <el-button type="primary" @click="submit">提交</el-button>
     <el-button @click="formRef.resetFields()">重置</el-button>
   </template>
@@ -63,8 +63,7 @@ const items = defineFormItems([
 async function submit() {
   const valid = await formRef.value.validate()
   if (!valid) return
-  const payload = formRef.value.getModel()
-  // 提交 payload
+  // 提交父组件持有的 model.value
 }
 ```
 
