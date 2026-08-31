@@ -8,7 +8,7 @@ import type {
   EmptyFieldTypeRegistry,
   FieldTypeRegistry,
   FormModel
-} from './types.public'
+} from './types'
 
 export declare function createConfigForm<
   TModel extends FormModel = FormModel,

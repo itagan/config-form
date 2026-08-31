@@ -27,9 +27,9 @@ type ConfigFormEmits<TModel> = {
 ```ts
 interface ConfigFormExpose {
   validate(callback?): Promise<boolean>
-  validateField(props: string | string[], callback?): Promise<boolean>
+  validateField(fieldKeys: string | string[], callback?): Promise<boolean>
   resetFields(): void
-  clearValidate(props?: string | string[]): void
+  clearValidate(fieldKeys?: string | string[]): void
   getFormRef(): ElForm | null
   focusField(fieldKey: string): Promise<boolean>
   scrollToFirstError(): Promise<boolean>

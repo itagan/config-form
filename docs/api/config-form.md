@@ -6,7 +6,7 @@
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `model` | `FormModel` | `{}` | 表单数据；支持 `v-model` 或 `:model.sync` |
+| `model` | `FormModel` | 必填 | 受控表单数据；支持 `v-model` 或 `:model.sync` |
 | `items` | `FormItemConfig[]` | 必填 | 字段配置，按数组顺序渲染 |
 | `formProps` | `object` | `{}` | 透传给 `el-form`；`model` 由 ConfigForm 管理 |
 | `rowProps` | `object` | `{ gutter: 16 }` | 透传给唯一的 `el-row` |
@@ -46,6 +46,8 @@ Vue 2 的组件 model 配置为：
 ```
 
 点路径和数组下标都可作为 `fieldKey`：`profile.name`、`addresses[0].city`。写回时仅浅拷贝路径沿线对象，原始根 model 不会被修改。
+
+路径术语保持明确分工：`fieldKey` 是字段自身的业务 model 路径；`binding.map.fieldPath` 是复合绑定写回的业务路径；`valuePath` 是组件值内部路径；Slot 中的 `propPath` 是交给 Element Form 校验的完整路径。在 ConfigForm 中 `propPath` 通常与 `fieldKey` 相同，但两者语义不同。
 
 ## 布局规则
 

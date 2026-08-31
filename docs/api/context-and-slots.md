@@ -43,6 +43,8 @@ interface ConfigFormFieldContext<TModel> extends ConfigFormFieldBindingContext<T
 </template>
 ```
 
-label Slot 使用 `ConfigFormFormItemSlotContext`；error Slot 使用额外带 `error` 的 `ConfigFormFormItemErrorSlotContext`。所有 Slot 函数可由 `ConfigFormSlots` / `ConfigFormSlotFn` 表达。
+label Slot 使用 `ConfigFormFormItemSlotContext`；error Slot 使用额外带 `error` 的 `ConfigFormFormItemErrorSlotContext`。需要为具名 Slot 单独标注时，直接使用对应的上下文类型即可。
 
 字段配置的 `leftSlot` / `rightSlot` 指向根组件具名 Slot，用于单位、前置操作和辅助链接；两者收到 `ConfigFormFormItemSlotContext`。主字段使用弹性宽度，并仍是 `focusField` 与内容型 Tooltip 的定位目标。
+
+路径字段含义不同：`fieldKey` 始终是业务 model 路径，`binding.map.fieldPath` 是复合绑定中的业务写回路径，`valuePath` 是组件值内部路径，`propPath` 则是 Element Form 实际使用的校验路径。

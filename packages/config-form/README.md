@@ -60,6 +60,7 @@ const items = defineConfigFormItems([
 ```
 
 根组件 `v-model` 使用 `model/update:model`，也可以使用 `:model.sync`。每次字段更新都会返回新的 model，不直接修改传入对象。
+`model` 与 `items` 都是必填 Prop；组件不会在缺失时静默创建空数据或空配置。
 
 ## 栅格布局
 
@@ -238,7 +239,7 @@ async function submit() {
 
 - `scrollToFirstError()`：滚动到第一个校验失败的字段（居中）并尝试聚焦。
 - `focusField(fieldKey)`：聚焦已挂载字段的第一个可聚焦元素，字段隐藏或未知时返回 `false`。
-- `validateField(props, callback?)` 返回 `Promise<boolean>`；未挂载或未知字段直接视为失败。
+- `validateField(fieldKeys, callback?)` 返回 `Promise<boolean>`；未挂载或未知字段直接视为失败。
 
 ```vue
 <ConfigForm

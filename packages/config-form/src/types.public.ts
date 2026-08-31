@@ -1,7 +1,5 @@
 export type {
   BuiltinFormItemType,
-  ComponentProps,
-  ConfigFormComponent,
   ConfigFormElementFormRef,
   ConfigFormEmits,
   ConfigFormExpose,
@@ -19,13 +17,8 @@ export type {
   ConfigFormHintValue,
   ConfigFormNavigationOptions,
   ConfigFormProps,
-  ConfigFormRenderContext,
   ConfigFormSlotContext,
-  ConfigFormSlotFn,
-  ConfigFormSlots,
   ConfigFormValue,
-  DynamicValue,
-  EmptyFieldTypeRegistry,
   FieldBindingConfig,
   FieldBindingMapEntry,
   FieldComponentConfig,
@@ -39,6 +32,5 @@ export type {
   FormItemOption,
   FormItemType,
   FormModel,
-  OptionPropsConfig,
-  TypedFieldTypeDefinition
+  OptionPropsConfig
 } from './types'

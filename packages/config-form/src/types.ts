@@ -219,10 +219,10 @@ export type BuiltinFormItemType =
   | 'number' | 'switch' | 'radio' | 'checkbox' | 'text' | 'rate'
   | 'slider' | 'color' | 'cascader' | 'autocomplete'
 
-/** 字段类型名称：内置类型、保留类型，或实例注册表中声明的业务类型。 */
-export type FormItemType = BuiltinFormItemType | 'component' | 'slot' | (string & Record<never, never>)
 /** 不可被业务字段类型注册表覆盖的保留名称。 */
 export type ReservedFormItemType = BuiltinFormItemType | 'component' | 'slot'
+/** 未使用注册表时可直接配置的字段类型名称。 */
+export type FormItemType = ReservedFormItemType
 
 /** 未声明自定义字段类型时使用的严格空注册表；此时 Custom 联合分支为 never。 */
 export type EmptyFieldTypeRegistry = Record<never, never>
@@ -448,11 +448,11 @@ export interface ConfigFormExpose {
   /** 校验全部字段；无论 Element UI resolve 或 reject 都返回 Promise<boolean>。 */
   validate: (callback?: (valid: boolean, fields?: ConfigFormValue) => void) => Promise<boolean>
   /** 校验一个或多个字段；未挂载或未知字段直接视为失败。 */
-  validateField: (props: string | string[], callback?: (message: string) => void) => Promise<boolean>
+  validateField: (fieldKeys: string | string[], callback?: (message: string) => void) => Promise<boolean>
   /** 恢复为组件创建时 model 的内部快照，并清除校验状态。 */
   resetFields: () => void
   /** 清除全部或指定字段校验状态。 */
-  clearValidate: (props?: string | string[]) => void
+  clearValidate: (fieldKeys?: string | string[]) => void
   /** 获取底层 Element UI el-form 实例。 */
   getFormRef: () => ConfigFormElementFormRef | null
   /** 聚焦已挂载字段的第一个可聚焦元素；字段隐藏或未知时返回 false。 */

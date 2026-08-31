@@ -63,15 +63,13 @@ import { collectSchemaDiagnostics } from './utils/schemaDiagnostics'
 
 const props = withDefaults(defineProps<{
   model: FormModel
-  items?: FormItemConfig[]
+  items: FormItemConfig[]
   formProps?: ComponentProps
   rowProps?: ComponentProps
   fieldTypes?: FieldTypeRegistry
   hintOptions?: ConfigFormHintOptions
   navigationOptions?: ConfigFormNavigationOptions
 }>(), {
-  model: () => ({}),
-  items: () => [],
   formProps: () => ({}),
   rowProps: () => ({ gutter: 16 }),
   fieldTypes: () => ({}),
@@ -142,8 +140,8 @@ async function validate(callback?: (valid: boolean, fields?: ConfigFormValue) =>
   }
 }
 
-function validateField(fieldProps: string | string[], callback?: (message: string) => void) {
-  return fieldLocator.validateField(fieldProps, callback)
+function validateField(fieldKeys: string | string[], callback?: (message: string) => void) {
+  return fieldLocator.validateField(fieldKeys, callback)
 }
 
 defineExpose({
@@ -153,7 +151,7 @@ defineExpose({
     controlledUpdate.replaceModel(cloneFormModel(initialModel))
     nextTick(() => formRef.value?.clearValidate?.())
   },
-  clearValidate: (fieldProps?: string | string[]) => formRef.value?.clearValidate?.(fieldProps),
+  clearValidate: (fieldKeys?: string | string[]) => formRef.value?.clearValidate?.(fieldKeys),
   getFormRef: () => formRef.value,
   focusField: fieldLocator.focusField,
   scrollToFirstError: fieldLocator.scrollToFirstError
