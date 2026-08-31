@@ -29,6 +29,29 @@ const deprecatedPatterns = [
 ]
 const markdownLinkPattern = /!?\[[^\]]*\]\(([^)]+)\)/g
 
+const customFieldTypesGuide = fs.readFileSync(path.join(repositoryRoot, 'docs/api/custom-field-types.md'), 'utf8')
+for (const requiredSnippet of [
+  'createConfigForm<FormData, typeof fieldTypes>()',
+  'defineConfigFormItems<FormData, typeof fieldTypes>',
+  '<TypedConfigForm :field-types="fieldTypes"'
+]) {
+  if (!customFieldTypesGuide.includes(requiredSnippet)) {
+    errors.push(`docs/api/custom-field-types.md: 缺少可编译的自定义字段类型契约 ${requiredSnippet}`)
+  }
+}
+
+const schemaDrivenGuide = fs.readFileSync(path.join(repositoryRoot, 'docs/examples/schema-driven.md'), 'utf8')
+for (const requiredSnippet of [
+  'parseRemoteFormSchema(remoteSchemaText',
+  'components: componentRegistry',
+  "slots: ['scoreLabel', 'scoreError']",
+  '`listeners`、`model`、`is`、`resolveComponent`'
+]) {
+  if (!schemaDrivenGuide.includes(requiredSnippet)) {
+    errors.push(`docs/examples/schema-driven.md: 缺少远程 Schema 安全边界说明 ${requiredSnippet}`)
+  }
+}
+
 for (const file of markdownFiles) {
   const source = fs.readFileSync(file, 'utf8')
   const relativeFile = path.relative(repositoryRoot, file)

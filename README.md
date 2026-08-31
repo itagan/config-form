@@ -49,6 +49,8 @@ pnpm lint
 pnpm type-check
 pnpm test
 pnpm test:coverage
+pnpm test:schema
+pnpm test:e2e
 pnpm test:performance
 pnpm build
 pnpm compat:check
@@ -69,12 +71,14 @@ pnpm release:check
 - `pnpm type-check`：检查组件包和 playground。
 - `pnpm test`：运行组件包核心逻辑单测。
 - `pnpm test:coverage`：运行组件测试并校验覆盖率阈值。
+- `pnpm test:schema`：校验远程 Schema 白名单解析与本地组件/Slot 绑定边界。
+- `pnpm test:e2e`：在 Chromium 中验证校验聚焦、键盘导航、左右 Slot 和动态字段交互。
 - `pnpm test:performance`：运行 200 字段本地性能基线，用于相邻版本回归对比。
 - `pnpm build`：先构建 npm 包，再构建 playground 和文档站。
 - `pnpm compat:check`：使用最低 peer dependency 组合验证构建后的包入口。
 - `pnpm pack:check`：检查 npm tarball 内容、声明文件和 ESM/CommonJS 导出。
 - `pnpm docs:check`：检查文档相对链接、已移除 API 和公共状态描述。
-- `pnpm release:check`：执行发布元数据、Lint、覆盖率、类型、构建、文档、同站校验和 npm 打包预检；不会发布。
+- `pnpm release:check`：执行发布元数据、Lint、覆盖率、Schema、类型、浏览器交互、构建、文档、同站校验和 npm 打包预检；不会发布。
 
 ## 调试页面
 

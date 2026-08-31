@@ -9,9 +9,12 @@
 
 ### Added
 
-- 新增 `ConfigFormFieldBindingContext`、Slot 上下文、`ConfigFormEmits` 和泛型 `ConfigFormExpose` 公共类型。
+- 新增 `ConfigFormFieldBindingContext`、Slot 上下文、`ConfigFormEmits` 和 `ConfigFormExpose` 公共类型。
 - 支持字段 `leftSlot` / `rightSlot`，用于在主字段两侧组合单位、操作和辅助内容。
 - 新增文档一致性检查、PR/push 发布级 CI、发布元数据检查与防误发布检查。
+- 新增 Chromium 真实浏览器交互测试，覆盖校验聚焦、Enter 导航、左右 Slot、Tooltip 和动态字段。
+- 新增最低 peer 环境中的自定义字段类型 Vue 模板编译契约。
+- Playground 新增远程 Schema 白名单解析边界与单元测试；组件和 Slot 仅从客户端注册表绑定。
 
 ### Changed
 

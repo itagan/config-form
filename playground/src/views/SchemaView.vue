@@ -45,6 +45,7 @@ import { computed, defineComponent, ref, watch } from 'vue'
 import ConfigForm from '@itagan/config-form'
 import DemoCollapsiblePanel from '../components/DemoCollapsiblePanel.vue'
 import { formatConfigFormConfig } from '../utils/formatConfigFormConfig'
+import { parseRemoteFormSchema } from '../utils/parseRemoteFormSchema'
 import MoneyInput from '../components/MoneyInput.vue'
 
 // 远程 JSON 不包含任何函数：组件目标用 meta.component 声明，由客户端注册表绑定。
@@ -112,7 +113,7 @@ const schemaDefaults: Record<string, Record<string, any>> = {
   worklog: { title: '', project: '', start: '', end: '', intensity: 50, expect: '', category: [], favColor: '', budget: 0 }
 }
 
-const componentRegistry: Record<string, unknown> = { money: MoneyInput }
+const componentRegistry = { money: MoneyInput }
 
 export default defineComponent({
   components: { ConfigForm, DemoCollapsiblePanel },
@@ -121,19 +122,11 @@ export default defineComponent({
     const schemaName = ref<'feedback' | 'worklog'>('feedback')
     const formModel = ref<Record<string, any>>({ ...schemaDefaults.feedback })
 
-    // 解析远程 JSON 后，把 meta.component 指向的客户端组件注入 resolveComponent；
-    // 内置 type 不需要这一步，因此整套 schema 仍然保持可序列化。
-    const items = computed(() => JSON.parse(remoteSchemas[schemaName.value]).map((item: any) => (
-      item.type === 'component'
-        ? {
-            ...item,
-            component: {
-              ...item.component,
-              resolveComponent: ({ itemConfig }: any) => componentRegistry[itemConfig.meta?.component]
-            }
-          }
-        : item
-    )))
+    // 远程 JSON 先经过白名单解析，再绑定本地组件和 Slot；不直接执行下发的渲染协议。
+    const items = computed(() => parseRemoteFormSchema(remoteSchemas[schemaName.value], {
+      components: componentRegistry,
+      slots: ['scoreLabel', 'scoreError']
+    }))
 
     // 切换 Schema 后整体替换 model，并清除上一套字段残留的校验状态。
     watch(schemaName, name => {
@@ -141,8 +134,8 @@ export default defineComponent({
       formRef.value?.clearValidate()
     })
 
-        const configCode = computed(() => formatConfigFormConfig(items.value))
-return { formRef, schemaName, formModel, items, configCode }
+    const configCode = computed(() => formatConfigFormConfig(items.value))
+    return { formRef, schemaName, formModel, items, configCode }
   }
 })
 </script>

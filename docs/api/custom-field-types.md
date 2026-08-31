@@ -10,10 +10,19 @@ const money = defineConfigFormType<FormData>()<MoneyProps, MoneyEvents>({
 })
 
 const fieldTypes = defineConfigFormTypes<FormData>()({ money })
+const TypedConfigForm = createConfigForm<FormData, typeof fieldTypes>()
+
+const items = defineConfigFormItems<FormData, typeof fieldTypes>([
+  {
+    fieldKey: 'amount',
+    type: 'money',
+    component: { props: { currency: 'CNY' } }
+  }
+])
 ```
 
 ```vue
-<ConfigForm :field-types="fieldTypes" :items="items" v-model="model" />
+<TypedConfigForm :field-types="fieldTypes" :items="items" v-model="model" />
 ```
 
 字段 type 定义仅支持：
@@ -27,7 +36,7 @@ const fieldTypes = defineConfigFormTypes<FormData>()({ money })
 字段项的 `component.props/model` 会覆盖注册级配置，适合在个别表单中微调：
 
 ```ts
-const items = defineConfigFormItems<FormData>([
+const items = defineConfigFormItems<FormData, typeof fieldTypes>([
   {
     fieldKey: 'amount',
     type: 'money',
@@ -38,7 +47,7 @@ const items = defineConfigFormItems<FormData>([
 ])
 ```
 
-`defineConfigFormType` 的两段调用用于先固定 model，再推导组件 Props 与事件协议；它只提供类型约束，不注册全局组件。`defineConfigFormTypes` 保留 type 名称字面量，并在运行时拒绝保留名称。
+`defineConfigFormType` 的两段调用用于先固定 model，再推导组件 Props 与事件协议；它只提供类型约束，不注册全局组件。`defineConfigFormTypes` 保留 type 名称字面量，并在运行时拒绝保留名称。仓库用最低 peer 组合中的真实 Vue 模板持续编译这套示例契约。
 
 ## 按注册表收窄字段配置
 
