@@ -44,3 +44,5 @@ interface ConfigFormFieldContext<TModel> extends ConfigFormFieldBindingContext<T
 ```
 
 label Slot 使用 `ConfigFormFormItemSlotContext`；error Slot 使用额外带 `error` 的 `ConfigFormFormItemErrorSlotContext`。所有 Slot 函数可由 `ConfigFormSlots` / `ConfigFormSlotFn` 表达。
+
+字段配置的 `leftSlot` / `rightSlot` 指向根组件具名 Slot，用于单位、前置操作和辅助链接；两者收到 `ConfigFormFormItemSlotContext`。主字段使用弹性宽度，并仍是 `focusField` 与内容型 Tooltip 的定位目标。

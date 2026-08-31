@@ -221,6 +221,50 @@ describe('ConfigForm', () => {
     expect(wrapper.find('.form-action').text()).toBe('提交')
   })
 
+  it('renders left and right slots with the field context', async () => {
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: {
+        model: { amount: 100 },
+        items: [{
+          fieldKey: 'amount',
+          type: 'input',
+          leftSlot: 'amountPrefix',
+          rightSlot: 'amountSuffix'
+        }]
+      },
+      scopedSlots: {
+        amountPrefix: '<button class="adorn-left" @click="props.setValue(200)">￥{{ props.value }}</button>',
+        amountSuffix: '<span class="adorn-right">万元</span>'
+      }
+    })
+
+    expect(wrapper.find('.config-form__field-row-side .adorn-left').text()).toBe('￥100')
+    expect(wrapper.find('.config-form__field-row-main input').exists()).toBe(true)
+    expect(wrapper.find('.config-form__field-row-side .adorn-right').text()).toBe('万元')
+    await wrapper.find('.adorn-left').trigger('click')
+    expect(wrapper.emitted('update:model')?.[0]?.[0]).toEqual({ amount: 200 })
+  })
+
+  it('focuses the field content instead of an interactive side slot', async () => {
+    const wrapper = mount(ConfigFormForTest, {
+      attachTo: document.body,
+      propsData: {
+        model: { keyword: '' },
+        items: [{ fieldKey: 'keyword', type: 'input', leftSlot: 'searchAction' }]
+      },
+      scopedSlots: {
+        searchAction: '<button class="adorn-button" type="button">检索</button>'
+      }
+    })
+
+    try {
+      await (wrapper.vm as any).focusField('keyword')
+      expect(document.activeElement).toBe(wrapper.find('.config-form__field-row-main input').element)
+    } finally {
+      wrapper.destroy()
+    }
+  })
+
   it('merges registered field type defaults with item props', () => {
     const MoneyEditor = Vue.extend({
       name: 'MoneyEditor',

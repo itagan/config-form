@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import BasicView from '../views/BasicView.vue'
 import DynamicView from '../views/DynamicView.vue'
 import SchemaView from '../views/SchemaView.vue'
+import AdornView from '../views/AdornView.vue'
 import OptionsView from '../views/OptionsView.vue'
 import ExtensionsView from '../views/ExtensionsView.vue'
 import ReadonlyView from '../views/ReadonlyView.vue'
@@ -20,6 +21,7 @@ export default new VueRouter({
     { path: '/options', component: OptionsView },
     { path: '/dynamic', component: DynamicView },
     { path: '/schema', component: SchemaView },
+    { path: '/adorn', component: AdornView },
     { path: '/extensions', component: ExtensionsView },
     { path: '/readonly', component: ReadonlyView },
     { path: '/interaction', component: InteractionView },

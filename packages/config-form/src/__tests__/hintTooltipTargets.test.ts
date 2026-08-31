@@ -28,7 +28,7 @@ function buildFieldContainer(options: { trigger?: 'content' } = {}) {
   return container
 }
 
-describe('hintTooltipTargets with ambiguous content roots', () => {
+describe('hintTooltipTargets with decorated field rows', () => {
   afterEach(() => {
     document.body.innerHTML = ''
   })

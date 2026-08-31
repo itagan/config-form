@@ -52,6 +52,7 @@ ConfigForm 固定的渲染结构是：一个 `el-form`、一个 `el-row`，每�
 | `labelSlot` | `el-form-item` 的 label | 字段上下文 + `propPath` |
 | `errorSlot` | 校验错误信息 | 字段上下文 + `propPath` + `error`（Element 校验消息） |
 | `component.slot`（type: 'slot'） | 整个字段内容 | 字段上下文 + `propPath` + `component` |
+| `leftSlot` / `rightSlot` | 主字段内容两侧 | 字段上下文 + `propPath` |
 
 ```ts
 {
@@ -78,6 +79,7 @@ ConfigForm 固定的渲染结构是：一个 `el-form`、一个 `el-row`，每�
 使用约定：
 
 - `labelSlot`、`errorSlot` 只改变展示，不影响校验行为；`rules` 仍按 `formItemProps` 生效。
+- `leftSlot` / `rightSlot` 与主字段同行，适合单位、操作按钮和辅助链接；程序化聚焦仍以主字段为目标。
 - `type: 'slot'` 字段没有实际字段组件，键盘导航与自动 Hint 对其内容的覆盖能力有限（内容提供标准可聚焦元素即可参与导航），详见[键盘导航](/features/keyboard-navigation)与 [Hint 说明](/features/hint-tooltip)。
 
 ## 与内置布局能力的关系
