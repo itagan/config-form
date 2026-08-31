@@ -8,12 +8,16 @@
     "build-only": "vite build",
     "build:site": "vite build --mode site",
     "preview": "vite preview --port 4173",
-    "type-check": "vue-tsc -p tsconfig.json --noEmit"
+    "type-check": "vue-tsc -p tsconfig.json --noEmit",
+    "test": "vitest run src/utils/__tests__/parseRemoteFormSchema.test.ts"
   },
   "dependencies": {
     "@itagan/config-form": "workspace:*",
     "element-ui": "^2.15.14",
     "vue": "2.7.16",
     "vue-router": "^3.5.4"
+  },
+  "devDependencies": {
+    "vitest": "0.34.6"
   }
 }

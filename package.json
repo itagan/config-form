@@ -25,17 +25,20 @@
     "site:preview": "pnpm docs:preview",
     "test": "pnpm --filter @itagan/config-form test",
     "test:coverage": "pnpm --filter @itagan/config-form test:coverage",
+    "test:schema": "pnpm --filter configform-playground test",
     "test:performance": "pnpm --filter @itagan/config-form test:performance",
-    "lint": "eslint --ext .ts,.vue packages/config-form/src packages/config-form-min-peer/src playground/src",
+    "test:e2e": "playwright test",
+    "lint": "eslint --ext .ts,.vue packages/config-form/src packages/config-form-min-peer/src playground/src e2e playwright.config.ts",
     "type-check": "pnpm -r type-check",
     "compat:check": "pnpm --filter config-form-min-peer-check check",
     "pack:check": "node scripts/check-package.mjs",
     "release:meta-check": "node scripts/check-release-metadata.mjs",
     "publish:ready-check": "node scripts/check-publish-ready.mjs",
     "publish:check": "run-s release:check publish:ready-check",
-    "release:check": "run-s release:meta-check lint test:coverage type-check build:package compat:check docs:check site:build site:check pack:check"
+    "release:check": "run-s release:meta-check lint test:coverage test:schema type-check test:e2e build:package compat:check docs:check site:build site:check pack:check"
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "@types/node": "^16.11.45",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
