@@ -134,6 +134,9 @@ export function useConfigFormFieldPresentation(options: Options) {
         : undefined
     )),
     getSlot,
+    hasSideSlots: computed(() => Boolean(
+      getSlot(getItem().leftSlot) || getSlot(getItem().rightSlot)
+    )),
     setBindingValue
   }
 }

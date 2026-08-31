@@ -10,6 +10,8 @@ interface BaseFormItemConfig<TModel> {
   meta?: Record<string, unknown>
   labelSlot?: string
   errorSlot?: string
+  leftSlot?: string
+  rightSlot?: string
   visible?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
   hint?: DynamicValue<string | false | null | undefined, ConfigFormFieldRenderContext<TModel>>
   hintTrigger?: 'item' | 'content'
@@ -24,6 +26,7 @@ interface BaseFormItemConfig<TModel> {
 - `formItemProps` 透传给 `el-form-item`；`prop` 由 `fieldKey` 管理并在类型上禁止重复传入。
 - `hint` 与 `hintTrigger` 管理当前字段提示。
 - `labelSlot`、`errorSlot` 和 `type: 'slot'` 覆盖 Element FormItem 与字段内容插槽场景。
+- `leftSlot`、`rightSlot` 在主字段两侧渲染装饰内容，共用字段 Slot 上下文。
 
 交互状态不设独立字段 API：全局禁用使用 `formProps.disabled`，单字段状态通过 `component.props` 直接交给 Element 组件：
 

@@ -171,5 +171,20 @@ defineExpose({
     min-width: 0;
   }
 
+  :deep(.config-form__field-row) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  :deep(.config-form__field-row-side) {
+    flex: 0 0 auto;
+  }
+
+  :deep(.config-form__field-row-main) {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 }
 </style>

@@ -150,7 +150,13 @@ defineConfigFormItems<BusinessModel, typeof narrowFieldTypes>([
 ])
 
 const strictItems: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['items'] = [
-  { fieldKey: 'name', type: 'input', component: { props: { readonly: true } } }
+  {
+    fieldKey: 'name',
+    type: 'input',
+    leftSlot: 'currencyPrefix',
+    rightSlot: 'amountSuffix',
+    component: { props: { readonly: true } }
+  }
 ]
 void strictItems
 

@@ -61,6 +61,15 @@ export const examples: PlaygroundExample[] = [
     tags: ['业务 type', 'binding.map', 'slot']
   },
   {
+    path: '/adorn',
+    title: '字段左右 Slot',
+    description: '在主字段两侧组合单位、操作按钮或辅助链接，同时保持字段聚焦与 Tooltip 语义。',
+    category: 'advanced',
+    level: 'intermediate',
+    type: 'success',
+    tags: ['leftSlot', 'rightSlot']
+  },
+  {
     path: '/readonly',
     title: '详情与只读模式',
     description: 'formProps.disabled 全局透传、type: text 纯展示与字段级锁定。',

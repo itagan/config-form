@@ -10,13 +10,14 @@
 ### Added
 
 - 新增 `ConfigFormFieldBindingContext`、Slot 上下文、`ConfigFormEmits` 和泛型 `ConfigFormExpose` 公共类型。
+- 支持字段 `leftSlot` / `rightSlot`，用于在主字段两侧组合单位、操作和辅助内容。
 - 新增文档一致性检查、PR/push 发布级 CI、发布元数据检查与防误发布检查。
 
 ### Changed
 
 - 根组件拆分为字段项、字段内容和展示计算模块。
 - API 与 FormTable 对齐：`defineConfigFormItems` 命名、严格字段类型注册、字段级 `hintTrigger`、最小 `field-change` 载荷和 `Expose` 实例类型。
-- 移除字段级 disabled/readonly 策略、左右装饰 Slot、cloneModel、根 prepend/append Slot 和 Ref model 读写方法；交互状态改为 Element Props 透传，操作区改用默认 Slot。
+- 移除字段级 disabled/readonly 策略、cloneModel、根 prepend/append Slot 和 Ref model 读写方法；交互状态改为 Element Props 透传，操作区改用默认 Slot。
 
 ## 0.3.0 - 2026-08-30
 
