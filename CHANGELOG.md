@@ -21,6 +21,8 @@
 - 根组件拆分为字段项、字段内容和展示计算模块。
 - API 与 FormTable 对齐：`defineConfigFormItems` 命名、严格字段类型注册、字段级 `hintTrigger`、最小 `field-change` 载荷和 `Expose` 实例类型。
 - 移除字段级 disabled/readonly 策略、cloneModel、根 prepend/append Slot 和 Ref model 读写方法；交互状态改为 Element Props 透传，操作区改用默认 Slot。
+- `model` 与 `items` 的运行时约束统一为必填；`FormItemType` 不再接受未注册的任意字符串。
+- 收缩包根类型导出，仅保留使用方需要直接标注的配置、上下文、事件和实例类型。
 
 ## 0.3.0 - 2026-08-30
 

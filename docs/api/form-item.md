@@ -12,13 +12,15 @@ interface BaseFormItemConfig<TModel> {
   errorSlot?: string
   leftSlot?: string
   rightSlot?: string
-  visible?: DynamicValue<boolean, ConfigFormFieldRenderContext<TModel>>
-  hint?: DynamicValue<string | false | null | undefined, ConfigFormFieldRenderContext<TModel>>
+  visible?: boolean | ((context: ConfigFormFieldRenderContext<TModel>) => boolean)
+  hint?: ConfigFormHintValue | ((context: ConfigFormFieldRenderContext<TModel>) => ConfigFormHintValue)
   hintTrigger?: 'item' | 'content'
-  colProps?: DynamicValue<object, ConfigFormFieldRenderContext<TModel>>
-  formItemProps?: DynamicValue<ConfigFormFormItemProps, ConfigFormFieldRenderContext<TModel>>
+  colProps?: object | ((context: ConfigFormFieldRenderContext<TModel>) => object)
+  formItemProps?: ConfigFormFormItemProps | ((context: ConfigFormFieldRenderContext<TModel>) => ConfigFormFormItemProps)
 }
 ```
+
+其中 `ConfigFormHintValue` 表示 `string | false | null | undefined`。这些联合签名直接体现在公共属性上，不需要额外导入动态值辅助类型。
 
 - `fieldKey` 是必填 model 路径，支持点路径和数组下标。
 - `visible` 为 `false` 时不渲染整个 `el-col`。
