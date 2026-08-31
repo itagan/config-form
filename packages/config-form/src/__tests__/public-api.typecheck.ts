@@ -12,7 +12,7 @@ import type {
   ConfigFormFormItemErrorSlotContext,
   ConfigFormProps,
   ConfigFormSlotContext,
-  EmptyFieldTypeRegistry
+  FormItemType
 } from '../index'
 
 interface BusinessModel {
@@ -25,8 +25,32 @@ interface BusinessModel {
 type RemovedResolvedComponentConfig = import('../index').ResolvedComponentConfig
 // @ts-expect-error the instance type is named ConfigFormExpose
 type RemovedConfigFormRef = import('../index').ConfigFormRef
+// @ts-expect-error implementation helper is not exported from the package entry
+type RemovedComponentProps = import('../index').ComponentProps
+// @ts-expect-error component view is inferred through createConfigForm
+type RemovedConfigFormComponent = import('../index').ConfigFormComponent
+// @ts-expect-error base render context is an implementation detail
+type RemovedConfigFormRenderContext = import('../index').ConfigFormRenderContext
+// @ts-expect-error slot maps are inferred from the component
+type RemovedConfigFormSlots = import('../index').ConfigFormSlots
+// @ts-expect-error slot function helpers are inferred from the component
+type RemovedConfigFormSlotFn = import('../index').ConfigFormSlotFn
+// @ts-expect-error dynamic value helper is represented by public property signatures
+type RemovedDynamicValue = import('../index').DynamicValue
+// @ts-expect-error empty registry is the default generic and not a public annotation target
+type RemovedEmptyFieldTypeRegistry = import('../index').EmptyFieldTypeRegistry
+// @ts-expect-error typed definitions are inferred from defineConfigFormType
+type RemovedTypedFieldTypeDefinition = import('../index').TypedFieldTypeDefinition
 void (null as unknown as RemovedResolvedComponentConfig)
 void (null as unknown as RemovedConfigFormRef)
+void (null as unknown as RemovedComponentProps)
+void (null as unknown as RemovedConfigFormComponent)
+void (null as unknown as RemovedConfigFormRenderContext)
+void (null as unknown as RemovedConfigFormSlots)
+void (null as unknown as RemovedConfigFormSlotFn)
+void (null as unknown as RemovedDynamicValue)
+void (null as unknown as RemovedEmptyFieldTypeRegistry)
+void (null as unknown as RemovedTypedFieldTypeDefinition)
 
 interface MoneyProps {
   currency: string
@@ -149,7 +173,7 @@ defineConfigFormItems<BusinessModel, typeof narrowFieldTypes>([
   }
 ])
 
-const strictItems: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['items'] = [
+const strictItems: ConfigFormProps<BusinessModel>['items'] = [
   {
     fieldKey: 'name',
     type: 'input',
@@ -166,7 +190,22 @@ const businessProps: ConfigFormProps<BusinessModel> = {
 }
 void businessProps
 
-const strictUnknown: ConfigFormProps<BusinessModel, EmptyFieldTypeRegistry>['items'] = [
+// @ts-expect-error model is required by the controlled component contract
+const missingModelProps: ConfigFormProps<BusinessModel> = { items: [] }
+// @ts-expect-error items are required by the schema-driven component contract
+const missingItemsProps: ConfigFormProps<BusinessModel> = {
+  model: { amount: 20, currency: 'CNY' }
+}
+void missingModelProps
+void missingItemsProps
+
+const builtinType: FormItemType = 'input'
+// @ts-expect-error custom names only enter FormItemConfig through a typed field registry
+const unknownStandaloneType: FormItemType = 'money'
+void builtinType
+void unknownStandaloneType
+
+const strictUnknown: ConfigFormProps<BusinessModel>['items'] = [
   // @ts-expect-error unregistered types are rejected without a field type registry
   { fieldKey: 'amount', type: 'money' }
 ]

@@ -10,9 +10,37 @@ const requiredFiles = [
   'dist/config-form.umd.cjs',
   'dist/style.css',
   'dist/types/public-types.d.ts',
+  'dist/types/types.public.d.ts',
   'README.md',
   'LICENSE'
 ]
+
+const publicTypesEntry = readFileSync(resolve(packageDir, 'dist/types/types.public.d.ts'), 'utf8')
+for (const removedType of [
+  'ComponentProps',
+  'ConfigFormComponent',
+  'ConfigFormRenderContext',
+  'ConfigFormSlotFn',
+  'ConfigFormSlots',
+  'DynamicValue',
+  'EmptyFieldTypeRegistry',
+  'TypedFieldTypeDefinition'
+]) {
+  if (new RegExp(`\\b${removedType}\\b`).test(publicTypesEntry)) {
+    throw new Error(`Internal type is still exported from the package entry: ${removedType}`)
+  }
+}
+for (const publicType of [
+  'ConfigFormProps',
+  'ConfigFormExpose',
+  'FormItemConfig',
+  'FieldComponentConfig',
+  'FieldTypeRegistry'
+]) {
+  if (!new RegExp(`\\b${publicType}\\b`).test(publicTypesEntry)) {
+    throw new Error(`Expected public type is missing from the package entry: ${publicType}`)
+  }
+}
 
 const packed = spawnSync(
   'npm',
