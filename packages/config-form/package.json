@@ -1,6 +1,6 @@
 {
   "name": "@itagan/config-form",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Vue 2.7 + Element UI configuration-driven form component.",
   "type": "module",
   "main": "./dist/config-form.umd.cjs",
