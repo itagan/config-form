@@ -15,6 +15,7 @@
 - 新增 Chromium 真实浏览器交互测试，覆盖校验聚焦、Enter 导航、左右 Slot、Tooltip 和动态字段。
 - 新增最低 peer 环境中的自定义字段类型 Vue 模板编译契约。
 - Playground 新增远程 Schema 白名单解析边界与单元测试；组件和 Slot 仅从客户端注册表绑定。
+- 新增业务元数据 `meta` 功能文档，说明挂载业务数据并经字段上下文 `itemConfig.meta` 传入组件的用法与示例。
 
 ### Changed
 

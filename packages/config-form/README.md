@@ -91,6 +91,7 @@ const items = defineConfigFormItems([
 | `hint` | 字段提示内容，支持动态回调或 `false` 单独关闭 |
 | `hintTrigger` | Tooltip 触发范围：整个 FormItem 或字段内容 |
 | `binding` | 将多个 model 路径映射为一个复合组件值 |
+| `meta` | 业务元数据挂载点，ConfigForm 不读取，随字段上下文 `itemConfig.meta` 透出 |
 | `labelSlot` / `errorSlot` | 自定义 label 和校验错误插槽名 |
 | `leftSlot` / `rightSlot` | 在主字段两侧渲染单位、按钮或辅助内容 |
 
