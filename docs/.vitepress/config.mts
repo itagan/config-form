@@ -101,6 +101,7 @@ export default defineConfig({
           { text: '动态字段与显隐', link: '/features/dynamic-fields' },
           { text: '校验与聚焦', link: '/features/validation-and-focus' },
           { text: '自定义组件接入', link: '/features/custom-components' },
+          { text: '业务元数据 meta', link: '/features/meta' },
           { text: '复合字段映射', link: '/features/composite-binding' },
           { text: '布局与 Slot', link: '/features/layout-and-slots' },
           { text: '键盘导航', link: '/features/keyboard-navigation' },

@@ -20,6 +20,8 @@ interface ConfigFormFieldContext<TModel> extends ConfigFormFieldBindingContext<T
 }
 ```
 
+所有字段级上下文都携带 `itemConfig`（当前字段的完整配置）；业务挂载在字段 `meta` 中的自定义元数据通过 `itemConfig.meta` 读取，详见 [业务元数据 meta](/features/meta)。
+
 ## 根默认 Slot
 
 根默认 Slot 渲染在生成的 `el-row` 之后、`el-form` 内部，适合放操作区，并接收 `{ model }`：

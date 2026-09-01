@@ -23,6 +23,7 @@ interface BaseFormItemConfig<TModel> {
 其中 `ConfigFormHintValue` 表示 `string | false | null | undefined`。这些联合签名直接体现在公共属性上，不需要额外导入动态值辅助类型。
 
 - `fieldKey` 是必填 model 路径，支持点路径和数组下标。
+- `meta` 是业务元数据挂载点：ConfigForm 不读取，通过 `context.itemConfig.meta` 读取，见 [业务元数据 meta](/features/meta)。
 - `visible` 为 `false` 时不渲染整个 `el-col`。
 - `colProps` 透传给 `el-col`，与默认 `{ span: 24 }` 合并。
 - `formItemProps` 透传给 `el-form-item`；`prop` 由 `fieldKey` 管理并在类型上禁止重复传入。
