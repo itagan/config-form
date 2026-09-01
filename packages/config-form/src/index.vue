@@ -147,6 +147,7 @@ function validateField(fieldKeys: string | string[], callback?: (message: string
 defineExpose({
   validate,
   validateField,
+  updateModel: controlledUpdate.updateModel,
   resetFields: () => {
     controlledUpdate.replaceModel(cloneFormModel(initialModel))
     nextTick(() => formRef.value?.clearValidate?.())
@@ -167,6 +168,10 @@ defineExpose({
 
   :deep(.el-form-item) {
     min-width: 0;
+  }
+
+  :deep(.config-form-form-item .config-form-field-control--full) {
+    width: 100%;
   }
 
   :deep(.config-form__field-row) {

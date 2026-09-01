@@ -9,8 +9,8 @@ export type FormModel = Record<string, ConfigFormValue>
 export type ComponentProps = Record<string, ConfigFormValue>
 /** 配置值：静态值或按当前上下文同步计算的函数；动态函数应保持同步、无副作用。 */
 export type DynamicValue<T, TContext> = T | ((context: TContext) => T)
-/** 自动 Hint 的归一化值；`false` 显式关闭，`null`/`undefined` 视为无提示。 */
-export type ConfigFormHintValue = string | false | null | undefined
+/** 自动 Hint 的归一化值；数字（包括 `0`）自动转为字符串，`false` 显式关闭，`null`/`undefined` 视为无提示。 */
+export type ConfigFormHintValue = string | number | false | null | undefined
 /** Hint 展示方式：原生 title、单例 Tooltip 或关闭。 */
 export type ConfigFormHintMode = false | 'title' | 'tooltip'
 /** Tooltip 触发区域：整个 FormItem 或仅字段内容根节点。 */
@@ -449,6 +449,8 @@ export interface ConfigFormExpose {
   validate: (callback?: (valid: boolean, fields?: ConfigFormValue) => void) => Promise<boolean>
   /** 校验一个或多个字段；未挂载或未知字段直接视为失败。 */
   validateField: (fieldKeys: string | string[], callback?: (message: string) => void) => Promise<boolean>
+  /** 在一次受控提交中更新多个 model 路径；值未变化的路径跳过，按字段发出 field-change。 */
+  updateModel: (patch: Record<string, ConfigFormValue>) => void
   /** 恢复为组件创建时 model 的内部快照，并清除校验状态。 */
   resetFields: () => void
   /** 清除全部或指定字段校验状态。 */

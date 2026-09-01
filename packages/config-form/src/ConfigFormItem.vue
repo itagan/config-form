@@ -4,6 +4,7 @@
     v-bind="presentation.colProps.value"
   >
     <el-form-item
+      class="config-form-form-item"
       v-bind="presentation.formItemProps.value"
       :prop="item.fieldKey"
       :data-config-form-field-prop="item.fieldKey"

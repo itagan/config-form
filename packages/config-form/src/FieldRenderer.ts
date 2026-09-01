@@ -53,6 +53,9 @@ function createData(component: ResolvedComponentConfig): ModelVNodeData {
   return { attrs, class: className, style, on: { ...component.listeners } }
 }
 
+/** Element UI 为这些内置字段根节点声明了固定像素宽度，表单栅格内统一铺满字段列宽。 */
+const FULL_WIDTH_BUILTIN_TYPES = new Set(['number', 'date', 'time', 'time-select'])
+
 export default {
   name: 'ConfigFormFieldRenderer',
   functional: true,
@@ -69,6 +72,9 @@ export default {
     if (!component.is) return h('span')
 
     const data = createData(component)
+    if (FULL_WIDTH_BUILTIN_TYPES.has(type)) {
+      data.class = ['config-form-field-control--full', data.class]
+    }
     const protocol = component.model
     const modelValue = protocol && protocol.valueToProp
       ? protocol.valueToProp(modelContext as ConfigFormFieldRenderContext<FormModel>, value)

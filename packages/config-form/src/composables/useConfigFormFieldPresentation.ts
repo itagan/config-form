@@ -11,7 +11,7 @@ import type {
 import type { ConfigFormRootSlots, ConfigFormUpdateApi } from '../types/internal'
 import { createBindingPatch, resolveBindingValue } from '../utils/binding'
 import { resolveDynamic, resolveFieldComponent } from '../utils/field'
-import { stripManagedHintTitle } from '../utils/hint'
+import { resolveConfigFormHint, stripManagedHintTitle } from '../utils/hint'
 import { getValueByPath } from '../utils/path'
 
 interface Options {
@@ -81,7 +81,8 @@ export function useConfigFormFieldPresentation(options: Options) {
     if (hintOptions.mode === false) return null
     const configured = resolveDynamic(item.hint, renderContext)
     if (configured === false) return null
-    if (typeof configured === 'string' && configured !== '') return configured
+    const explicitHint = resolveConfigFormHint(configured)
+    if (explicitHint !== null) return explicitHint
 
     const defaultHint = hintOptions.field
     if (!defaultHint) return null
@@ -90,7 +91,7 @@ export function useConfigFormFieldPresentation(options: Options) {
       : renderContext.value == null || renderContext.value === ''
         ? null
         : String(renderContext.value)
-    return typeof content === 'string' && content !== '' ? content : null
+    return resolveConfigFormHint(content)
   })
 
   const resolvedComponent = computed(() => {

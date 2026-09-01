@@ -28,6 +28,7 @@ type ConfigFormEmits<TModel> = {
 interface ConfigFormExpose {
   validate(callback?): Promise<boolean>
   validateField(fieldKeys: string | string[], callback?): Promise<boolean>
+  updateModel(patch: Record<string, any>): void
   resetFields(): void
   clearValidate(fieldKeys?: string | string[]): void
   getFormRef(): ElForm | null
@@ -37,6 +38,12 @@ interface ConfigFormExpose {
 ```
 
 ConfigForm 不额外提供 model 读写 Ref；读取和提交使用父组件持有的 `model`，写入走 `v-model` 或字段上下文，底层 Form 的其他能力可通过 `getFormRef()` 使用。
+
+需要在字段回调之外做批量写入时，使用实例方法 `updateModel`：一次调用按路径合并为一份新 model 提交（支持 `profile.city` 点路径），值未变化的路径跳过，并按字段发出 `field-change`；同步连续调用会自动合并为一次受控更新：
+
+```ts
+formRef.value?.updateModel({ status: 'approved', 'audit.checkedBy': 'admin' })
+```
 
 ```ts
 import type { ConfigFormExpose } from '@itagan/config-form'

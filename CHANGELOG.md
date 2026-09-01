@@ -16,14 +16,22 @@
 - 新增最低 peer 环境中的自定义字段类型 Vue 模板编译契约。
 - Playground 新增远程 Schema 白名单解析边界与单元测试；组件和 Slot 仅从客户端注册表绑定。
 - 新增业务元数据 `meta` 功能文档，说明挂载业务数据并经字段上下文 `itemConfig.meta` 传入组件的用法与示例。
+- 新增稳定的 `config-form-form-item` 与 `config-form-field-control--full` 样式定位标记，配合 `dist/style.css` 支持业务局部覆盖。
+- 实例方法新增 `updateModel(patch)`，可在字段回调之外一次受控提交多个 model 路径（支持点路径、跳过未变化字段并按字段发出 `field-change`），对齐 FormTable 的原子批量更新。
 
 ### Changed
+
+- API 与 FormTable 1.3 对齐：内置 `number/date/time/time-select` 默认铺满字段列宽，覆盖 Element UI 的固定像素宽度；`component.props.style` 仍可覆盖。
 
 - 根组件拆分为字段项、字段内容和展示计算模块。
 - API 与 FormTable 对齐：`defineConfigFormItems` 命名、严格字段类型注册、字段级 `hintTrigger`、最小 `field-change` 载荷和 `Expose` 实例类型。
 - 移除字段级 disabled/readonly 策略、cloneModel、根 prepend/append Slot 和 Ref model 读写方法；交互状态改为 Element Props 透传，操作区改用默认 Slot。
 - `model` 与 `items` 的运行时约束统一为必填；`FormItemType` 不再接受未注册的任意字符串。
 - 收缩包根类型导出，仅保留使用方需要直接标注的配置、上下文、事件和实例类型。
+
+### Fixed
+
+- 动态 Hint 返回数字时不再丢弃，数字（包括 `0`）自动转换为字符串展示；`ConfigFormHintValue` 类型相应支持 `number`。
 
 ## 0.3.0 - 2026-08-30
 

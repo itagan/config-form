@@ -206,6 +206,23 @@ describe('ConfigForm', () => {
     expect(wrapper.findComponent({ name: 'ElInput' }).props('readonly')).toBe(true)
   })
 
+  it('renders numeric hints as strings, including zero', () => {
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: {
+        model: { count: 0, name: '', score: 0 },
+        hintOptions: { mode: 'title', field: ({ value }: any) => value },
+        items: [
+          { fieldKey: 'count', type: 'number', hint: ({ value }: any) => value },
+          { fieldKey: 'name', type: 'input', hint: 0 },
+          { fieldKey: 'score', type: 'number' }
+        ]
+      }
+    })
+
+    const titles = wrapper.findAll('.config-form__hint-target').wrappers.map(w => w.attributes('title'))
+    expect(titles).toEqual(['0', '0', '0'])
+  })
+
   it('renders the default slot after generated fields', () => {
     const wrapper = mount(ConfigFormForTest, {
       propsData: {
@@ -380,6 +397,35 @@ describe('ConfigForm', () => {
     await expect(vm.validateField('unknown', (message: string) => { callbackMessage = message }))
       .resolves.toBe(false)
     expect(callbackMessage).toBeUndefined()
+  })
+
+  it('commits atomic multi-path updates through the exposed updateModel', async () => {
+    const source = { name: 'Ada', profile: { city: 'Paris' } }
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: {
+        model: source,
+        items: [
+          { fieldKey: 'name', type: 'input' },
+          { fieldKey: 'profile.city', type: 'input' }
+        ]
+      }
+    })
+
+    ;(wrapper.vm as any).updateModel({ name: 'Grace', 'profile.city': 'Lyon' })
+
+    expect(wrapper.emitted('update:model')).toHaveLength(1)
+    const nextModel = wrapper.emitted('update:model')?.[0]?.[0] as typeof source
+    expect(nextModel).not.toBe(source)
+    expect(nextModel.profile).not.toBe(source.profile)
+    expect(nextModel).toEqual({ name: 'Grace', profile: { city: 'Lyon' } })
+    expect(wrapper.emitted('field-change')?.map(event => (event as unknown[])[0])).toMatchObject([
+      { fieldKey: 'name', previousValue: 'Ada', value: 'Grace' },
+      { fieldKey: 'profile.city', previousValue: 'Paris', value: 'Lyon' }
+    ])
+
+    ;(wrapper.vm as any).updateModel({ name: 'Grace' })
+    await Vue.nextTick()
+    expect(wrapper.emitted('update:model')).toHaveLength(1)
   })
 
   it('scrolls to the first error field and focuses it', async () => {
