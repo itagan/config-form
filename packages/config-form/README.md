@@ -76,6 +76,8 @@ const items = defineConfigFormItems([
 
 根级 `rowProps` 控制 `gutter`、对齐方式等；字段级 `colProps` 支持 `span`、`offset`、`xs`、`sm`、`md`、`lg`、`xl` 等 Element UI 栅格属性。
 
+样式覆盖可依赖稳定定位类：每个 FormItem 带 `config-form-form-item`；内置 `number/date/time/time-select` 根节点带 `config-form-field-control--full`，默认铺满字段列宽。
+
 ## 字段配置
 
 `FormItemConfig` 的常用属性：
@@ -88,7 +90,7 @@ const items = defineConfigFormItems([
 | `formItemProps` | 传给 `el-form-item`，包括 label、rules 等 |
 | `component` | 字段组件的 props、listeners、options、model 配置 |
 | `visible` | 布尔值或 `(context) => boolean` |
-| `hint` | 字段提示内容，支持动态回调或 `false` 单独关闭 |
+| `hint` | 字段提示内容，支持字符串、数字（含 0）、动态回调或 `false` 单独关闭 |
 | `hintTrigger` | Tooltip 触发范围：整个 FormItem 或字段内容 |
 | `binding` | 将多个 model 路径映射为一个复合组件值 |
 | `meta` | 业务元数据挂载点，ConfigForm 不读取，随字段上下文 `itemConfig.meta` 透出 |
@@ -257,7 +259,7 @@ async function submit() {
 - `update:model(model)`：受控 model 更新。
 - `field-change(payload)`：字段粒度更新，包含 `fieldKey`、新值和旧值。
 - `form-validate(prop, valid, message)`：透传 Element Form 的逐字段校验结果。
-- Ref 校验方法：`validate()`、`validateField()`、`resetFields()`、`clearValidate()`、`getFormRef()`、`scrollToFirstError()`、`focusField()`。
-`resetFields()` 使用支持 Date、RegExp、Map、Set、对象原型和循环引用的内部快照器。model 读取与页面级写入由父组件负责；字段内部的组合更新使用上下文 `updateModel`。
+- Ref 校验方法：`validate()`、`validateField()`、`updateModel(patch)`、`resetFields()`、`clearValidate()`、`getFormRef()`、`scrollToFirstError()`、`focusField()`。
+`resetFields()` 使用支持 Date、RegExp、Map、Set、对象原型和循环引用的内部快照器。model 读取与页面级写入由父组件负责；字段回调外的批量写入用实例 `updateModel(patch)` 一次受控提交（支持点路径、跳过未变化字段并按字段发出 `field-change`），字段内部的组合更新使用上下文 `updateModel`。
 
 本地运行 `pnpm dev` 查看示例，运行 `pnpm test`、`pnpm type-check` 和 `pnpm build` 完成验证；`pnpm test:performance` 可执行 200 字段本地性能基线。

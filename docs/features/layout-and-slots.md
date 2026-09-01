@@ -29,6 +29,14 @@ ConfigForm 固定的渲染结构是：一个 `el-form`、一个 `el-row`，每�
 
 超出一行 24 栅格时由 Element UI 自动换行；字段 `visible: false` 时卸载，不留占位。
 
+## 样式定位与字段宽度
+
+组件提供稳定的定位类，方便业务用 scoped CSS 的 `:deep()` 或全局样式做局部覆盖：
+
+- 每个字段的 `el-form-item` 带 `config-form-form-item` 类；`formItemProps.class` / `style` 与定位类合并生效。
+- 内置 `number`、`date`、`time`、`time-select` 的字段根节点带 `config-form-field-control--full` 类，默认铺满字段列宽，覆盖 Element UI 为这些组件声明的固定像素宽度。
+- 宽度仍由业务掌控：`component.props.style` 的行内样式优先于定位类，例如给 `time-select` 指定 `style: { width: '160px' }`；其他内置类型与自定义组件不加定位类，宽度行为不变。
+
 ## 根级 Slot
 
 根 `ConfigForm` 使用 Element Form 的默认内容插槽，渲染在字段列表之后，并暴露当前 `model`：

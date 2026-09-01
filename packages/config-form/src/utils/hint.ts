@@ -10,3 +10,9 @@ export function stripManagedHintTitle<T extends Record<string, unknown>>(sourceP
   const { title: _managed, ...rest } = sourceProps
   return rest as T
 }
+
+/** 将公开 Hint 值归一化为自动展示使用的字符串；数字（包括 `0`）自动转换。 */
+export function resolveConfigFormHint(hint: unknown): string | null {
+  if (typeof hint === 'number') return String(hint)
+  return typeof hint === 'string' && hint !== '' ? hint : null
+}
