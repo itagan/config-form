@@ -98,6 +98,14 @@ export type ConfigFormFieldListener<TModel extends FormModel = FormModel> = (
   ...args: unknown[]
 ) => void
 
+/** 字段组件根节点支持的标准 DOM 事件监听器。 */
+export type ConfigFormNativeFieldListeners<TModel extends FormModel = FormModel> = {
+  [TEvent in keyof GlobalEventHandlersEventMap]?: (
+    context: ConfigFormFieldContext<TModel>,
+    event: GlobalEventHandlersEventMap[TEvent]
+  ) => void
+}
+
 /** 双变签名：允许回调参数按注册协议逆变检查。 */
 type ConfigFormFieldValueFromEvent<TModel extends FormModel, TArgs extends unknown[]> = {
   bivarianceHack(
@@ -168,6 +176,8 @@ export interface FieldComponentConfig<TModel extends FormModel = FormModel> {
   props?: DynamicValue<ComponentProps, ConfigFormFieldBindingContext<TModel>>
   /** 字段组件事件监听器；回调首参固定为可更新的字段上下文。 */
   listeners?: Record<string, ConfigFormFieldListener<TModel>>
+  /** 字段组件根节点的原生 DOM 事件监听器；回调首参固定为可更新的字段上下文。 */
+  nativeListeners?: ConfigFormNativeFieldListeners<TModel>
   /** select、radio、checkbox 等选项型组件的数据源。 */
   options?: DynamicValue<FormItemOption[], ConfigFormFieldRenderContext<TModel>>
   /** 将业务选项对象字段映射到 label、value、disabled 和 key。 */
@@ -293,7 +303,12 @@ export interface SlotFormItemConfig<TModel extends FormModel = FormModel>
   extends BaseFormItemConfig<TModel> {
   type: 'slot'
   /** 必须通过 slot 指定具名 Slot，不创建实际字段组件。 */
-  component: FieldComponentConfig<TModel> & { slot: string, is?: never, resolveComponent?: never }
+  component: Omit<FieldComponentConfig<TModel>, 'nativeListeners'> & {
+    slot: string
+    is?: never
+    resolveComponent?: never
+    nativeListeners?: never
+  }
 }
 
 /** 从注册表定义中还原声明时的组件 Props 协议。 */
@@ -330,6 +345,7 @@ type CustomFieldComponentConfig<
     ConfigFormFieldBindingContext<TModel>
   >
   listeners?: RegisteredFieldTypeListeners<TModel, TDefinition>
+  nativeListeners?: ConfigFormNativeFieldListeners<TModel>
   model?: FieldModelConfig<TModel, RegisteredFieldTypeEvents<TDefinition>> | false
   is?: never
   resolveComponent?: never
@@ -502,6 +518,8 @@ export interface ResolvedComponentConfig<TModel extends FormModel = FormModel> {
   props: ComponentProps
   /** 已归一化的事件监听器表。 */
   listeners: Record<string, (...args: unknown[]) => void>
+  /** 已注入字段更新上下文的组件根节点原生监听器。 */
+  nativeListeners: Record<string, (event: Event) => void>
   /** 已解析的选项数据源。 */
   options: FormItemOption[]
   /** 已解析的选项字段映射。 */

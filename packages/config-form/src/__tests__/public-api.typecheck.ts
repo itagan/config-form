@@ -10,6 +10,7 @@ import type {
   ConfigFormEmits,
   ConfigFormFieldBindingContext,
   ConfigFormFormItemErrorSlotContext,
+  ConfigFormNativeFieldListeners,
   ConfigFormProps,
   ConfigFormSlotContext,
   FormItemType
@@ -235,3 +236,61 @@ defineConfigFormItems<BusinessModel, typeof narrowFieldTypes>([
     }
   }
 ])
+
+const nativeFieldListeners: ConfigFormNativeFieldListeners<BusinessModel> = {
+  click(context, event) {
+    context.model.amount.toFixed(0)
+    event.clientX.toFixed(0)
+    // @ts-expect-error click is inferred as MouseEvent, not KeyboardEvent.
+    event.key.toLowerCase()
+  },
+  keydown(context, event) {
+    context.updateModel({ amount: 100 })
+    event.key.toLowerCase()
+  }
+}
+
+defineConfigFormItems<BusinessModel, typeof narrowFieldTypes>([
+  {
+    fieldKey: 'amount',
+    type: 'money',
+    component: {
+      props: { currency: 'USD' },
+      nativeListeners: nativeFieldListeners
+    }
+  },
+  {
+    fieldKey: 'name',
+    type: 'input',
+    component: {
+      nativeListeners: {
+        click({ model }, event) {
+          model.amount.toFixed(0)
+          event.clientX.toFixed(0)
+        }
+      }
+    }
+  }
+])
+
+defineConfigFormItems<BusinessModel, typeof narrowFieldTypes>([
+  {
+    fieldKey: 'name',
+    type: 'input',
+    component: {
+      // @ts-expect-error unknown DOM event names are rejected
+      nativeListeners: { notAStandardEvent: () => undefined }
+    }
+  }
+])
+
+const invalidSlotNativeListeners: Extract<ConfigFormProps<BusinessModel>['items'][number], { type: 'slot' }> = {
+  fieldKey: 'actions',
+  type: 'slot',
+  component: {
+    slot: 'actions',
+    // @ts-expect-error Slot 内容由调用方渲染，不接受 nativeListeners。
+    nativeListeners: { click: () => undefined }
+  }
+}
+void invalidSlotNativeListeners

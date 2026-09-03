@@ -5,6 +5,12 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## Unreleased
+
+### Added
+
+- 新增字段组件 `nativeListeners` 配置，可携带字段更新上下文监听 Element UI、直接组件、注册 Type 和 `text` 根节点的标准 DOM 事件，对齐 FormTable 1.4。
+
 ## 0.4.0 - 2026-09-02
 
 ### Added

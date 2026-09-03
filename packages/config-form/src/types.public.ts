@@ -15,6 +15,7 @@ export type {
   ConfigFormHintOptions,
   ConfigFormHintTrigger,
   ConfigFormHintValue,
+  ConfigFormNativeFieldListeners,
   ConfigFormNavigationOptions,
   ConfigFormProps,
   ConfigFormSlotContext,
