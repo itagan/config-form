@@ -48,9 +48,33 @@ function createOptions(
   })
 }
 
-function createData(component: ResolvedComponentConfig): ModelVNodeData {
+function createData(
+  component: ResolvedComponentConfig,
+  nativeListeners: Record<string, (event: Event) => void>,
+  isNativeElement = false
+): ModelVNodeData {
   const { class: className, style, ...attrs } = component.props
-  return { attrs, class: className, style, on: { ...component.listeners } }
+  const data: ModelVNodeData = {
+    attrs,
+    class: className,
+    style,
+    on: { ...component.listeners }
+  }
+  if (isNativeElement) {
+    for (const name of Object.keys(nativeListeners)) {
+      const componentListener = component.listeners[name]
+      const nativeListener = nativeListeners[name]
+      data.on![name] = componentListener
+        ? (...args: unknown[]) => {
+            componentListener(...args)
+            nativeListener(args[0] as Event)
+          }
+        : nativeListener
+    }
+  } else {
+    data.nativeOn = { ...nativeListeners }
+  }
+  return data
 }
 
 /** Element UI 为这些内置字段根节点声明了固定像素宽度，表单栅格内统一铺满字段列宽。 */
@@ -68,10 +92,12 @@ export default {
   },
   render(h: CreateElement, context: RenderContext<Props>): VNode {
     const { type, value, component, modelContext, onModelInput } = context.props
-    if (type === 'text') return h('span', createData(component), [String(value ?? '')])
+    if (type === 'text') {
+      return h('span', createData(component, component.nativeListeners, true), [String(value ?? '')])
+    }
     if (!component.is) return h('span')
 
-    const data = createData(component)
+    const data = createData(component, component.nativeListeners)
     if (FULL_WIDTH_BUILTIN_TYPES.has(type)) {
       data.class = ['config-form-field-control--full', data.class]
     }

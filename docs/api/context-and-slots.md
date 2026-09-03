@@ -36,7 +36,7 @@ interface ConfigFormFieldContext<TModel> extends ConfigFormFieldBindingContext<T
 
 ## 字段 Slot
 
-`type: 'slot'` 通过 `component.slot` 指向根组件具名 Slot。其上下文为 `ConfigFormSlotContext`，包含字段完整上下文、`propPath` 和已解析的 `ResolvedComponentConfig`。
+`type: 'slot'` 通过 `component.slot` 指向根组件具名 Slot。其上下文为 `ConfigFormSlotContext`，包含字段完整上下文、`propPath` 和已解析的 `ResolvedComponentConfig`。字段 Slot 不接受 `nativeListeners`，因为实际组件和根节点由调用方创建；原生 DOM 事件应在 Slot 模板内显式监听。
 
 ```vue
 <template #amountEditor="{ bindingValue, setBindingValue, propPath }">

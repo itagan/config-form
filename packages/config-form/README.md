@@ -88,7 +88,7 @@ const items = defineConfigFormItems([
 | `type` | 内置类型、`component`、`slot` 或注册的业务类型 |
 | `colProps` | 传给外层 `el-col`，默认 `{ span: 24 }` |
 | `formItemProps` | 传给 `el-form-item`，包括 label、rules 等 |
-| `component` | 字段组件的 props、listeners、options、model 配置 |
+| `component` | 字段组件的 props、listeners、nativeListeners、options、model 配置 |
 | `visible` | 布尔值或 `(context) => boolean` |
 | `hint` | 字段提示内容，支持字符串、数字（含 0）、动态回调或 `false` 单独关闭 |
 | `hintTrigger` | Tooltip 触发范围：整个 FormItem 或字段内容 |
@@ -151,6 +151,8 @@ interface ConfigFormFieldRenderContext {
 ```
 
 需要按当前 model 选择不同组件时，使用 `component.resolveComponent(context)`；返回 `undefined` 会回退到 `component.is`。
+
+组件没有发出所需事件时，`component.nativeListeners` 监听其根节点标准 DOM 事件（如只读 Input 的 `click`），回调首参同样为字段上下文；事件修饰符不在此解析，需要时直接操作事件对象。
 
 完全自定义渲染使用 `type: 'slot'`。插槽上下文提供 `value`、`setValue`、`bindingValue`、`setBindingValue`、`updateModel`、`model`、`itemConfig` 与 `propPath`。
 

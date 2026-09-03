@@ -48,6 +48,17 @@ export function resolveFieldComponent<TModel extends FormModel>(
     },
     {}
   )
+  const nativeListenerConfig = component.nativeListeners || {}
+  const nativeListeners = Object.keys(nativeListenerConfig).reduce<Record<string, (event: Event) => void>>(
+    (result, event) => {
+      const listener = nativeListenerConfig[event as keyof GlobalEventHandlersEventMap] as
+        | ((context: any, event: Event) => void)
+        | undefined
+      result[event] = nativeEvent => listener?.(fieldContext, nativeEvent)
+      return result
+    },
+    {}
+  )
 
   return {
     is: component.resolveComponent?.(renderContext)
@@ -59,6 +70,7 @@ export function resolveFieldComponent<TModel extends FormModel>(
       ...(resolveDynamic(component.props, bindingContext) || {})
     },
     listeners,
+    nativeListeners,
     options: resolveDynamic(component.options, renderContext) || [],
     optionProps: resolveDynamic(component.optionProps, renderContext),
     model: component.model !== undefined ? component.model : definition?.model
