@@ -8,6 +8,7 @@
 | `resolveComponent` | `(context) => string \| Component \| undefined` | 动态解析组件；`undefined` 时回退到 `is` |
 | `props` | `object \| (context) => object` | 组件 Props |
 | `listeners` | `Record<string, (context, ...args) => void>` | 组件事件监听；第一个参数固定为字段上下文 |
+| `nativeListeners` | `ConfigFormNativeFieldListeners` | 字段组件根节点的标准 DOM 事件；第一个参数固定为字段上下文 |
 | `options` | `FormItemOption[] \| (context) => FormItemOption[]` | select/radio/checkbox 子选项 |
 | `optionProps` | `OptionPropsConfig \| (context) => OptionPropsConfig` | 选项字段名映射 |
 | `model` | `FieldModelConfig \| false` | 自定义组件 model 协议；`false` 表示不自动写回 |
@@ -32,6 +33,28 @@
 ```
 
 `resolveComponent(context)` 可动态选择组件；返回 undefined 时回退到 `is`。自定义 model 可声明 `prop`、`event`、`valueToProp` 和 `valueFromEvent`。
+
+## 根节点原生事件
+
+`listeners` 监听组件通过 `$emit` 发出的事件；`nativeListeners` 监听字段组件根节点的标准 DOM 事件。后者适合只读 `el-input` 点击查看、原生键盘和鼠标交互等组件本身没有发出同名业务事件的场景：
+
+```ts
+component: {
+  props: { readonly: true },
+  nativeListeners: {
+    click(context, event) {
+      event.stopPropagation()
+      openDetail(context.model)
+    }
+  }
+}
+```
+
+事件名按标准 DOM 事件推导参数类型，例如 `click` 为 `MouseEvent`、`keydown` 为 `KeyboardEvent`。ConfigForm 不解析 `.stop/.prevent/.self/.once/.capture/.passive` 等模板修饰符；需要阻止传播、阻止默认行为或过滤目标时直接操作事件对象。同一事件同时出现在 `listeners` 和 `nativeListeners` 时，两者独立生效，不会去重。
+
+`type: 'text'` 的实际目标是原生 `span`，ConfigForm 会在内部把 `nativeListeners` 适配为普通 DOM listener；若与原有 `listeners` 配置同名事件，先执行 `listeners`，再执行 `nativeListeners`。字段 Slot 的内容由调用方创建，因此不接受 `nativeListeners`，请在 Slot 模板中显式使用 `@click.native` 等监听方式。
+
+完整的事件选择与限制见[字段组件事件](/features/component-events)。
 
 ## 自定义 model 协议
 

@@ -53,6 +53,6 @@ interface BaseFormItemConfig<TModel> {
 - 内置 type：`component` 可覆盖 Props、监听器、选项和 model 协议。
 - `component`：必须提供 `component.is` 或 `component.resolveComponent`。
 - `slot`：必须提供 `component.slot`。
-- 注册业务 type：`component.props/listeners/model` 按注册协议收窄，且 `fieldTypes` 必填。
+- 注册业务 type：`component.props/listeners/nativeListeners/model` 按注册协议收窄，且 `fieldTypes` 必填。
 
 校验规则直接写在 `formItemProps.rules`，由 Element Form 执行。

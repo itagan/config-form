@@ -19,7 +19,7 @@
 ```
 
 - 组件目标 `is`（组件对象或全局注册名）与 `resolveComponent`（同步函数，返回组件）二选一；`resolveComponent` 返回 `undefined` 时回退到 `is`。
-- `props`、`listeners` 透传；监听器首参固定为字段上下文，可以读写 model。
+- `props`、`listeners` 透传；监听器首参固定为字段上下文，可以读写 model。组件没有发出所需事件时，`nativeListeners` 可监听其根节点 DOM 事件，同样以字段上下文为首参。
 - `options/optionProps` 在 `type: 'component'` 下不可用——业务组件的选项数据源通过 `props` 自行传入（`el-cascader` 的 `props.options` 同理）。
 - 未配置 `model` 协议时，默认使用组件原生 Vue 2 `v-model`（`value` / `input`）。
 
@@ -58,7 +58,7 @@ const fieldTypes = defineConfigFormTypes()({ money })
 
 - 注册是**实例级**的（通过 `fieldTypes` Prop 传入），不污染全局。
 - `type` 保留名（内置 type 与 `component`/`slot`）不可被注册覆盖。
-- 显式泛型（`defineConfigFormType<Model>()<Props, Events>`）后，`items` 中该 type 字段的 `component.props`、`listeners` 按注册协议收窄，未注册的 type 名在类型检查阶段直接报错。
+- 显式泛型（`defineConfigFormType<Model>()<Props, Events>`）后，`items` 中该 type 字段的 `component.props`、`listeners`、`nativeListeners` 按注册协议收窄，未注册的 type 名在类型检查阶段直接报错。
 - 注册级 `props` 支持动态函数，与字段级 `component.props` 按浅合并、字段级优先。
 
 完整协议见 [自定义字段类型 API](/api/custom-field-types)。

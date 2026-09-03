@@ -73,6 +73,7 @@ const items = defineConfigFormItems<FormData, typeof fieldTypes>([
 
 - `component.props` 只接受注册时声明的 Props（或同步函数）。
 - `component.model.event` 与 `valueFromEvent` 参数按注册的事件元组协议联动。
+- `component.nativeListeners` 接受标准 DOM 事件名，回调首参固定为字段上下文。
 - `component.is`、`resolveComponent`、`slot`、`options`、`optionProps` 在类型上禁止；需要自定义渲染时改用 `type: 'component'` 或 `'slot'`。
 - 未注册的 type 名直接编译错误；运行时诊断会在开发环境给出同样的提示。
 

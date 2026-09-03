@@ -22,6 +22,8 @@ type ConfigFormEmits<TModel> = {
 
 `field-change` 与 FormTable 保持字段变化的最小载荷；下一份完整 model 由 `update:model` 提供。
 
+字段级事件在 `component` 上配置：`listeners` 对应组件 `$emit`（首参为字段上下文），`nativeListeners` 对应组件根节点的标准 DOM 事件（`ConfigFormFieldContext, DOM Event`）。两者都不是 ConfigForm 根事件，配置方式与限制见[字段组件事件](/features/component-events)。
+
 ## 实例
 
 ```ts
