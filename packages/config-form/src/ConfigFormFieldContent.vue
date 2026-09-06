@@ -16,13 +16,14 @@
       :value="bindingValue"
       :component="resolvedComponent"
       :model-context="renderContext"
+      :component-slots="componentSlots"
       :on-model-input="onModelInput"
     />
   </ConfigFormHint>
 </template>
 
 <script lang="ts" setup>
-import type { PropType } from 'vue'
+import type { PropType, VNodeData } from 'vue'
 import ConfigFormHint from './ConfigFormHint'
 import FieldRenderer from './FieldRenderer'
 import SlotRenderer from './SlotRenderer'
@@ -43,6 +44,7 @@ defineProps({
   tooltipProps: { type: Object as PropType<ComponentProps>, default: () => ({}) },
   fieldSlot: { type: Function as PropType<ConfigFormSlot>, default: undefined },
   slotContext: { type: Object as PropType<Record<string, unknown>>, required: true },
+  componentSlots: { type: Object as PropType<VNodeData['scopedSlots']>, required: true },
   bindingValue: { default: undefined as ConfigFormValue },
   resolvedComponent: { type: Object as PropType<ResolvedComponentConfig>, required: true },
   renderContext: { type: Object as PropType<ConfigFormFieldRenderContext>, required: true },

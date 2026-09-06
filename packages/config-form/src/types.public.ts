@@ -1,5 +1,6 @@
 export type {
   BuiltinFormItemType,
+  ConfigFormComponentSlotContext,
   ConfigFormElementFormRef,
   ConfigFormEmits,
   ConfigFormExpose,

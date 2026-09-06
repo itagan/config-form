@@ -184,6 +184,8 @@ export interface FieldComponentConfig<TModel extends FormModel = FormModel> {
   optionProps?: DynamicValue<OptionPropsConfig, ConfigFormFieldRenderContext<TModel>>
   /** 自定义受控值协议；undefined 使用组件原生 Vue 2 v-model，false 禁用写回。 */
   model?: FieldModelConfig<TModel> | false
+  /** 原生组件插槽名到根 ConfigForm 具名 Slot 名的映射。 */
+  slots?: Record<string, string>
   /** type: 'slot' 时在根 ConfigForm 上对应的具名 Slot。 */
   slot?: string
 }
@@ -303,11 +305,12 @@ export interface SlotFormItemConfig<TModel extends FormModel = FormModel>
   extends BaseFormItemConfig<TModel> {
   type: 'slot'
   /** 必须通过 slot 指定具名 Slot，不创建实际字段组件。 */
-  component: Omit<FieldComponentConfig<TModel>, 'nativeListeners'> & {
+  component: Omit<FieldComponentConfig<TModel>, 'nativeListeners' | 'slots'> & {
     slot: string
     is?: never
     resolveComponent?: never
     nativeListeners?: never
+    slots?: never
   }
 }
 
@@ -346,6 +349,7 @@ type CustomFieldComponentConfig<
   >
   listeners?: RegisteredFieldTypeListeners<TModel, TDefinition>
   nativeListeners?: ConfigFormNativeFieldListeners<TModel>
+  slots?: Record<string, string>
   model?: FieldModelConfig<TModel, RegisteredFieldTypeEvents<TDefinition>> | false
   is?: never
   resolveComponent?: never
@@ -447,6 +451,15 @@ export interface ConfigFormFormItemErrorSlotContext<TModel extends FormModel = F
   error: string
 }
 
+/** 原生组件插槽上下文：字段读写能力与底层插槽参数分别提供。 */
+export interface ConfigFormComponentSlotContext<
+  TModel extends FormModel = FormModel,
+  TSlotProps = Record<string, ConfigFormValue>
+> {
+  field: ConfigFormFieldContext<TModel>
+  slotProps: TSlotProps
+}
+
 /** 字段内容 Slot 上下文。 */
 export interface ConfigFormSlotContext<TModel extends FormModel = FormModel>
   extends ConfigFormFormItemSlotContext<TModel> {
@@ -461,9 +474,9 @@ export type ConfigFormElementFormRef = ElForm
 
 /** ConfigForm 实例暴露的方法集合；通过模板 Ref 获取。 */
 export interface ConfigFormExpose {
-  /** 校验全部字段；无论 Element UI resolve 或 reject 都返回 Promise<boolean>。 */
+  /** 校验全部字段；校验失败返回 false，业务回调异常正常 reject。 */
   validate: (callback?: (valid: boolean, fields?: ConfigFormValue) => void) => Promise<boolean>
-  /** 校验一个或多个字段；未挂载或未知字段直接视为失败。 */
+  /** 校验配置生成的一个或多个字段；未挂载或未知字段直接视为失败。 */
   validateField: (fieldKeys: string | string[], callback?: (message: string) => void) => Promise<boolean>
   /** 在一次受控提交中更新多个 model 路径；值未变化的路径跳过，按字段发出 field-change。 */
   updateModel: (patch: Record<string, ConfigFormValue>) => void

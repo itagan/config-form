@@ -265,3 +265,17 @@ async function submit() {
 `resetFields()` 使用支持 Date、RegExp、Map、Set、对象原型和循环引用的内部快照器。model 读取与页面级写入由父组件负责；字段回调外的批量写入用实例 `updateModel(patch)` 一次受控提交（支持点路径、跳过未变化字段并按字段发出 `field-change`），字段内部的组合更新使用上下文 `updateModel`。
 
 本地运行 `pnpm dev` 查看示例，运行 `pnpm test`、`pnpm type-check` 和 `pnpm build` 完成验证；`pnpm test:performance` 可执行 200 字段本地性能基线。
+
+### 原生组件插槽
+
+字段级 `component.slots` 将底层组件插槽名映射到 ConfigForm 根具名 Slot，例如 `slots: { prepend: 'prefix', append: 'action' }`。根插槽接收 `{ field, slotProps }`：`field` 提供字段读写上下文，`slotProps` 保留底层作用域插槽参数。对应公共类型为 `ConfigFormComponentSlotContext<TModel, TSlotProps>`。
+
+支持内置组件、注册字段和一次性组件；`text` 没有组件插槽，整字段 Slot 继续使用 `component.slot`。映射目标存在时才覆盖；select/radio/checkbox 的有效 `default` 插槽替代自动选项，否则保留 `options/optionProps`。注册定义仍只包含 `is/props/model`。
+
+### 校验与重置契约
+
+`validate()` 校验失败返回 `false` 并向回调提供失败字段；业务回调只调用一次，其异常会正常 reject。`validateField()` 只支持配置生成的已挂载字段；手写原生 FormItem 使用 `getFormRef()?.validateField()`。
+
+`resetFields()` 恢复组件创建时的整份 model 快照，包括隐藏字段和非表单属性；动态字段不会重新记录初值，后续新增属性随快照恢复而移除。这不同于 Element UI 的逐字段重置，父组件须接收受控更新。
+
+同步连续 `updateModel()` 每次有效调用分别提交，但基于最新待回写数据合并，避免更新丢失。

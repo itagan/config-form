@@ -98,7 +98,7 @@ if (import.meta.env.DEV) {
   })
 }
 
-// 与 Element Form 一致，以组件创建时的 model 作为 resetFields 初始值。
+// 恢复组件创建时的整份 model 快照；不同于 Element Form 按已挂载字段重置。
 const initialModel = cloneFormModel(props.model)
 
 const controlledUpdate = useControlledFormUpdate({
@@ -130,14 +130,17 @@ function handleValidate(prop: string, valid: boolean, message: string | null) {
 }
 
 async function validate(callback?: (valid: boolean, fields?: ConfigFormValue) => void) {
+  let valid = false
+  let invalidFields: ConfigFormValue
   try {
-    const valid = Boolean(await formRef.value?.validate?.())
-    callback?.(valid)
-    return valid
+    valid = Boolean(await formRef.value?.validate?.())
   } catch (fields) {
-    callback?.(false, fields)
-    return false
+    invalidFields = fields
   }
+  // 业务回调异常应交给调用方，不能被误判为校验失败或导致重复调用。
+  if (valid) callback?.(valid)
+  else callback?.(false, invalidFields)
+  return valid
 }
 
 function validateField(fieldKeys: string | string[], callback?: (message: string) => void) {

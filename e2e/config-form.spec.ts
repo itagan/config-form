@@ -53,3 +53,22 @@ test('updates dynamic fields and the controlled model', async ({ page }) => {
   await expect(field(page, 'title').locator('input')).toHaveValue('季度巡检')
   await expect(field(page, 'owner.name').locator('input')).toHaveValue('Ada')
 })
+
+
+test('uses Input and Autocomplete native slots without replacing their controls', async ({ page }) => {
+  await page.goto('/#/extensions')
+  const project = field(page, 'project')
+  await expect(project.locator('.el-input-group__prepend')).toHaveText('项目')
+  await project.locator('input').fill('Custom project')
+  await expect(page.locator('.el-alert')).toContainText('Custom project')
+  await project.getByRole('button', { name: '恢复项目名' }).click()
+  await expect(project.locator('input')).toHaveValue('ConfigForm')
+  await expect(project.locator('.el-input-group__prepend')).toBeVisible()
+
+  const owner = field(page, 'owner').locator('input')
+  await owner.fill('Ad')
+  const suggestion = page.locator('.owner-suggestion:visible').filter({ hasText: 'Ada · 工程师' })
+  await expect(suggestion).toBeVisible()
+  await suggestion.click()
+  await expect(owner).toHaveValue('Ada')
+})

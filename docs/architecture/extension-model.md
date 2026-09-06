@@ -60,3 +60,7 @@ const fieldTypes = defineConfigFormTypes()({ money })
 - 扩展只发生在**字段渲染层**。受控写回、校验、诊断、Hint、导航对四种扩展方式一视同仁——自定义组件只要遵守 model 协议就自动获得受控更新、`field-change`、`focusField` 等能力。
 - 注册表是实例级的：同一页面可以挂载两份不同 `fieldTypes` 的 ConfigForm，互不影响。
 - ConfigForm 不提供全局字段类型注册 API，避免隐式耦合；跨页面复用通过导出注册表常量实现。
+
+## FormTable 后续对齐记录
+
+本轮仅修改 ConfigForm。FormTable 后续可同步校验回调异常处理，以及字段级 `component.slots` 的映射和 `{ field, slotProps }` 上下文；继续保留 `row/updateRow` 与 `model/updateModel` 的场景差异。本轮不增加字段实例注册表，也不抽取公共包。

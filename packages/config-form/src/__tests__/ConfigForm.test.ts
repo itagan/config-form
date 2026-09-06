@@ -137,6 +137,51 @@ describe('ConfigForm', () => {
     expect(source.profile.name).toBe('Ada')
   })
 
+  it('restores the creation snapshot including hidden, late-mounted and non-field data', async () => {
+    const source = { name: 'Ada', hidden: 'initial', late: 'original', metadata: { revision: 1 } }
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: { model: source, items: [{ fieldKey: 'name', type: 'input' }] }
+    })
+    source.metadata.revision = 2
+    await wrapper.setProps({
+      model: { name: 'Grace', hidden: 'changed', late: 'mounted', metadata: { revision: 3 }, added: true },
+      items: [
+        { fieldKey: 'name', type: 'input' },
+        { fieldKey: 'hidden', type: 'input', visible: false },
+        { fieldKey: 'late', type: 'input' }
+      ]
+    })
+    ;(wrapper.vm as any).resetFields()
+    await Vue.nextTick()
+    const reset = wrapper.emitted('update:model')![0][0] as typeof source
+    expect(reset).toEqual({ name: 'Ada', hidden: 'initial', late: 'original', metadata: { revision: 1 } })
+    expect(wrapper.props('model').late).toBe('mounted')
+    reset.metadata.revision = 9
+    ;(wrapper.vm as any).resetFields()
+    expect((wrapper.emitted('update:model')![1][0] as typeof source).metadata.revision).toBe(1)
+    wrapper.destroy()
+  })
+
+  it.each([true, false])('invokes validation callbacks once and propagates business errors (valid=%s)', async valid => {
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: {
+        model: { name: valid ? 'Ada' : '' },
+        items: [{ fieldKey: 'name', type: 'input', formItemProps: { rules: [{ required: true, message: 'name required' }] } }]
+      }
+    })
+    const callback = vi.fn()
+    await expect((wrapper.vm as any).validate(callback)).resolves.toBe(valid)
+    expect(callback).toHaveBeenCalledTimes(1)
+    expect(callback.mock.calls[0][0]).toBe(valid)
+    if (!valid) expect(callback.mock.calls[0][1]).toHaveProperty('name')
+
+    const error = new Error('business callback failed')
+    const throwingCallback = vi.fn(() => { throw error })
+    await expect((wrapper.vm as any).validate(throwingCallback)).rejects.toBe(error)
+    expect(throwingCallback).toHaveBeenCalledTimes(1)
+    wrapper.destroy()
+  })
+
   it('resolves a field component from the current model', async () => {
     const EditorA = Vue.extend({ name: 'EditorA', props: ['value'], render: h => h('div') })
     const EditorB = Vue.extend({ name: 'EditorB', props: ['value'], render: h => h('div') })

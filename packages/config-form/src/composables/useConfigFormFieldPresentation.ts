@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import type { VNodeData } from 'vue'
 import type {
   ConfigFormFieldBindingContext,
   ConfigFormFieldContext,
@@ -120,6 +121,20 @@ export function useConfigFormFieldPresentation(options: Options) {
       return hintTooltipEnabled.value && hint.value !== null
         ? stripManagedHintTitle(props)
         : props
+    }),
+    componentSlots: computed(() => {
+      const slots: NonNullable<VNodeData['scopedSlots']> = {}
+      const mapping = getItem().component?.slots || {}
+      Object.keys(mapping).forEach(name => {
+        const slot = getSlot(mapping[name])
+        if (!slot) return
+        // Vue 2 的 proxy 标记同时向读取 $slots 的原生组件（如 el-input）暴露插槽。
+        slots[name] = Object.assign((slotProps: Record<string, unknown>) => {
+          const rendered = slot({ field: fieldContext, slotProps })
+          return Array.isArray(rendered) ? rendered : rendered ? [rendered] : undefined
+        }, { proxy: true })
+      })
+      return slots
     }),
     bindingValue,
     renderContext,

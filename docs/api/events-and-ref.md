@@ -41,7 +41,7 @@ interface ConfigFormExpose {
 
 ConfigForm 不额外提供 model 读写 Ref；读取和提交使用父组件持有的 `model`，写入走 `v-model` 或字段上下文，底层 Form 的其他能力可通过 `getFormRef()` 使用。
 
-需要在字段回调之外做批量写入时，使用实例方法 `updateModel`：一次调用按路径合并为一份新 model 提交（支持 `profile.city` 点路径），值未变化的路径跳过，并按字段发出 `field-change`；同步连续调用会自动合并为一次受控更新：
+需要在字段回调之外做批量写入时，使用实例方法 `updateModel`：一次调用按路径合并为一份新 model 提交（支持 `profile.city` 点路径），值未变化的路径跳过，并按字段发出 `field-change`；每次有效调用分别提交一次更新；同步连续调用会基于最新待回写数据继续合并，避免更新丢失：
 
 ```ts
 formRef.value?.updateModel({ status: 'approved', 'audit.checkedBy': 'admin' })
@@ -57,3 +57,11 @@ async function submit() {
   if (await formRef.value?.validate()) submitForm(model.value)
 }
 ```
+
+## 校验与重置边界
+
+`validate()` 校验失败返回 `false`，并将失败字段传给回调；回调只调用一次，业务回调抛出的异常会使返回的 Promise reject。
+
+`validateField()` 只定位配置生成的已挂载字段。默认 Slot 中手写的原生 `el-form-item` 请使用 `getFormRef()?.validateField(prop, callback)`；全表 `validate()` 仍由 Element Form 校验全部已注册字段。
+
+`resetFields()` 通过受控更新恢复组件创建时的**整份 model 快照**，包括隐藏字段和未配置到表单的业务属性，然后清除校验状态。动态挂载字段不会重新记录初值，创建之后新增的 model 属性也会随整份快照恢复而移除。父组件需要接收 `update:model`（通常使用 `v-model`）。这与 Element UI 按当前已挂载 FormItem 的挂载初值重置不同；组件不会直接修改父级 model，也不新增另一套重置 API。

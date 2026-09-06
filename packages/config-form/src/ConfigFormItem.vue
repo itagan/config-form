@@ -102,6 +102,7 @@ const fieldContentProps = computed(() => ({
     ...formItemSlotContext.value,
     component: presentation.resolvedComponent.value
   },
+  componentSlots: presentation.componentSlots.value,
   bindingValue: presentation.bindingValue.value,
   resolvedComponent: presentation.resolvedComponent.value,
   renderContext: presentation.renderContext,

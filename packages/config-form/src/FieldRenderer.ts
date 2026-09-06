@@ -12,6 +12,7 @@ interface Props {
   type: string
   value: ConfigFormValue
   component: ResolvedComponentConfig
+  componentSlots: VNodeData['scopedSlots']
   modelContext: ConfigFormFieldRenderContext
   onModelInput: (value: ConfigFormValue) => void
 }
@@ -87,6 +88,7 @@ export default {
     type: { type: String, required: true },
     value: null,
     component: { type: Object, required: true },
+    componentSlots: { type: Object, required: true },
     modelContext: { type: Object, required: true },
     onModelInput: { type: Function, required: true }
   },
@@ -98,6 +100,11 @@ export default {
     if (!component.is) return h('span')
 
     const data = createData(component, component.nativeListeners)
+    // 每轮提供新的映射，避免 Vue 缓存的 _normalized 丢失 $slots 代理。
+    const componentSlots = context.props.componentSlots
+    if (componentSlots && Object.keys(componentSlots).length) {
+      data.scopedSlots = { ...componentSlots }
+    }
     if (FULL_WIDTH_BUILTIN_TYPES.has(type)) {
       data.class = ['config-form-field-control--full', data.class]
     }
@@ -128,7 +135,7 @@ export default {
     return h(
       component.is as any,
       data,
-      createOptions(h, type, component.options, component.optionProps)
+      data.scopedSlots?.default ? undefined : createOptions(h, type, component.options, component.optionProps)
     )
   }
 }
