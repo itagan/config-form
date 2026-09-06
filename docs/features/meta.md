@@ -148,3 +148,4 @@ ConfigForm 对 `meta` 不可见，这个边界断言不影响运行时行为；C
 - [上下文与 Slot](/api/context-and-slots)：三类上下文的完整字段定义。
 - [自定义组件接入](/features/custom-components)：`resolveComponent` 结合 `meta.component` 的注册表绑定。
 - [JSON Schema 驱动](/examples/schema-driven)：远程下发 meta 的安全边界与白名单解析。
+- [业务元数据 meta 示例](/examples/meta)：货币复用、字典 key、权限显隐与埋点上报的可运行示例。
