@@ -81,3 +81,26 @@ const items = defineConfigFormItems<FormData>([
 ```
 
 这里 `fieldKey: 'start'` 同时作为校验 prop 和事件身份；组件实际接收的值由 binding 组装为 `{ start, end }`。更新复合值后，两个字段在同一份新 model 中写回。
+
+## 原生组件插槽
+
+示例页的项目输入框通过 `component.slots` 使用 Input 的 `prepend/append`，负责人使用 Autocomplete 的作用域插槽：
+
+```ts
+{
+  fieldKey: 'owner',
+  type: 'autocomplete',
+  component: {
+    props: { fetchSuggestions }, // 使用原生建议查询回调
+    slots: { default: 'ownerSuggestion' }
+  }
+}
+```
+
+```vue
+<template #ownerSuggestion="{ slotProps }">
+  <span>{{ slotProps.item.value }} · {{ slotProps.item.role }}</span>
+</template>
+```
+
+选择建议项仍走原生组件的 v-model；不需要另建包装组件。字段读写能力通过同级的 `field` 参数获取，详见[原生组件插槽](/api/context-and-slots#原生组件插槽)。

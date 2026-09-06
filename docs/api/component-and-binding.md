@@ -12,6 +12,7 @@
 | `options` | `FormItemOption[] \| (context) => FormItemOption[]` | select/radio/checkbox 子选项 |
 | `optionProps` | `OptionPropsConfig \| (context) => OptionPropsConfig` | 选项字段名映射 |
 | `model` | `FieldModelConfig \| false` | 自定义组件 model 协议；`false` 表示不自动写回 |
+| `slots` | `Record<string, string>` | 原生组件插槽名 → 根 ConfigForm 具名 Slot 名；上下文为 `{ field, slotProps }` |
 | `slot` | `string` | `type: 'slot'` 的具名 Slot 名称 |
 
 ## 自定义组件

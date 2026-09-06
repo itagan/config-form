@@ -7,7 +7,14 @@
 
 ## Unreleased
 
+### Fixed
+
+- `validate()` 的业务回调异常正常向调用方传播，不再被当作校验失败而重复调用。
+- 澄清整份 model 快照重置、配置字段校验范围和同步更新分别提交的既有契约。
+
 ### Added
+
+- 字段级 `component.slots` 透传原生组件插槽，使用 `{ field, slotProps }` 上下文，支持内置组件、注册字段和一次性组件；提供 `ConfigFormComponentSlotContext` 公共类型与 Input/Autocomplete 示例。
 
 - 新增字段组件 `nativeListeners` 配置，可携带字段更新上下文监听 Element UI、直接组件、注册 Type 和 `text` 根节点的标准 DOM 事件，对齐 FormTable 1.4。
 
