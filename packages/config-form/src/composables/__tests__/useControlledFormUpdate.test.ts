@@ -14,6 +14,7 @@ describe('useControlledFormUpdate', () => {
     update.setFieldValue('first', 'Grace')
     update.setFieldValue('last', 'Hopper')
 
+    expect(emitUpdate).toHaveBeenCalledTimes(2)
     expect(emitUpdate).toHaveBeenNthCalledWith(1, { first: 'Grace', last: 'Lovelace' })
     expect(emitUpdate).toHaveBeenNthCalledWith(2, { first: 'Grace', last: 'Hopper' })
   })
