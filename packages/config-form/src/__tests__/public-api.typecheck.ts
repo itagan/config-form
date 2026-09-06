@@ -294,3 +294,33 @@ const invalidSlotNativeListeners: Extract<ConfigFormProps<BusinessModel>['items'
   }
 }
 void invalidSlotNativeListeners
+
+
+// 原生插槽对内置、一次性组件和注册字段使用相同的映射协议。
+defineConfigFormItems<BusinessModel>([
+  { fieldKey: 'amount', type: 'input', component: { slots: { append: 'currency' } } },
+  { fieldKey: 'amount', type: 'component', component: { is: MoneyInput, slots: { default: 'amountContent' } } }
+])
+defineConfigFormItems<BusinessModel, { money: typeof money }>([
+  { fieldKey: 'amount', type: 'money', component: { slots: { append: 'currency' } } }
+])
+defineConfigFormItems<BusinessModel>([
+  // @ts-expect-error 整字段 Slot 不接受原生组件插槽映射
+  { fieldKey: 'amount', type: 'slot', component: { slot: 'editor', slots: { append: 'currency' } } }
+])
+defineConfigFormItems<BusinessModel>([
+  // @ts-expect-error 映射目标必须是根具名 Slot 的名称
+  { fieldKey: 'amount', type: 'input', component: { slots: { append: 42 } } }
+])
+defineConfigFormType<BusinessModel>()<MoneyProps>({
+  is: MoneyInput,
+  // @ts-expect-error 注册协议继续只描述 is / props / model
+  slots: { default: 'content' }
+})
+function nativeSlot(context: import('../index').ConfigFormComponentSlotContext<BusinessModel, { item: { value: string } }>) {
+  const amount: number = context.field.model.amount
+  const suggestion: string = context.slotProps.item.value
+  context.field.setValue(amount)
+  return suggestion
+}
+void nativeSlot

@@ -7,7 +7,8 @@ import ConfigForm, {
   createConfigForm,
   defineConfigFormType,
   defineConfigFormTypes,
-  defineConfigFormItems
+  defineConfigFormItems,
+  type ConfigFormComponentSlotContext
 } from '@itagan/config-form'
 import '@itagan/config-form/style.css'
 
@@ -59,10 +60,14 @@ describe('minimum peer package consumer', () => {
               {
                 fieldKey: 'name',
                 type: 'input',
+                component: { slots: { prepend: 'namePrefix' } },
                 formItemProps: { rules: [{ required: true, message: '请输入姓名' }] }
               },
               { fieldKey: 'employeeId', type: 'employee' }
             ]
+          },
+          scopedSlots: {
+            namePrefix: ({ field }: ConfigFormComponentSlotContext) => [createElement('span', String(field.value))]
           },
           on: { 'update:model': (model: { name: string, employeeId: string }) => { this.model = model } }
         })
@@ -71,11 +76,13 @@ describe('minimum peer package consumer', () => {
     document.body.appendChild(host.$el)
     await Vue.nextTick()
 
+    expect(host.$el.querySelector('.el-input-group__prepend')?.textContent).toBe('Alice')
     const input = host.$el.querySelector('input') as HTMLInputElement
     input.value = 'Bob'
     input.dispatchEvent(new Event('input', { bubbles: true }))
     await Vue.nextTick()
     expect(host.model.name).toBe('Bob')
+    expect(host.$el.querySelector('.el-input-group__prepend')?.textContent).toBe('Bob')
 
     const employee = host.$el.querySelector('.minimum-employee-field') as HTMLButtonElement
     employee.click()
