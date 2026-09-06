@@ -16,6 +16,8 @@
 | [动态字段与增删](/examples/dynamic-form) | 数组路径、稳定 key、动态显隐、批量事务 | <PlaygroundLink route="/dynamic">打开</PlaygroundLink> |
 | [扩展、Slot 与复合字段](/examples/extensions) | 业务 type、具名 Slot、binding.map | <PlaygroundLink route="/extensions">打开</PlaygroundLink> |
 | [JSON Schema 驱动](/examples/schema-driven) | 远程配置下发、resolveComponent、label/error Slot | <PlaygroundLink route="/schema">打开</PlaygroundLink> |
+| [字段组件事件与原生事件](/examples/component-events) | listeners、nativeListeners、事件上下文写回 | <PlaygroundLink route="/component-events">打开</PlaygroundLink> |
+| [业务元数据 meta](/examples/meta) | meta 透传、权限显隐、字典与埋点 | <PlaygroundLink route="/meta">打开</PlaygroundLink> |
 
 ## 状态与体验
 

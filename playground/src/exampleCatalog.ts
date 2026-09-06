@@ -10,7 +10,7 @@ export interface PlaygroundExample {
 
 export const categoryDefinitions = [
   { id: 'basics', title: '基础使用', description: '常规字段编辑、选项映射和受控闭环。' },
-  { id: 'advanced', title: '进阶配置', description: '动态字段、扩展协议、远程 Schema 与装饰插槽。' },
+  { id: 'advanced', title: '进阶配置', description: '动态字段、扩展协议、组件事件、业务 meta 与装饰插槽。' },
   { id: 'experience', title: '状态与体验', description: '详情态、聚焦导航和提示交互。' }
 ] as const
 
@@ -68,6 +68,24 @@ export const examples: PlaygroundExample[] = [
     level: 'intermediate',
     type: 'success',
     tags: ['leftSlot', 'rightSlot']
+  },
+  {
+    path: '/component-events',
+    title: '字段组件事件与原生事件',
+    description: 'listeners 响应组件 $emit 业务事件，nativeListeners 监听根节点 DOM，事件上下文直接写回。',
+    category: 'advanced',
+    level: 'intermediate',
+    type: 'success',
+    tags: ['listeners', 'nativeListeners', '事件上下文']
+  },
+  {
+    path: '/meta',
+    title: '业务元数据 meta',
+    description: '单位、字典 key、权限码和埋点标识挂在字段配置上，经 itemConfig 透传给组件与回调。',
+    category: 'advanced',
+    level: 'intermediate',
+    type: 'success',
+    tags: ['meta', 'component.props', 'visible', 'listeners']
   },
   {
     path: '/readonly',

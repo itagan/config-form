@@ -118,6 +118,8 @@ export default defineConfig({
           { text: '动态字段与增删', link: '/examples/dynamic-form' },
           { text: '扩展、Slot 与复合字段', link: '/examples/extensions' },
           { text: 'JSON Schema 驱动', link: '/examples/schema-driven' },
+          { text: '字段组件事件与原生事件', link: '/examples/component-events' },
+          { text: '业务元数据 meta', link: '/examples/meta' },
           { text: '详情与只读模式', link: '/examples/readonly-detail' },
           { text: '校验聚焦与键盘导航', link: '/examples/interaction-validation' },
           { text: '提示与 Tooltip 单例', link: '/examples/hint-modes' }

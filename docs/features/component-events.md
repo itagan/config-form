@@ -190,3 +190,5 @@ nativeListeners: {
 ## 相关 API
 
 [Component 与 Binding](../api/component-and-binding.md) · [自定义组件接入](./custom-components.md) · [上下文与 Slot](../api/context-and-slots.md) · [事件与实例](../api/events-and-ref.md)
+
+可运行的完整示例见[字段组件事件与原生事件](/examples/component-events)。
