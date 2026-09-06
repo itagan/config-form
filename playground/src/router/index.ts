@@ -10,6 +10,8 @@ import ExtensionsView from '../views/ExtensionsView.vue'
 import ReadonlyView from '../views/ReadonlyView.vue'
 import InteractionView from '../views/InteractionView.vue'
 import HintView from '../views/HintView.vue'
+import ComponentEventsView from '../views/ComponentEventsView.vue'
+import MetaView from '../views/MetaView.vue'
 
 Vue.use(VueRouter)
 
@@ -25,6 +27,8 @@ export default new VueRouter({
     { path: '/extensions', component: ExtensionsView },
     { path: '/readonly', component: ReadonlyView },
     { path: '/interaction', component: InteractionView },
-    { path: '/hints', component: HintView }
+    { path: '/hints', component: HintView },
+    { path: '/component-events', component: ComponentEventsView },
+    { path: '/meta', component: MetaView }
   ]
 })
