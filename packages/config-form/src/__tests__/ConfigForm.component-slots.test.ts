@@ -12,7 +12,7 @@ describe('native component slots', () => {
       propsData: {
         model: { name: 'Ada' },
         items: [{ fieldKey: 'name', type: 'input', component: {
-          slots: { prepend: 'prefix', append: 'action' }, listeners: { input: onInput }
+          nativeSlots: { prepend: 'prefix', append: 'action' }, listeners: { input: onInput }
         } }]
       },
       scopedSlots: {
@@ -43,7 +43,7 @@ describe('native component slots', () => {
         model: { name: '' },
         items: [{ fieldKey: 'name', type: 'autocomplete', component: {
           props: { fetchSuggestions: (_query: string, done: (items: unknown[]) => void) => done([suggestion]) },
-          slots: { default: 'suggestion' }, listeners: { select: onSelect }
+          nativeSlots: { default: 'suggestion' }, listeners: { select: onSelect }
         } }]
       },
       scopedSlots: { suggestion: renderSuggestion }
@@ -62,7 +62,7 @@ describe('native component slots', () => {
   it('replaces generated options only when the mapped default slot exists', async () => {
     const component = {
       options: [{ label: 'Generated', value: 'generated' }],
-      slots: { default: 'missing' }
+      nativeSlots: { default: 'missing' }
     }
     const wrapper = mount(ConfigFormForTest, {
       propsData: { model: { choice: '' }, items: [{ fieldKey: 'choice', type: 'select', component }] },
@@ -72,7 +72,7 @@ describe('native component slots', () => {
     })
     expect(wrapper.findComponent({ name: 'ElOption' }).props('value')).toBe('generated')
     await wrapper.setProps({ items: [{ fieldKey: 'choice', type: 'select', component: {
-      ...component, slots: { default: 'grouped' }
+      ...component, nativeSlots: { default: 'grouped' }
     } }] })
     expect(wrapper.findAllComponents({ name: 'ElOption' })).toHaveLength(1)
     expect(wrapper.findComponent({ name: 'ElOptionGroup' }).props('label')).toBe('Custom')
@@ -95,7 +95,7 @@ describe('native component slots', () => {
       propsData: {
         model: { enabled: false }, fieldTypes: { registered: { is: Editor } },
         items: [{ fieldKey: 'enabled', type, component: {
-          ...(type === 'component' ? { is: Editor } : {}), slots: { default: 'label' }
+          ...(type === 'component' ? { is: Editor } : {}), nativeSlots: { default: 'label' }
         } }]
       },
       scopedSlots: { label: '<span>{{ props.field.fieldKey }}: {{ props.slotProps.checked }}</span>' }

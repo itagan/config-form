@@ -298,24 +298,28 @@ void invalidSlotNativeListeners
 
 // 原生插槽对内置、一次性组件和注册字段使用相同的映射协议。
 defineConfigFormItems<BusinessModel>([
-  { fieldKey: 'amount', type: 'input', component: { slots: { append: 'currency' } } },
-  { fieldKey: 'amount', type: 'component', component: { is: MoneyInput, slots: { default: 'amountContent' } } }
+  { fieldKey: 'amount', type: 'input', component: { nativeSlots: { append: 'currency' } } },
+  { fieldKey: 'amount', type: 'component', component: { is: MoneyInput, nativeSlots: { default: 'amountContent' } } }
 ])
 defineConfigFormItems<BusinessModel, { money: typeof money }>([
-  { fieldKey: 'amount', type: 'money', component: { slots: { append: 'currency' } } }
+  { fieldKey: 'amount', type: 'money', component: { nativeSlots: { append: 'currency' } } }
 ])
 defineConfigFormItems<BusinessModel>([
   // @ts-expect-error 整字段 Slot 不接受原生组件插槽映射
-  { fieldKey: 'amount', type: 'slot', component: { slot: 'editor', slots: { append: 'currency' } } }
+  { fieldKey: 'amount', type: 'slot', component: { slot: 'editor', nativeSlots: { append: 'currency' } } }
 ])
 defineConfigFormItems<BusinessModel>([
   // @ts-expect-error 映射目标必须是根具名 Slot 的名称
-  { fieldKey: 'amount', type: 'input', component: { slots: { append: 42 } } }
+  { fieldKey: 'amount', type: 'input', component: { nativeSlots: { append: 42 } } }
+])
+defineConfigFormItems<BusinessModel>([
+  // @ts-expect-error 原生组件插槽映射只使用 nativeSlots，不保留 slots 别名
+  { fieldKey: 'amount', type: 'input', component: { slots: { append: 'currency' } } }
 ])
 defineConfigFormType<BusinessModel>()<MoneyProps>({
   is: MoneyInput,
   // @ts-expect-error 注册协议继续只描述 is / props / model
-  slots: { default: 'content' }
+  nativeSlots: { default: 'content' }
 })
 function nativeSlot(context: import('../index').ConfigFormComponentSlotContext<BusinessModel, { item: { value: string } }>) {
   const amount: number = context.field.model.amount

@@ -60,7 +60,7 @@ describe('minimum peer package consumer', () => {
               {
                 fieldKey: 'name',
                 type: 'input',
-                component: { slots: { prepend: 'namePrefix' } },
+                component: { nativeSlots: { prepend: 'namePrefix' } },
                 formItemProps: { rules: [{ required: true, message: '请输入姓名' }] }
               },
               { fieldKey: 'employeeId', type: 'employee' }

@@ -53,13 +53,13 @@ label Slot 使用 `ConfigFormFormItemSlotContext`；error Slot 使用额外带 `
 
 ## 原生组件插槽
 
-只修改控件内部内容时，使用 `component.slots`，让 ConfigForm 继续负责创建组件和绑定数据。映射的键是原生组件插槽名，值是根 ConfigForm 具名 Slot 名：
+只修改控件内部内容时，使用 `component.nativeSlots`，让 ConfigForm 继续负责创建组件和绑定数据。映射的键是原生组件插槽名，值是根 ConfigForm 具名 Slot 名：
 
 ```ts
 const items = [{
   fieldKey: 'project',
   type: 'input',
-  component: { slots: { prepend: 'projectPrefix', append: 'projectAction' } }
+  component: { nativeSlots: { prepend: 'projectPrefix', append: 'projectAction' } }
 }]
 ```
 
@@ -74,8 +74,8 @@ const items = [{
 
 上下文类型为 `ConfigFormComponentSlotContext<TModel, TSlotProps>`：`field` 是当前字段的 `ConfigFormFieldContext`，`slotProps` 原样保留底层组件提供的插槽参数，两者不会扁平合并。例如 Autocomplete 的 `default` 插槽通过 `slotProps.item` 读取建议项，见[扩展示例](/examples/extensions)。
 
-此配置适用于内置组件、注册字段和一次性组件；`text` 没有组件插槽，整字段 `type: 'slot'` 不接受 `component.slots`。`fieldTypes` 注册定义仍只包含 `is/props/model`。
+此配置适用于内置组件、注册字段和一次性组件；`text` 没有组件插槽，整字段 `type: 'slot'` 不接受 `component.nativeSlots`。`fieldTypes` 注册定义仍只包含 `is/props/model`。
 
 只有映射的根插槽存在时才覆盖。对 select/radio/checkbox，存在的 `default` 插槽会替代自动生成的选项；仅配置其他插槽、或映射目标不存在时，保留 `options/optionProps` 行为。自定义分组与选项内容可在该默认插槽中直接使用原生 `el-option-group/el-option`。
 
-选择顺序：原生属性用 `component.props`；局部内容用 `component.slots`；完全自定义字段或需要自行持有组件 `ref` 时用整字段 Slot。
+选择顺序：原生属性用 `component.props`；局部内容用 `component.nativeSlots`；完全自定义字段或需要自行持有组件 `ref` 时用整字段 Slot。

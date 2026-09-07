@@ -268,7 +268,7 @@ async function submit() {
 
 ### 原生组件插槽
 
-字段级 `component.slots` 将底层组件插槽名映射到 ConfigForm 根具名 Slot，例如 `slots: { prepend: 'prefix', append: 'action' }`。根插槽接收 `{ field, slotProps }`：`field` 提供字段读写上下文，`slotProps` 保留底层作用域插槽参数。对应公共类型为 `ConfigFormComponentSlotContext<TModel, TSlotProps>`。
+字段级 `component.nativeSlots` 将底层组件插槽名映射到 ConfigForm 根具名 Slot，例如 `nativeSlots: { prepend: 'prefix', append: 'action' }`。根插槽接收 `{ field, slotProps }`：`field` 提供字段读写上下文，`slotProps` 保留底层作用域插槽参数。对应公共类型为 `ConfigFormComponentSlotContext<TModel, TSlotProps>`。
 
 支持内置组件、注册字段和一次性组件；`text` 没有组件插槽，整字段 Slot 继续使用 `component.slot`。映射目标存在时才覆盖；select/radio/checkbox 的有效 `default` 插槽替代自动选项，否则保留 `options/optionProps`。注册定义仍只包含 `is/props/model`。
 

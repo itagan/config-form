@@ -63,4 +63,4 @@ const fieldTypes = defineConfigFormTypes()({ money })
 
 ## FormTable 后续对齐记录
 
-本轮仅修改 ConfigForm。FormTable 后续可同步校验回调异常处理，以及字段级 `component.slots` 的映射和 `{ field, slotProps }` 上下文；继续保留 `row/updateRow` 与 `model/updateModel` 的场景差异。本轮不增加字段实例注册表，也不抽取公共包。
+本轮仅修改 ConfigForm。FormTable 后续可同步校验回调异常处理，以及字段级 `component.nativeSlots` 的映射和 `{ field, slotProps }` 上下文；继续保留 `row/updateRow` 与 `model/updateModel` 的场景差异。本轮不增加字段实例注册表，也不抽取公共包。
