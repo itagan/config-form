@@ -124,7 +124,7 @@ export function useConfigFormFieldPresentation(options: Options) {
     }),
     componentSlots: computed(() => {
       const slots: NonNullable<VNodeData['scopedSlots']> = {}
-      const mapping = getItem().component?.slots || {}
+      const mapping = getItem().component?.nativeSlots || {}
       Object.keys(mapping).forEach(name => {
         const slot = getSlot(mapping[name])
         if (!slot) return

@@ -185,7 +185,7 @@ export interface FieldComponentConfig<TModel extends FormModel = FormModel> {
   /** 自定义受控值协议；undefined 使用组件原生 Vue 2 v-model，false 禁用写回。 */
   model?: FieldModelConfig<TModel> | false
   /** 原生组件插槽名到根 ConfigForm 具名 Slot 名的映射。 */
-  slots?: Record<string, string>
+  nativeSlots?: Record<string, string>
   /** type: 'slot' 时在根 ConfigForm 上对应的具名 Slot。 */
   slot?: string
 }
@@ -305,12 +305,12 @@ export interface SlotFormItemConfig<TModel extends FormModel = FormModel>
   extends BaseFormItemConfig<TModel> {
   type: 'slot'
   /** 必须通过 slot 指定具名 Slot，不创建实际字段组件。 */
-  component: Omit<FieldComponentConfig<TModel>, 'nativeListeners' | 'slots'> & {
+  component: Omit<FieldComponentConfig<TModel>, 'nativeListeners' | 'nativeSlots'> & {
     slot: string
     is?: never
     resolveComponent?: never
     nativeListeners?: never
-    slots?: never
+    nativeSlots?: never
   }
 }
 
@@ -349,7 +349,7 @@ type CustomFieldComponentConfig<
   >
   listeners?: RegisteredFieldTypeListeners<TModel, TDefinition>
   nativeListeners?: ConfigFormNativeFieldListeners<TModel>
-  slots?: Record<string, string>
+  nativeSlots?: Record<string, string>
   model?: FieldModelConfig<TModel, RegisteredFieldTypeEvents<TDefinition>> | false
   is?: never
   resolveComponent?: never

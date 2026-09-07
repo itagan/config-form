@@ -84,7 +84,7 @@ const items = defineConfigFormItems<FormData>([
 
 ## 原生组件插槽
 
-示例页的项目输入框通过 `component.slots` 使用 Input 的 `prepend/append`，负责人使用 Autocomplete 的作用域插槽：
+示例页的项目输入框通过 `component.nativeSlots` 使用 Input 的 `prepend/append`，负责人使用 Autocomplete 的作用域插槽：
 
 ```ts
 {
@@ -92,7 +92,7 @@ const items = defineConfigFormItems<FormData>([
   type: 'autocomplete',
   component: {
     props: { fetchSuggestions }, // 使用原生建议查询回调
-    slots: { default: 'ownerSuggestion' }
+    nativeSlots: { default: 'ownerSuggestion' }
   }
 }
 ```

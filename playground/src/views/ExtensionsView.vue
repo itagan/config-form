@@ -47,7 +47,7 @@ export default defineComponent({
   setup() {
     const model = ref({ project: 'ConfigForm', amount: 1200, start: '09:00', end: '18:00', summary: '', owner: '' })
     const items = defineConfigFormItems<Record<string, any>, typeof fieldTypes>([
-      { fieldKey: 'project', type: 'input', colProps: { span: 12 }, formItemProps: { label: '项目' }, component: { slots: { prepend: 'projectPrefix', append: 'projectAction' } } },
+      { fieldKey: 'project', type: 'input', colProps: { span: 12 }, formItemProps: { label: '项目' }, component: { nativeSlots: { prepend: 'projectPrefix', append: 'projectAction' } } },
       { fieldKey: 'amount', type: 'money', colProps: { span: 12 }, formItemProps: { label: '金额' }, component: { props: { currency: 'CNY' } } },
       {
         fieldKey: 'start', type: 'component', colProps: { span: 24 }, formItemProps: { label: '工作时段' },
@@ -63,7 +63,7 @@ export default defineComponent({
               done(suggestions.filter(item => item.value.toLowerCase().includes(query.toLowerCase())))
             }
           },
-          slots: { default: 'ownerSuggestion' }
+          nativeSlots: { default: 'ownerSuggestion' }
         }
       },
       { fieldKey: 'summary', type: 'slot', colProps: { span: 24 }, formItemProps: { label: '摘要' }, component: { slot: 'summary' } }
