@@ -5,7 +5,12 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## Unreleased
+## 0.4.1-beta.0 - 2026-09-08
+
+### Fixed
+
+- 修复复合字段在父组件尚未完成回写时连续修改多个子控件会显示旧值或覆盖前一次修改的问题。
+- Hint 定位过滤零尺寸目标，并合并动态刷新任务，避免旧节点刷新竞态。
 
 ### Fixed
 
