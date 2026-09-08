@@ -137,6 +137,32 @@ describe('ConfigForm', () => {
     expect(source.profile.name).toBe('Ada')
   })
 
+  it('resets opaque values by reference and clears validation through controlled updates', async () => {
+    const file = new File(['abc'], 'note.txt')
+    const bytes = new Uint8Array([1, 2])
+    const wrapper = mount(ConfigFormForTest, {
+      propsData: { model: { name: 'Ada', file, bytes }, items: [{ fieldKey: 'name', type: 'input' }] }
+    })
+    const clearValidate = vi.spyOn((wrapper.vm as any).getFormRef(), 'clearValidate')
+    const current = { name: 'Grace', file: new File([], 'new.txt'), bytes: new Uint8Array([9]) }
+    await wrapper.setProps({ model: current })
+    bytes[0] = 7
+    for (let index = 0; index < 2; index++) {
+      (wrapper.vm as any).resetFields()
+      await Vue.nextTick()
+      const reset = wrapper.emitted('update:model')![index][0]
+      expect(reset.name).toBe('Ada')
+      expect(reset.file).toBe(file)
+      expect(reset.file.size).toBe(3)
+      expect(reset.bytes).toBe(bytes)
+      expect(reset.bytes[0]).toBe(7)
+      expect(wrapper.props('model')).toBe(current)
+      expect(current.name).toBe('Grace')
+    }
+    expect(clearValidate).toHaveBeenCalledTimes(2)
+    wrapper.destroy()
+  })
+
   it('restores the creation snapshot including hidden, late-mounted and non-field data', async () => {
     const source = { name: 'Ada', hidden: 'initial', late: 'original', metadata: { revision: 1 } }
     const wrapper = mount(ConfigFormForTest, {
