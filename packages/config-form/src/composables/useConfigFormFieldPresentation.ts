@@ -45,6 +45,8 @@ export function useConfigFormFieldPresentation(options: Options) {
   }
 
   const bindingValue = computed(() => {
+    // 读取同步版本，确保父组件尚未回写 prop 时也刷新复合字段的 value。
+    options.updateApi.getRevision?.()
     const item = getItem()
     return item.binding
       ? resolveBindingValue(getModel(), item.binding)

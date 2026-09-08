@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import type {
   ConfigFormFieldChangePayload,
   ConfigFormValue,
@@ -13,6 +14,9 @@ interface Options {
 
 /** 合并父组件回写前发生的同步更新，微任务结束后重新以受控 prop 为准。 */
 export function useControlledFormUpdate(options: Options) {
+  // 受控父组件通常要到下一轮渲染才回写 prop；该版本号让字段在同一轮同步更新中
+  // 立即重新求值，避免复合组件连续输入时第二次事件基于旧 value 覆盖第一次输入。
+  const revision = ref(0)
   let synchronousBase: FormModel | null = null
   let resetPending = false
 
@@ -29,6 +33,7 @@ export function useControlledFormUpdate(options: Options) {
 
   const commitModel = (model: FormModel) => {
     synchronousBase = model
+    revision.value++
     scheduleReset()
     options.emitUpdate(model)
   }
@@ -57,6 +62,7 @@ export function useControlledFormUpdate(options: Options) {
 
   return {
     getCurrentModel,
+    getRevision: () => revision.value,
     replaceModel: (model: FormModel) => commitModel(model),
     updateModel,
     setFieldValue: (fieldKey: string, value: ConfigFormValue) => (

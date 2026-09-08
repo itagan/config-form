@@ -6,6 +6,7 @@ export type ConfigFormRootSlots = Readonly<ConfigFormSlots>
 
 export interface ConfigFormUpdateApi {
   getCurrentModel: () => FormModel
+  getRevision?: () => number
   setFieldValue: (
     fieldKey: string,
     value: ConfigFormValue
