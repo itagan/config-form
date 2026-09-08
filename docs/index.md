@@ -24,6 +24,12 @@ features:
 
 [打开 Playground ↗](http://localhost:5173/)
 
+```bash
+pnpm add @itagan/config-form@latest
+```
+
+组件包：[npm ↗](https://www.npmjs.com/package/@itagan/config-form) · [GitHub ↗](https://github.com/itagan/config-form)
+
 ## 选择你的入口
 
 | 当前目标 | 推荐入口 |

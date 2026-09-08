@@ -2,6 +2,16 @@
 
 `ConfigForm` 是一个基于 `Vue 2.7 + Element UI + TypeScript` 的配置驱动表单组件。本页只说明仓库开发；组件行为与 API 统一以 [VitePress 文档](./docs/index.md)为准。
 
+[![npm version](https://img.shields.io/npm/v/%40itagan%2Fconfig-form.svg)](https://www.npmjs.com/package/@itagan/config-form)
+
+组件已发布为 [`@itagan/config-form`](https://www.npmjs.com/package/@itagan/config-form)。当前发布的是 `0.4.1-beta.0` 测试版，可通过 `beta` 标签安装；正式稳定版发布后再切换到稳定版本。
+
+```bash
+pnpm add @itagan/config-form@latest
+# 测试版
+pnpm add @itagan/config-form@beta
+```
+
 ## 在线站点
 
 - 文档与示例站：<https://itagan.github.io/config-form/>
@@ -16,7 +26,7 @@
 
 ## 组件包
 
-`@itagan/config-form` 计划发布到 npm Registry，发布前业务项目可通过 Git 仓库或 workspace alias 引用源码。安装与 API 说明见 [`packages/config-form/README.md`](./packages/config-form/README.md) 与[快速开始](./docs/guide/quick-start.md)。
+安装、兼容范围和最小示例见 [`packages/config-form/README.md`](./packages/config-form/README.md) 与[快速开始](./docs/guide/quick-start.md)。
 
 ## 仓库结构
 
