@@ -72,3 +72,18 @@ test('uses Input and Autocomplete native slots without replacing their controls'
   await suggestion.click()
   await expect(owner).toHaveValue('Ada')
 })
+
+test('keeps composite time controls synchronized with the controlled model', async ({ page }) => {
+  await page.goto('/#/extensions')
+  const inputs = field(page, 'start').locator('input')
+  await expect(inputs.nth(0)).toHaveValue('09:00')
+  await expect(inputs.nth(1)).toHaveValue('18:00')
+  await inputs.nth(0).click()
+  await page.locator('.time-select-item:visible').getByText('10:00', { exact: true }).click()
+  await expect(inputs.nth(0)).toHaveValue('10:00')
+  await inputs.nth(1).click()
+  await inputs.nth(1).press('ArrowDown')
+  await inputs.nth(1).press('Enter')
+  await expect(inputs.nth(1)).toHaveValue('18:30')
+  await expect(inputs.nth(0)).toHaveValue('10:00')
+})
