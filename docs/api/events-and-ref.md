@@ -65,3 +65,5 @@ async function submit() {
 `validateField()` 只定位配置生成的已挂载字段。默认 Slot 中手写的原生 `el-form-item` 请使用 `getFormRef()?.validateField(prop, callback)`；全表 `validate()` 仍由 Element Form 校验全部已注册字段。
 
 `resetFields()` 通过受控更新恢复组件创建时的**整份 model 快照**，包括隐藏字段和未配置到表单的业务属性，然后清除校验状态。动态挂载字段不会重新记录初值，创建之后新增的 model 属性也会随整份快照恢复而移除。父组件需要接收 `update:model`（通常使用 `v-model`）。这与 Element UI 按当前已挂载 FormItem 的挂载初值重置不同；组件不会直接修改父级 model，也不新增另一套重置 API。
+
+快照仅递归克隆普通对象（含空原型对象）、数组、Date、RegExp、Map 和 Set，并保留循环与共享引用关系。自定义类实例、Blob/File、TypedArray、WeakMap/WeakSet、DOM 节点等其他对象保持引用；`resetFields()` 不会回滚这些对象的内部修改。需要恢复这类内部状态时，由父组件持有业务初值并替换对象。

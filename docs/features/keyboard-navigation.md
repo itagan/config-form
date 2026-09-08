@@ -18,11 +18,12 @@ ConfigForm 默认不接管键盘。传入 `navigationOptions` 后，可使用 En
 - 顺序来自当前实际 DOM，会跟随字段动态显隐变化。
 - 隐藏、未挂载、禁用、只读或没有可聚焦内容的字段会被跳过。
 - Enter 前进，Shift+Enter 后退；到达首尾后停止，不循环。
+- 已被控件阻止默认行为（`event.defaultPrevented`）的 Enter 不再触发表单导航，例如 Element Select 打开或选择选项。
 - Tab、Shift+Tab 保持浏览器原生行为。
 - Textarea、`contenteditable`、按钮和 `role="button"` 不接管 Enter。
 - 输入法组合期间（`isComposing` / `keyCode === 229`）以及 Ctrl/Cmd/Alt+Enter 不接管。
 
-字段 Slot 和自定义组件只要在 FormItem 内提供标准可聚焦元素即可参与导航。复杂组件若需要自定义内部焦点顺序，应自行处理键盘，并在对应目标上阻止事件继续冒泡。
+字段 Slot 和自定义组件只要在 FormItem 内提供标准可聚焦元素即可参与导航。复杂组件若需要自定义内部焦点顺序，应自行处理键盘；消费 Enter 时调用 `preventDefault()` 或阻止事件继续冒泡，即可避免表单再次导航。
 
 ```ts
 interface ConfigFormNavigationOptions {
