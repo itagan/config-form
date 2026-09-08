@@ -38,6 +38,8 @@ export function useConfigFormHintTooltip(options: UseConfigFormHintTooltipOption
   let focusSuppressedByPointer = false
   let observedContainer: HTMLElement | null = null
   let observer: MutationObserver | null = null
+  let positionRefreshPending = false
+  let positionRefreshVersion = 0
 
   const syncActiveTarget = (forcePositionUpdate = false) => {
     if (escapeSuppressed) {
@@ -67,6 +69,17 @@ export function useConfigFormHintTooltip(options: UseConfigFormHintTooltipOption
       ? focusAriaTarget
       : target
     presenter.show(target, content, ariaTarget, forcePositionUpdate)
+  }
+
+  const schedulePositionRefresh = () => {
+    if (positionRefreshPending) return
+    positionRefreshPending = true
+    const scheduledVersion = positionRefreshVersion
+    void Promise.resolve().then(() => {
+      if (scheduledVersion !== positionRefreshVersion) return
+      positionRefreshPending = false
+      if (hoveredTarget || focusedTarget) syncActiveTarget(true)
+    })
   }
 
   const handleMouseOver = (event: MouseEvent) => {
@@ -130,6 +143,8 @@ export function useConfigFormHintTooltip(options: UseConfigFormHintTooltipOption
     observedContainer = null
     observer?.disconnect()
     observer = null
+    positionRefreshVersion += 1
+    positionRefreshPending = false
   }
 
   const addListeners = (container: HTMLElement) => {
@@ -140,9 +155,7 @@ export function useConfigFormHintTooltip(options: UseConfigFormHintTooltipOption
     container.addEventListener('focusout', handleFocusOut)
     container.addEventListener('keydown', handleKeyDown)
     // Hint 内容、可见性或子树变化时，复用当前目标并在下一次 DOM 更新后刷新定位。
-    observer = new MutationObserver(() => {
-      if (hoveredTarget || focusedTarget) syncActiveTarget(true)
-    })
+    observer = new MutationObserver(schedulePositionRefresh)
     observer.observe(container, {
       attributes: true,
       attributeFilter: [

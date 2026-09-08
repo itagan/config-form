@@ -801,6 +801,12 @@ describe('ConfigForm', () => {
       })
 
       const nameItem = wrapper.find('[data-config-form-field-prop="name"]').element
+      // jsdom 无布局；为本场景中的实际 Hint 内容模拟可见尺寸。
+      const content = nameItem.querySelector('.config-form__hint-target') as HTMLElement
+      vi.spyOn(content, 'getBoundingClientRect').mockReturnValue({
+        x: 0, y: 0, top: 0, left: 0, right: 100, bottom: 30, width: 100, height: 30,
+        toJSON: () => ({})
+      })
       const label = nameItem.querySelector('.el-form-item__label') as HTMLElement
       const input = nameItem.querySelector('input') as HTMLInputElement
       const hover = (target: HTMLElement) => target.dispatchEvent(
@@ -822,6 +828,7 @@ describe('ConfigForm', () => {
       expect((tooltip.vm as any).showPopper).toBe(true)
       wrapper.destroy()
     } finally {
+      vi.restoreAllMocks()
       vi.useRealTimers()
     }
   })

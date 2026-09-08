@@ -13,6 +13,17 @@ const FORM_ITEM_ERROR_SELECTOR = '.el-form-item__error'
 const HINT_TARGET_SELECTOR = '.config-form__hint-target'
 const FIELD_ROW_MAIN_SELECTOR = '.config-form__field-row-main'
 
+/** 定位目标必须具有可见的实际尺寸，包含从装饰行中选出的主内容。 */
+function isVisibleContentTarget(element: HTMLElement): boolean {
+  const style = window.getComputedStyle(element)
+  const rect = element.getBoundingClientRect()
+  return !element.hidden
+    && style.display !== 'none'
+    && style.visibility !== 'hidden'
+    && rect.width > 0
+    && rect.height > 0
+}
+
 /** 查找 FormItem 内容区中可用于触发和定位的直接根节点。 */
 function findVisibleContentRoots(target: HTMLElement): HTMLElement[] {
   if (!target.matches(FORM_ITEM_SELECTOR)) return []
@@ -23,11 +34,7 @@ function findVisibleContentRoots(target: HTMLElement): HTMLElement[] {
 
   return Array.from(content.children).filter((element): element is HTMLElement => {
     if (!(element instanceof HTMLElement) || element.matches(FORM_ITEM_ERROR_SELECTOR)) return false
-    const style = window.getComputedStyle(element)
-    // 不检查布局尺寸：jsdom 等测试环境没有布局，尺寸恒为 0。
-    return !element.hidden
-      && style.display !== 'none'
-      && style.visibility !== 'hidden'
+    return isVisibleContentTarget(element)
   })
 }
 
@@ -36,7 +43,7 @@ function preferMainContent(roots: HTMLElement[]): HTMLElement[] {
   if (roots.length !== 1) return roots
   const scoped = roots[0].querySelector<HTMLElement>(HINT_TARGET_SELECTOR)
     ?? roots[0].querySelector<HTMLElement>(FIELD_ROW_MAIN_SELECTOR)
-  return scoped ? [scoped] : roots
+  return scoped ? (isVisibleContentTarget(scoped) ? [scoped] : []) : roots
 }
 
 /** 隔离 Hint DOM 目标解析和 content 回退诊断。 */
