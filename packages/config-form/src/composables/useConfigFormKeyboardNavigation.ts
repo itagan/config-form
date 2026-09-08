@@ -23,6 +23,7 @@ export function useConfigFormKeyboardNavigation(options: ConfigFormKeyboardNavig
       !navigationOptions
       || navigationOptions.enabled === false
       || event.key !== 'Enter'
+      || event.defaultPrevented
       || event.isComposing
       || event.keyCode === 229
       || isModifiedEnter(event)

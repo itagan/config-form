@@ -579,6 +579,67 @@ describe('ConfigForm', () => {
     }
   })
 
+  it('lets Element Select consume Enter when opening and choosing an option', async () => {
+    const wrapper = mount(ConfigFormForTest, {
+      attachTo: document.body,
+      propsData: {
+        navigationOptions: { enabled: true },
+        model: { choice: '', next: '' },
+        items: [
+          { fieldKey: 'choice', type: 'select', component: { options: [{ label: 'Ada', value: 'ada' }] } },
+          { fieldKey: 'next', type: 'input' }
+        ]
+      }
+    })
+    try {
+      const select = wrapper.findComponent({ name: 'ElSelect' })
+      const input = select.find('input').element as HTMLInputElement
+      input.focus()
+      await Vue.nextTick()
+      for (const key of ['Enter', 'ArrowDown', 'Enter']) {
+        input.dispatchEvent(new KeyboardEvent('keydown', {
+          key, keyCode: key === 'Enter' ? 13 : 40, bubbles: true, cancelable: true
+        }))
+        await Vue.nextTick()
+        expect(document.activeElement).toBe(input)
+        if (key === 'ArrowDown') expect((select.vm as any).hoverIndex).toBe(0)
+      }
+      expect(wrapper.emitted('update:model')?.[0]?.[0].choice).toBe('ada')
+      expect((select.vm as any).visible).toBe(false)
+    } finally {
+      wrapper.destroy()
+    }
+  })
+
+  it('respects a custom component preventing Enter without stopping propagation', async () => {
+    const editor = Vue.extend({
+      render(h) {
+        return h('input', { on: { keydown: (event: KeyboardEvent) => event.preventDefault() } })
+      }
+    })
+    const wrapper = mount(ConfigFormForTest, {
+      attachTo: document.body,
+      propsData: {
+        navigationOptions: { enabled: true }, model: { custom: '', next: '' },
+        items: [
+          { fieldKey: 'custom', type: 'component', component: { is: editor } },
+          { fieldKey: 'next', type: 'input' }
+        ]
+      }
+    })
+    try {
+      const input = wrapper.find('input').element as HTMLInputElement
+      input.focus()
+      const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })
+      input.dispatchEvent(event)
+      await Vue.nextTick()
+      expect(event.defaultPrevented).toBe(true)
+      expect(document.activeElement).toBe(input)
+    } finally {
+      wrapper.destroy()
+    }
+  })
+
   it('leaves Enter untouched when navigation is off, composing or modified', async () => {
     const wrapper = mount(ConfigFormForTest, {
       attachTo: document.body,
