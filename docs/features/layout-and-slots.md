@@ -1,6 +1,6 @@
 # 布局与 Slot
 
-ConfigForm 固定的渲染结构是：一个 `el-form`、一个 `el-row`，每个可见字段对应一个 `el-col` 和一个 `el-form-item`。四个层级的属性各管一层，全部支持动态函数：
+ConfigForm 固定的渲染结构是：一个 `el-form`、一个 `el-row`，每个可见字段对应一个 `el-col` 和一个 `el-form-item`。四个层级的属性各管一层：`formProps`、`rowProps` 接收属性对象；字段级 `colProps`、`formItemProps` 支持属性对象或同步动态函数：
 
 | 属性 | 作用对象 | 默认值 |
 | --- | --- | --- |
@@ -28,6 +28,8 @@ ConfigForm 固定的渲染结构是：一个 `el-form`、一个 `el-row`，每�
 ```
 
 超出一行 24 栅格时由 Element UI 自动换行；字段 `visible: false` 时卸载，不留占位。
+
+`formProps.inline` 会透传给 Element Form，但每个配置字段仍包在 `el-col` 中，默认占满 24 栅格，因此仅设置 `inline: true` 不会得到原生 FormItem 的行内排列。配置字段的多列布局使用 `colProps`；需要原生行内排列时，可在根级 Slot 中组合原生 `el-form-item`。
 
 ## 样式定位与字段宽度
 

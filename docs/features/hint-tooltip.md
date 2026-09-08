@@ -33,6 +33,12 @@ Hint 内容支持字符串与数字，数字（包括 `0`）自动转换为字�
 
 单例模式将 Tooltip 实例数从 O(字段数) 降为 O(1)；事件监听统一挂在表单根节点上，字段增减不产生额外的监听器。
 
+## 透传与兼容边界
+
+`hintOptions.tooltipProps` 可设置 placement、effect、openDelay、popperClass 等 Element Tooltip 属性。`content`、`reference`、`popper`、`manual`、`value`、`enterable` 由 ConfigForm 管理，传入这些属性不会覆盖内部协议；`enterable` 固定为 false，提示不承载可交互内容。
+
+单例定位通过内部适配层调用 Element UI 2 的 `referenceElm`、`doDestroy`、`updatePopper` 等实例内部接口。这不是 Element 的公共 API 保证，升级依赖时需要运行 Tooltip 回归测试和最低版本兼容检查。仅在 tooltip 模式挂载单例及事件委托；默认 title 模式使用原生提示。
+
 ## 相关 API
 
 [Hint、事件与 Ref](../api/events-and-ref.md)
