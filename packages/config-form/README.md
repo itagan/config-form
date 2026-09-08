@@ -4,11 +4,19 @@
 
 ## 安装
 
-组件当前尚未发布到 npm Registry。仓库开发和联调阶段使用 workspace alias 或 Git 依赖；正式发布后安装命令为：
+组件已发布到 npm Registry。稳定版本安装：
 
 ```bash
 pnpm add @itagan/config-form
 ```
+
+当前测试版：
+
+```bash
+pnpm add @itagan/config-form@beta
+```
+
+版本与发布信息见 [npm 包页面](https://www.npmjs.com/package/@itagan/config-form)。
 
 使用方需要安装并注册 Vue `>=2.7.1 <3` 与 Element UI `>=2.4.9 <3`。
 
